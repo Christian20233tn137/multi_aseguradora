@@ -20,7 +20,7 @@ function App() {
           {/* Rutas con layout y contenido principal */}
           <Route path="/inicio/*" element={<MainContent />} />
           <Route path="/datos/*" element={<MainContent />} />
-          <Route path="/documentos/*" element={<MainContent />} />
+          <Route path="/documentos/*" element={<MainContent activeSection="Inicio" />} />
           <Route path="/buscar/*" element={<MainContent />} />
           <Route path="/solicitudes/*" element={<MainContent />} />
           <Route path="/aseguradoras/*" element={<MainContent />} />
