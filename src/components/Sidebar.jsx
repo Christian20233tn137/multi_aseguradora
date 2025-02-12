@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
 import UsuarioProfile from "./AdminViews/assets/UsuarioProfile.png";
-import MenuIcon from "./AdminViews/assets/Menu.png"; // Icono de menú
+import MenuIcon from "./AdminViews/assets/Menu.png";
+import EditIcon from "./AdminViews/assets/BotonEdit.png";
 
 const Sidebar = ({ setActiveSection }) => {
-  const [isOpen, setIsOpen] = useState(window.innerWidth >= 1024); // Abierto en pantallas grandes
+  const [isOpen, setIsOpen] = useState(false); // Siempre cerrado al inicio
 
-  // Manejo de cambio de tamaño para corregir visibilidad en responsive
+  // Manejo de cambio de tamaño (en este caso no es necesario controlar el resize)
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsOpen(true); // Siempre abierto en pantallas grandes
-      } else {
-        setIsOpen(false); // Cerrar en pantallas pequeñas
-      }
-    };
-  
-    window.addEventListener('resize', handleResize);
-  
     // Limpieza del evento al desmontar el componente
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {};
   }, []);
 
   return (
@@ -26,7 +17,7 @@ const Sidebar = ({ setActiveSection }) => {
       {/* Botón de menú siempre accesible */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 m-4 rounded colorFondo text-white fixed top-0 left-4 z-50"
+        className="p-2 m-4 rounded colorFondo text-white fixed top-auto left-2"
       >
         <img src={MenuIcon} alt="Menú" className="w-8 h-8" />
       </button>
@@ -35,17 +26,30 @@ const Sidebar = ({ setActiveSection }) => {
       <div
         className={`fixed top-0 left-0 h-full w-64 colorFondo text-white p-5 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 lg:relative lg:w-64 lg:translate-x-0`}
+        } transition-transform duration-300 z-50`}
       >
         {/* Contenido del Sidebar */}
         <div className="mt-11 p-10">
-          <img className="object-cover w-20 h-20 mx-auto" src={UsuarioProfile} alt="Usuario" />
-          <h2 className="mt-4 text-xl font-bold text-center">Editar perfil</h2>
+          <img
+            className="object-cover w-20 h-20 mx-auto"
+            src={UsuarioProfile}
+            alt="Usuario"
+          />
+          <h2 className="mt-4 text-base font-bold text-center flex items-center justify-center gap-2">
+            Editar perfil
+            <img className="w-5 h-5" src={EditIcon} alt="" />
+          </h2>
         </div>
 
         {/* Menú de navegación */}
         <ul>
-          {["Inicio", "Solicitudes", "Aseguradoras", "Agentes", "Cuotas"].map((item) => (
+          {[
+            "Inicio",
+            "Solicitudes",
+            "Aseguradoras",
+            "Agentes",
+            "Configurar Cuotas",
+          ].map((item) => (
             <li key={item} className="mb-2">
               <button
                 onClick={() => setActiveSection(item)}
@@ -66,9 +70,9 @@ const Sidebar = ({ setActiveSection }) => {
       </div>
 
       {/* Fondo oscuro cuando el sidebar está abierto en móviles */}
-      {isOpen && window.innerWidth < 1024 && (
+      {isOpen && (
         <div
-          className="fixed inset-0 bg-opacity-50 lg:hidden"
+          className="fixed inset-0 bg-opacity-50 bg-gradient-to-b from-grey-300 to-100% z-40"
           onClick={() => setIsOpen(false)}
         ></div>
       )}

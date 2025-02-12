@@ -12,7 +12,7 @@ const MainContent = ({ activeSection }) => {
       {activeSection === "Solicitudes" && <SolicitudSection />}
       {activeSection === "Aseguradoras" && <div>Contenido de Aseguradoras</div>}
       {activeSection === "Agentes" && <div>Contenido de Agentes</div>}
-      {activeSection === "Cuotas" && <div>Contenido de las Cuotas</div>}
+      {activeSection === "Configurar Cuotas" && <div>Contenido de las Cuotas</div>}
     </div>
   );
 };
