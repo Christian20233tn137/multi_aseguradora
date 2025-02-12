@@ -1,0 +1,25 @@
+.centered{
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+.botones {
+    background-color: #0B1956;
+    color: #fdfdfd;
+    border: 1px solid #343a40;
+    border-radius: 0
+}
+
+.botones:hover {
+    background-color: #354797; 
+}
+
+.miColor {
+    background-color: #D2E8FF;
+}
+
+.colorFondo {
+    background-color: #0B1956;
+}
+
