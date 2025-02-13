@@ -6,7 +6,6 @@ import EditIcon from "./AdminViews/assets/BotonEdit.png";
 const Sidebar = ({ setActiveSection }) => {
   const [isOpen, setIsOpen] = useState(false); // Siempre cerrado al inicio
 
-  // Manejo de cambio de tamaño (en este caso no es necesario controlar el resize)
   useEffect(() => {
     // Limpieza del evento al desmontar el componente
     return () => {};
@@ -48,6 +47,7 @@ const Sidebar = ({ setActiveSection }) => {
             "Solicitudes",
             "Aseguradoras",
             "Agentes",
+            "Administradores",
             "Configurar Cuotas",
           ].map((item) => (
             <li key={item} className="mb-2">
