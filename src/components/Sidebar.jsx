@@ -1,19 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import UsuarioProfile from "./AdminViews/assets/UsuarioProfile.png";
 import MenuIcon from "./AdminViews/assets/Menu.png";
 import EditIcon from "./AdminViews/assets/BotonEdit.png";
 
 const Sidebar = ({ setActiveSection }) => {
-  const [isOpen, setIsOpen] = useState(false); // Siempre cerrado al inicio
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Limpieza del evento al desmontar el componente
-    return () => {};
-  }, []);
+  const obtenerRuta = (seccion) => {
+    const rutas = {
+      Inicio: "/inicio",
+      Solicitudes: "/solicitudes",
+      Aseguradoras: "/aseguradoras",
+      Agentes: "/agentes",
+      Administradores: "/administradores",
+      "Configurar Cuotas": "/configurar-cuotas",
+    };
+    return rutas[seccion] || "/";
+  };
+
+  const manejarNavegacion = (seccion) => {
+    setActiveSection(seccion);
+    navigate(obtenerRuta(seccion));
+    setIsOpen(false); // Cierra el sidebar en móviles
+  };
 
   return (
     <>
-      {/* Botón de menú siempre accesible */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 m-4 rounded colorFondo text-white fixed top-auto left-2"
@@ -36,7 +50,7 @@ const Sidebar = ({ setActiveSection }) => {
           />
           <h2 className="mt-4 text-base font-bold text-center flex items-center justify-center gap-2">
             Editar perfil
-            <img className="w-5 h-5" src={EditIcon} alt="" />
+            <img className="w-5 h-5" src={EditIcon} alt="Editar" />
           </h2>
         </div>
 
@@ -52,7 +66,7 @@ const Sidebar = ({ setActiveSection }) => {
           ].map((item) => (
             <li key={item} className="mb-2">
               <button
-                onClick={() => setActiveSection(item)}
+                onClick={() => manejarNavegacion(item)}
                 className="w-full text-left hover:bg-blue-900 p-2 rounded transition"
               >
                 {item}

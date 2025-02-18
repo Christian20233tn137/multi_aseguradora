@@ -33,7 +33,7 @@ const RecruimentStructure = () => {
             <div className="flex justify-between items-center p-2 border-b">
               <h2 className="text-left font-bold text-lg">Postularme</h2>
               <img
-                className="object-cover w-13 h-13 cursor-pointer p-2"
+                className="object-cover w-13vis h-13 cursor-pointer p-2"
                 src={Close}
                 alt="Cerrar"
                 onClick={closeModal}
