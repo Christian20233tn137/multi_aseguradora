@@ -34,6 +34,10 @@ function App() {
         />
         <Route path="/agentes/*" element={<Layout activeSection="Agentes" />} />
         <Route
+          path="/administradores/*"
+          element={<Layout activeSection="Administradores" />}
+        />
+        <Route
           path="/configurar-cuotas/*"
           element={<Layout activeSection="Configurar Cuotas" />}
         />

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import ProfileSection from "./AdminViews/ProfileSection";
 import SolicitudSection from "./AdminViews/SolicitudSection";
-import SolicitudDocumentos from "./AdminViews/SolicitudDocumentos";
+import InicioSolicitudes from "./AdminViews/InicioSolicitudes";
 
 const MainContent = ({ activeSection }) => {
   const navigate = useNavigate(); // Obtén la función de navegación
@@ -28,14 +28,14 @@ const MainContent = ({ activeSection }) => {
       )}
       {activeSection === "Solicitudes" && (
         <div onClick={() => handleNavigate("/solicitudes")}>
-          <SolicitudSection />
+          <InicioSolicitudes />
         </div>
       )}
       {activeSection === "SolicitudDocumentos" && (
         <div
           onClick={() => handleNavigate("/solicitudes/solicitud-documentos")}
         >
-          <SolicitudDocumentos />
+          <SolicitudSection />
         </div>
       )}
       {activeSection === "Aseguradoras" && (

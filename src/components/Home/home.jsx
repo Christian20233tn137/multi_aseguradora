@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "./NavBarHome";
 import Section from "./Section";
 import ImageSection from "./ImageSection";
 
-const home = () => {
+const Home = () => {
+  // Deshabilitar el scroll al montar el componente
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "visible"; // Restaurar el scroll al desmontar
+    };
+  }, []);
+
   return (
     <div className="font-sans">
       <Navbar />
@@ -15,4 +23,4 @@ const home = () => {
   );
 };
 
-export default home;
+export default Home;
