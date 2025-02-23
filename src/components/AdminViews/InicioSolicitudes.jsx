@@ -1,6 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const InicioSolicitudes = () => {
+  const navigate = useNavigate();
+
+  const handleAceptar = () => {
+    navigate("/solicitudes/solicitud-documentos"); 
+  };
+
   const [view, setView] = useState("datos"); // Estado para controlar la vista actual
 
   const profiles = [
@@ -14,13 +21,17 @@ const InicioSolicitudes = () => {
     <div className="p-4">
       <div className="flex items-center mb-4">
         <button
-          className={`px-4 py-2 mr-2 border rounded ${view === "datos" ? "bg-blue-200" : "hover:bg-blue-200"}`}
+          className={`px-4 py-2 mr-2 border rounded ${
+            view === "datos" ? "bg-blue-200" : "hover:bg-blue-200"
+          }`}
           onClick={() => setView("datos")}
         >
           Datos
         </button>
         <button
-          className={`px-4 py-2 mr-2 border rounded ${view === "documentos" ? "bg-blue-200" : "hover:bg-blue-200"}`}
+          className={`px-4 py-2 mr-2 border rounded ${
+            view === "documentos" ? "bg-blue-200" : "hover:bg-blue-200"
+          }`}
           onClick={() => setView("documentos")}
         >
           Documentos
@@ -42,7 +53,7 @@ const InicioSolicitudes = () => {
                 <span className="text-ls font-semibold">{profile.name}</span>
               </div>
               <div className="flex items-center">
-                <button className="px-4 py-2 text-white rounded botones">
+                <button className="px-4 py-2 text-white rounded botones" onClick={handleAceptar}>
                   Ver más
                 </button>
               </div>

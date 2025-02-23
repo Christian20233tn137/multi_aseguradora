@@ -1,12 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 const SolicitudSection = () => {
-  const navigate = useNavigate();
-
-  const handleAceptar = () => {
-    navigate("/solicitudes/solicitud-documentos"); // Ahora apunta a la ruta correcta
-  };
 
   let nombrePostulante = "Juan Perez";
 
@@ -91,7 +85,6 @@ const SolicitudSection = () => {
             <button
               type="button"
               className="w-30 text-white rounded-md hover:bg-blue-700 botones"
-              onClick={handleAceptar}
             >
               Aceptar
             </button>

@@ -1,35 +1,80 @@
-.centered{
-    display: flex;
-    justify-content: center;
-    align-items: center;    
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .botones {
-    background-color: #0B1956;
-    color: #fdfdfd;
-    border: 1px solid #343a40;
-    border-radius: 0
+  background-color: #0b1956;
+  color: #fdfdfd;
+  border: 1px solid #343a40;
+  border-radius: 0;
 }
 
 .botones:hover {
-    background-color: #354797; 
+  background-color: #354797;
 }
 
 .miColor {
-    background-color: #D2E8FF;
+  background-color: #d2e8ff;
 }
 
 .colorFondo {
-    background-color: #0B1956;
+  background-color: #0b1956;
 }
 
 .botonLogin {
-    background-color: #fdfdfd;
-    color: #0B1956;
-    border-radius: 0
+  background-color: #fdfdfd;
+  color: #0b1956;
+  border-radius: 0;
 }
 
 .botonLogin:hover {
-    background-color: rgb(0, 28, 150); 
-    color: #fdfdfd;
+  background-color: rgb(0, 28, 150);
+  color: #fdfdfd;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #0b1956;
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
 }

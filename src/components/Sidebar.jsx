@@ -26,6 +26,12 @@ const Sidebar = ({ setActiveSection }) => {
     setIsOpen(false); // Cierra el sidebar en móviles
   };
 
+  const handleLogout = () => {
+    // Lógica para cerrar sesión, por ejemplo, limpiar el estado de autenticación
+    // y redirigir al usuario a la página de inicio de sesión
+    navigate("/login");
+  };
+
   return (
     <>
       <button
@@ -77,16 +83,18 @@ const Sidebar = ({ setActiveSection }) => {
 
         {/* Cerrar sesión */}
         <div className="absolute bottom-5 left-5 right-5">
-          <button className="w-full text-left hover:bg-red-700 p-2 rounded transition">
+          <button
+            onClick={handleLogout}
+            className="w-full text-left hover:bg-red-700 p-2 rounded transition"
+          >
             Cerrar sesión
           </button>
         </div>
       </div>
 
-      {/* Fondo oscuro cuando el sidebar está abierto en móviles */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-opacity-50 bg-gradient-to-b from-grey-300 to-100% z-40"
+          className="fixed inset-0 bg-opacity-50  z-40"
           onClick={() => setIsOpen(false)}
         ></div>
       )}

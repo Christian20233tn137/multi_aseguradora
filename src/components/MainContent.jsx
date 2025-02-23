@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import ProfileSection from "./AdminViews/ProfileSection";
 import SolicitudSection from "./AdminViews/SolicitudSection";
 import InicioSolicitudes from "./AdminViews/InicioSolicitudes";
+import InicioAseguradoras from "./AdminViews/InicioAseguradoras";
 
 const MainContent = ({ activeSection }) => {
   const navigate = useNavigate(); // Obtén la función de navegación
@@ -40,7 +41,7 @@ const MainContent = ({ activeSection }) => {
       )}
       {activeSection === "Aseguradoras" && (
         <div onClick={() => handleNavigate("/aseguradoras")}>
-          Contenido de Aseguradoras
+          <InicioAseguradoras/>
         </div>
       )}
       {activeSection === "Agentes" && (
