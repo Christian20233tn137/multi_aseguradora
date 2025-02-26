@@ -22,11 +22,11 @@ const InicioAgentes = () => {
   ];
 
   const profilesReserves = [
-    { name: "Dominic Sanchez Rabadan" },
-    { name: "Dana Jimenez Barenque" },
-    { name: "Andrea Aguilar Medina" },
-    { name: "Gabriel Morales Rosales" },
-    { name: "Maria Figueroa Sotelo" },
+    { name: "Dominic Sanchez Rabadan", numReactivaciones: 2 },
+    { name: "Dana Jimenez Barenque", numReactivaciones: 1 },
+    { name: "Andrea Aguilar Medina", numReactivaciones: 1 },
+    { name: "Gabriel Morales Rosales", numReactivaciones: 1 },
+    { name: "Maria Figueroa Sotelo", numReactivaciones: 2 },
     // Esto después será dinámico con nuestra bd
   ];
 
@@ -83,22 +83,31 @@ const InicioAgentes = () => {
               <span className="text-lg font-semibold">{profile.name}</span>
             </div>
             <div className="flex items-center space-x-6">
-              <label className="switch">
-                <input type="checkbox" className="hidden" />
-                <span className="slider round"></span>
-              </label>
+              {view === "reactivaciones" && (
+                <span className="text-lg font-semibold">
+                  No.Reactivaciones: {profile.numReactivaciones}
+                </span>
+              )}
+              {view === "agentes" && (
+                <label className="switch">
+                  <input type="checkbox" className="hidden" />
+                  <span className="slider round"></span>
+                </label>
+              )}
               <button
                 className="px-8 py-3 text-white rounded botones"
                 onClick={handleAceptar}
               >
-                Editar
+                {view === "agentes" ? "Editar" : "Reactivar"}
               </button>
-              <button
-                className="px-8 py-3 text-white rounded botones ml-4"
-                onClick={handleAceptar}
-              >
-                Perfil
-              </button>
+              {view === "agentes" && (
+                <button
+                  className="px-8 py-3 text-white rounded botones ml-4"
+                  onClick={handleAceptar}
+                >
+                  Perfil
+                </button>
+              )}
             </div>
           </div>
         ))}

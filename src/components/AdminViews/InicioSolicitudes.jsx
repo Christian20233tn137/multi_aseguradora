@@ -62,31 +62,23 @@ const InicioSolicitudes = () => {
         />
       </div>
       <div className="border-0 p-4">
-        {view === "datos" ? (
-          visibleProfiles.map((profile, index) => (
-            <div
-              key={index}
-              className="flex justify-between items-center border rounded p-4 mb-4"
-            >
-              <div className="px-4 py-2 rounded">
-                <span className="text-ls font-semibold">{profile.name}</span>
-              </div>
-              <div className="flex items-center">
-                <button className="px-4 py-2 text-white rounded botones" onClick={handleAceptar}>
-                  Ver más
-                </button>
-              </div>
+        {visibleProfiles.map((profile, index) => (
+          <div
+            key={index}
+            className="flex justify-between items-center border rounded p-9 mb-8"
+          >
+            <div className="px-4 py-2 rounded">
+              <span className="text-ls font-semibold">{profile.name}</span>
             </div>
-          ))
-        ) : (
-          <div>
-            {/* Aquí puedes agregar la vista para "Documentos" */}
-            <p>Vista de Documentos</p>
-            {/* Puedes agregar más componentes o lógica para la vista de documentos */}
+            <div className="flex items-center">
+              <button className="px-4 py-2 text-white rounded botones" onClick={handleAceptar}>
+                Ver más
+              </button>
+            </div>
           </div>
-        )}
+        ))}
       </div>
-      {view === "datos" && filteredProfiles.length > profilesPerPage && (
+      {filteredProfiles.length > profilesPerPage && (
         <div className="flex justify-center mt-4">
           <button
             disabled={currentPage === 0}

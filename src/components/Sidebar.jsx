@@ -85,7 +85,7 @@ const Sidebar = ({ setActiveSection }) => {
         <div className="absolute bottom-5 left-5 right-5">
           <button
             onClick={handleLogout}
-            className="w-full text-left hover:bg-red-700 p-2 rounded transition"
+            className="w-full text-left hover:bg-red-800 p-2 rounded transition"
           >
             Cerrar sesión
           </button>

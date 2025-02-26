@@ -5,6 +5,7 @@ import SolicitudSection from "./AdminViews/SolicitudSection";
 import InicioSolicitudes from "./AdminViews/InicioSolicitudes";
 import InicioAseguradoras from "./AdminViews/InicioAseguradoras";
 import InicioAgentes from "./AdminViews/InicioAgentes";
+import InicioAdmin from "./AdminViews/InicioAdmin";
 
 const MainContent = ({ activeSection }) => {
   const navigate = useNavigate(); // Obtén la función de navegación
@@ -52,7 +53,7 @@ const MainContent = ({ activeSection }) => {
       )}
       {activeSection === "Administradores" && (
         <div onClick={() => handleNavigate("/administradores")}>
-          Contenido de Administradores
+          <InicioAdmin/>
         </div>
       )}
       {activeSection === "Configurar Cuotas" && (
