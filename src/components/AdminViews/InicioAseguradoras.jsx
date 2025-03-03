@@ -14,7 +14,9 @@ const InicioAseguradoras = () => {
   const itemsPerPage = 3;
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(aseguradoras.length / itemsPerPage) - 1));
+    setCurrentPage((prevPage) =>
+      Math.min(prevPage + 1, Math.ceil(aseguradoras.length / itemsPerPage) - 1)
+    );
   };
 
   const handlePrevPage = () => {
@@ -56,12 +58,8 @@ const InicioAseguradoras = () => {
                 <input type="checkbox" className="hidden" />
                 <span className="slider round"></span>
               </label>
-              <button className="px-6 py-3 text-white botones">
-                Editar
-              </button>
-              <button className="px-6 py-3 text-white botones">
-                Ver más
-              </button>
+              <button className="px-6 py-3 text-white botones">Editar</button>
+              <button className="px-6 py-3 text-white botones">Ver más</button>
             </div>
           </div>
         ))}

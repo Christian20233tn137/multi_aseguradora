@@ -29,7 +29,10 @@ const InicioSolicitudes = () => {
   // Calcular los perfiles a mostrar en la página actual
   const profilesPerPage = 3;
   const startIndex = currentPage * profilesPerPage;
-  const visibleProfiles = filteredProfiles.slice(startIndex, startIndex + profilesPerPage);
+  const visibleProfiles = filteredProfiles.slice(
+    startIndex,
+    startIndex + profilesPerPage
+  );
 
   return (
     <div className="p-4">
@@ -71,7 +74,10 @@ const InicioSolicitudes = () => {
               <span className="text-ls font-semibold">{profile.name}</span>
             </div>
             <div className="flex items-center">
-              <button className="px-4 py-2 text-white rounded botones" onClick={handleAceptar}>
+              <button
+                className="px-4 py-2 text-white rounded botones"
+                onClick={handleAceptar}
+              >
                 Ver más
               </button>
             </div>

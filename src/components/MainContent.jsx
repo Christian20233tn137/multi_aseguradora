@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useLocation } from "react-router-dom";
 import ProfileSection from "./AdminViews/ProfileSection";
 import SolicitudSection from "./AdminViews/SolicitudSection";
 import InicioSolicitudes from "./AdminViews/InicioSolicitudes";
@@ -7,60 +7,43 @@ import InicioAseguradoras from "./AdminViews/InicioAseguradoras";
 import InicioAgentes from "./AdminViews/InicioAgentes";
 import InicioAdmin from "./AdminViews/InicioAdmin";
 
-const MainContent = ({ activeSection }) => {
-  const navigate = useNavigate(); // Obtén la función de navegación
+const MainContent = () => {
+  const location = useLocation();
 
-  const handleNavigate = (path) => {
-    navigate(path);
+  const renderContent = () => {
+    if (location.pathname === "/inicio") {
+      return <ProfileSection />;
+    }
+    if (location.pathname === "/datos") {
+      return <div>Contenido de Datos</div>;
+    }
+    if (location.pathname === "/documentos") {
+      return <div>Contenido de Documentos</div>;
+    }
+    if (location.pathname === "/solicitudes") {
+      return <InicioSolicitudes />;
+    }
+    if (location.pathname === "/solicitudes/solicitud-documentos") {
+      return <SolicitudSection />;
+    }
+    if (location.pathname === "/aseguradoras") {
+      return <InicioAseguradoras />;
+    }
+    if (location.pathname === "/agentes") {
+      return <InicioAgentes />;
+    }
+    if (location.pathname === "/administradores") {
+      return <InicioAdmin />;
+    }
+    if (location.pathname === "/configurar-cuotas") {
+      return <div>Contenido de las Cuotas</div>;
+    }
+    return <div>Bienvenido al sistema</div>;
   };
 
   return (
     <div className="flex-1 p-4 overflow-y-auto">
-      {activeSection === "Inicio" && (
-        <div onClick={() => handleNavigate("/inicio")}>
-          <ProfileSection />
-        </div>
-      )}
-      {activeSection === "Datos" && (
-        <div onClick={() => handleNavigate("/datos")}>Contenido de Datos</div>
-      )}
-      {activeSection === "Documentos" && (
-        <div onClick={() => handleNavigate("/documentos")}>
-          Contenido de Documentos
-        </div>
-      )}
-      {activeSection === "Solicitudes" && (
-        <div onClick={() => handleNavigate("/solicitudes")}>
-          <InicioSolicitudes />
-        </div>
-      )}
-      {activeSection === "SolicitudDocumentos" && (
-        <div
-          onClick={() => handleNavigate("/solicitudes/solicitud-documentos")}
-        >
-          <SolicitudSection />
-        </div>
-      )}
-      {activeSection === "Aseguradoras" && (
-        <div onClick={() => handleNavigate("/aseguradoras")}>
-          <InicioAseguradoras/>
-        </div>
-      )}
-      {activeSection === "Agentes" && (
-        <div onClick={() => handleNavigate("/agentes")}>
-          <InicioAgentes/>
-        </div>
-      )}
-      {activeSection === "Administradores" && (
-        <div onClick={() => handleNavigate("/administradores")}>
-          <InicioAdmin/>
-        </div>
-      )}
-      {activeSection === "Configurar Cuotas" && (
-        <div onClick={() => handleNavigate("/configurar-cuotas")}>
-          Contenido de las Cuotas
-        </div>
-      )}
+      {renderContent()}
     </div>
   );
 };

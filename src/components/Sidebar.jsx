@@ -4,39 +4,35 @@ import UsuarioProfile from "./AdminViews/assets/UsuarioProfile.png";
 import MenuIcon from "./AdminViews/assets/Menu.png";
 import EditIcon from "./AdminViews/assets/BotonEdit.png";
 
-const Sidebar = ({ setActiveSection }) => {
+const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const obtenerRuta = (seccion) => {
-    const rutas = {
-      Inicio: "/inicio",
-      Solicitudes: "/solicitudes",
-      Aseguradoras: "/aseguradoras",
-      Agentes: "/agentes",
-      Administradores: "/administradores",
-      "Configurar Cuotas": "/configurar-cuotas",
-    };
-    return rutas[seccion] || "/";
-  };
-
-  const manejarNavegacion = (seccion) => {
-    setActiveSection(seccion);
-    navigate(obtenerRuta(seccion));
+  const manejarNavegacion = (ruta) => {
+    navigate(ruta);
     setIsOpen(false); // Cierra el sidebar en móviles
   };
 
   const handleLogout = () => {
-    // Lógica para cerrar sesión, por ejemplo, limpiar el estado de autenticación
-    // y redirigir al usuario a la página de inicio de sesión
+    // Aquí puedes limpiar el localStorage o contexto de sesión si lo tienes
     navigate("/login");
   };
 
+  const menuItems = [
+    { nombre: "Inicio", ruta: "/inicio" },
+    { nombre: "Solicitudes", ruta: "/solicitudes" },
+    { nombre: "Aseguradoras", ruta: "/aseguradoras" },
+    { nombre: "Agentes", ruta: "/agentes" },
+    { nombre: "Administradores", ruta: "/administradores" },
+    { nombre: "Configurar Cuotas", ruta: "/configurar-cuotas" },
+  ];
+
   return (
     <>
+      {/* Botón flotante para abrir menú */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 m-4 rounded colorFondo text-white fixed top-auto left-2"
+        className="p-2 m-4 rounded colorFondo text-white fixed top-0 left-2 z-50"
       >
         <img src={MenuIcon} alt="Menú" className="w-8 h-8" />
       </button>
@@ -47,7 +43,7 @@ const Sidebar = ({ setActiveSection }) => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 z-50`}
       >
-        {/* Contenido del Sidebar */}
+        {/* Perfil */}
         <div className="mt-11 p-10">
           <img
             className="object-cover w-20 h-20 mx-auto"
@@ -62,26 +58,19 @@ const Sidebar = ({ setActiveSection }) => {
 
         {/* Menú de navegación */}
         <ul>
-          {[
-            "Inicio",
-            "Solicitudes",
-            "Aseguradoras",
-            "Agentes",
-            "Administradores",
-            "Configurar Cuotas",
-          ].map((item) => (
-            <li key={item} className="mb-2">
+          {menuItems.map(({ nombre, ruta }) => (
+            <li key={nombre} className="mb-2">
               <button
-                onClick={() => manejarNavegacion(item)}
+                onClick={() => manejarNavegacion(ruta)}
                 className="w-full text-left hover:bg-blue-900 p-2 rounded transition"
               >
-                {item}
+                {nombre}
               </button>
             </li>
           ))}
         </ul>
 
-        {/* Cerrar sesión */}
+        {/* Botón Cerrar sesión */}
         <div className="absolute bottom-5 left-5 right-5">
           <button
             onClick={handleLogout}
@@ -92,9 +81,10 @@ const Sidebar = ({ setActiveSection }) => {
         </div>
       </div>
 
+      {/* Fondo oscuro al abrir el menú (para cerrar al hacer click fuera) */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-opacity-50  z-40"
+          className="fixed inset-0 bg-trasnparent bg-opacity-50 z-40"
           onClick={() => setIsOpen(false)}
         ></div>
       )}

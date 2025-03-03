@@ -5,6 +5,7 @@ const InicioAgentes = () => {
   const navigate = useNavigate();
 
   const handleAceptar = () => {
+    console.log("Navigating to /solicitudes/solicitud-documentos");
     navigate("/solicitudes/solicitud-documentos");
   };
 
@@ -96,9 +97,9 @@ const InicioAgentes = () => {
               )}
               <button
                 className="px-8 py-3 text-white rounded botones"
-                onClick={handleAceptar}
+                onClick={() => handleAceptar()}
               >
-                {view === "agentes" ? "Editar" : "Reactivar"}
+                {view === "agentes" ? "Editarrrr" : "Reactivar"}
               </button>
               {view === "agentes" && (
                 <button
