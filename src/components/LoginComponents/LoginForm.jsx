@@ -7,16 +7,33 @@ const LoginForm = ({ setUser }) => {
   // Estados para los campos (adaptando el nombre y contraseña)
   const [nombre, setNombre] = useState("");
   const [contra, setContra] = useState("");
-  const [error, setError] = useState(false);
+  const [errorNombre, setErrorNombre] = useState(false); // Error para nombre
+  const [errorContra, setErrorContra] = useState(false); // Error para contraseña
 
   // Función para manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (nombre === "" || contra === "") {
-      setError(true);
-      return;
+    let hasError = false;
+
+    // Validar nombre
+    if (nombre === "") {
+      setErrorNombre(true);
+      hasError = true;
+    } else {
+      setErrorNombre(false);
     }
-    setError(false);
+
+    // Validar contraseña
+    if (contra === "") {
+      setErrorContra(true);
+      hasError = true;
+    } else {
+      setErrorContra(false);
+    }
+
+    // Si no hay errores, proceder con el login
+    if (hasError) return;
+
     setUser([nombre]);
     navigate("/inicio"); // Redirige al usuario tras login exitoso
     console.log("Probando");
@@ -40,9 +57,9 @@ const LoginForm = ({ setUser }) => {
           onChange={(e) => setNombre(e.target.value)}
         />
       </div>
-      {error && (
-        <p className="text-red-600 text-sm font-medium">
-          El usuario es necesario{" "}
+      {errorNombre && (
+        <p className="text-red-600 text-sm font-medium flex justify-start">
+          Correo electrónico invalido, intente de nuevo{" "}
         </p>
       )}
       <div>
@@ -61,9 +78,9 @@ const LoginForm = ({ setUser }) => {
           onChange={(e) => setContra(e.target.value)}
         />
       </div>
-      {error && (
-        <p className="text-red-600 text-sm font-medium">
-          La contrasena es necesaria{" "}
+      {errorContra && (
+        <p className="text-red-600 text-sm font-medium flex justify-start">
+          Contraseña invalida, intente de nuevo{" "}
         </p>
       )}
       <div>
