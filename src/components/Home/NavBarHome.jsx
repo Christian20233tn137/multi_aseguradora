@@ -16,7 +16,7 @@ const Navbar = () => {
       <div className="ml-4">
         <img src={Logo} alt="Nar Multi Aseguradora" className="h-16" />
       </div>
-      <button className="bg-white text-blue-900 px-4 py-2 rounded mr-4 botonLogin" onClick={handleAceptar}>
+      <button className="bg-white px-4 py-2 rounded mr-4 botonLogin" onClick={handleAceptar}>
         Iniciar Sesión
       </button>
     </nav>

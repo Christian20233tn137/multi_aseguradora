@@ -5,7 +5,7 @@ import LoginCard from "./LoginCard";
 import RecruimentSection from "./RecruimentSection";
 
 const Login = () => {
-  const [user, setUser] = useState(null); // Define el estado aquí
+  const [user, setUser] = useState(null);
 
   return (
     <section>

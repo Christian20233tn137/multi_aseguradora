@@ -3,13 +3,12 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
 
-const Layout = () => {
+const Layout = ({ title }) => {
   return (
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex flex-col flex-1">
-        <Header />
-        {/* Aquí puedes insertar MainContent directamente */}
+        <Header title={title} />
         <MainContent />
       </div>
     </div>

@@ -4,8 +4,12 @@ import { useNavigate } from "react-router-dom";
 const InicioSolicitudes = () => {
   const navigate = useNavigate();
 
-  const handleAceptar = () => {
-    navigate("/solicitudes/solicitud-documentos");
+  const handleVerMas = () => {
+    if (view === "datos") {
+      navigate("/solicitudes/solicitud-section");
+    } else if (view === "documentos") {
+      navigate("/solicitudes/solicitud-documentos");
+    }
   };
 
   const [view, setView] = useState("datos"); // Estado para controlar la vista actual
@@ -18,15 +22,12 @@ const InicioSolicitudes = () => {
     { name: "Utez" },
     { name: "Pepsi" },
     { name: "Albertano" },
-    // Esto después será dinámico con nuestra bd
   ];
 
-  // Filtrar perfiles según el término de búsqueda
   const filteredProfiles = profiles.filter((profile) =>
     profile.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Calcular los perfiles a mostrar en la página actual
   const profilesPerPage = 3;
   const startIndex = currentPage * profilesPerPage;
   const visibleProfiles = filteredProfiles.slice(
@@ -60,7 +61,7 @@ const InicioSolicitudes = () => {
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(0); // Reiniciar la página al buscar
+            setCurrentPage(0);
           }}
         />
       </div>
@@ -76,7 +77,7 @@ const InicioSolicitudes = () => {
             <div className="flex items-center">
               <button
                 className="px-4 py-2 text-white rounded botones"
-                onClick={handleAceptar}
+                onClick={handleVerMas}
               >
                 Ver más
               </button>
