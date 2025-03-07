@@ -84,7 +84,7 @@ const SolicitudSection = () => {
             </button>
             <button
               type="button"
-              className="w-30 text-white rounded-md hover:bg-blue-700 botones"
+              className="w-30 text-white rounded-md botones"
             >
               Aceptar
             </button>

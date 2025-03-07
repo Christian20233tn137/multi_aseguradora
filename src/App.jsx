@@ -8,6 +8,7 @@ import SolicitudSection from "./components/AdminViews/SolicitudSection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NuevaAseguradora from "./components/AdminViews/NuevaAseguradora";
 import EditarAseguradora from "./components/AdminViews/EditarAseguradora";
+import VerMasAseguradora from "./components/AdminViews/VerMasAseguradora";
 
 const App = () => {
   const location = useLocation();
@@ -29,6 +30,8 @@ const App = () => {
       case "/aseguradoras/nuevaAseguradora":
         return "Aseguradoras";
       case "/aseguradoras/editar-Aseguradora":
+        return "Aseguradoras";
+      case "/aseguradoras/seguros":
         return "Aseguradoras";
       case "/agentes":
         return "Agentes";
@@ -90,7 +93,7 @@ const App = () => {
         {/* Rutas hijas */}
         <Route path="nuevaAseguradora" element={<NuevaAseguradora />} />
         <Route path="editar-Aseguradora" element={<EditarAseguradora />} />
-
+        <Route path="seguros" element={<VerMasAseguradora />} />
       </Route>
 
       <Route

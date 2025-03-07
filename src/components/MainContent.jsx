@@ -10,6 +10,7 @@ import InicioAdmin from "./AdminViews/InicioAdmin";
 import Notfound from "./NotFound";
 import NuevaAseguradora from "./AdminViews/NuevaAseguradora";
 import EditarAseguradora from "./AdminViews/EditarAseguradora";
+import VerMasAseguradora from "./AdminViews/VerMasAseguradora";
 
 const MainContent = () => {
   const location = useLocation();
@@ -29,6 +30,8 @@ const MainContent = () => {
       case "/aseguradoras/nuevaAseguradora":
         return "Aseguradoras";
       case "/aseguradoras/editar-Aseguradora":
+        return "Aseguradoras";
+      case "/aseguradoras/seguros":
         return "Aseguradoras";
       case "/agentes":
         return "Agentes";
@@ -56,7 +59,9 @@ const MainContent = () => {
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
       case "/aseguradoras/editar-Aseguradora":
-          return <EditarAseguradora />;
+        return <EditarAseguradora />;
+      case "/aseguradoras/seguros":
+        return <VerMasAseguradora />;
       case "/agentes":
         return <InicioAgentes />;
       case "/administradores":

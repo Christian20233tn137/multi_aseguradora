@@ -9,6 +9,10 @@ const InicioAseguradoras = () => {
     navigate("/aseguradoras/nuevaAseguradora")
   }
 
+  const handlerInfo = () =>{
+    navigate("/aseguradoras/seguros")
+  }
+
   const handlerNavgigationEdit = () =>{
     navigate("/aseguradoras/editar-Aseguradora")
     console.log("Probando");
@@ -74,7 +78,9 @@ const InicioAseguradoras = () => {
               </label>
               <button className="px-6 py-3 text-white botones"
               onClick={handlerNavgigationEdit}>Editar</button>
-              <button className="px-6 py-3 text-white botones">Ver más</button>
+              <button className="px-6 py-3 text-white botones"
+              onClick={handlerInfo}
+              >Ver más</button>
             </div>
           </div>
         ))}
