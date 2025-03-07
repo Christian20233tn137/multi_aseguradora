@@ -1,6 +1,19 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const InicioAseguradoras = () => {
+
+  const navigate = useNavigate();
+
+  const handlerNavgigation = () =>{
+    navigate("/aseguradoras/nuevaAseguradora")
+  }
+
+  const handlerNavgigationEdit = () =>{
+    navigate("/aseguradoras/editar-Aseguradora")
+    console.log("Probando");
+  }
+
   const aseguradoras = [
     { name: "Nombre de la aseguradora 1", date: "12-02-2024" },
     { name: "Nombre de la aseguradora 2", date: "12-02-2024" },
@@ -36,7 +49,8 @@ const InicioAseguradoras = () => {
           placeholder="Buscar..."
           className="px-4 py-3 w-full md:w-auto border rounded order-first md:order-none"
         />
-        <button className="px-6 py-3 text-white botones w-full md:w-auto">
+        <button className="px-6 py-3 text-white botones w-full md:w-auto"
+        onClick={handlerNavgigation}>
           + Agregar
         </button>
       </div>
@@ -58,7 +72,8 @@ const InicioAseguradoras = () => {
                 <input type="checkbox" className="hidden" />
                 <span className="slider round"></span>
               </label>
-              <button className="px-6 py-3 text-white botones">Editar</button>
+              <button className="px-6 py-3 text-white botones"
+              onClick={handlerNavgigationEdit}>Editar</button>
               <button className="px-6 py-3 text-white botones">Ver más</button>
             </div>
           </div>

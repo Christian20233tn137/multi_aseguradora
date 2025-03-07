@@ -14,9 +14,8 @@ const SolicitudDocumentos = () => {
         </label>
         <input
           className="shadow appearance-none border-2 rounded w-full py-18  px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          type="text"
-          placeholder="Arrastre el comprobante de domicilio aquí"
-        />
+          type="file"
+        />  
       </div>
 
       <div className="mb-6">
@@ -25,8 +24,7 @@ const SolicitudDocumentos = () => {
         </label>
         <input
           className="shadow appearance-none border-2 rounded w-full py-18 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          type="text"
-          placeholder="Arrastre la constancia de situación fiscal aquí"
+          type="file"
         />
       </div>
 

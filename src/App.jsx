@@ -6,6 +6,8 @@ import Layout from "./components/Layout";
 import NotFound from "./components/NotFound";
 import SolicitudSection from "./components/AdminViews/SolicitudSection";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NuevaAseguradora from "./components/AdminViews/NuevaAseguradora";
+import EditarAseguradora from "./components/AdminViews/EditarAseguradora";
 
 const App = () => {
   const location = useLocation();
@@ -20,9 +22,13 @@ const App = () => {
         return "Solicitudes";
       case "/solicitudes/solicitud-section":
         return "Solicitud";
-        case "/solicitudes/solicitud-documentos":
-          return "Documentos de solicitud";
+      case "/solicitudes/solicitud-documentos":
+        return "Documentos de solicitud";
       case "/aseguradoras":
+        return "Aseguradoras";
+      case "/aseguradoras/nuevaAseguradora":
+        return "Aseguradoras";
+      case "/aseguradoras/editar-Aseguradora":
         return "Aseguradoras";
       case "/agentes":
         return "Agentes";
@@ -51,7 +57,6 @@ const App = () => {
         }
       />
 
-
       <Route
         path="/documentos/*"
         element={
@@ -71,7 +76,7 @@ const App = () => {
       >
         {/* Ruta hija dentro de solicitudes */}
         <Route path="solicitud-section" element={<SolicitudSection />} />
-        <Route path="solicitud-documentos" element={<SolicitudSection/>}/>
+        <Route path="solicitud-documentos" element={<SolicitudSection />} />
       </Route>
 
       <Route
@@ -81,7 +86,12 @@ const App = () => {
             <Layout title={getTitle()} />
           </ProtectedRoute>
         }
-      />
+      >
+        {/* Rutas hijas */}
+        <Route path="nuevaAseguradora" element={<NuevaAseguradora />} />
+        <Route path="editar-Aseguradora" element={<EditarAseguradora />} />
+
+      </Route>
 
       <Route
         path="/agentes/*"
