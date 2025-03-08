@@ -9,6 +9,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import NuevaAseguradora from "./components/AdminViews/NuevaAseguradora";
 import EditarAseguradora from "./components/AdminViews/EditarAseguradora";
 import VerMasAseguradora from "./components/AdminViews/VerMasAseguradora";
+import EditarAgente from "./components/AdminViews/EditarAgente";
+import AgentesInfo from "./components/AdminViews/AgentesInfo";
 
 const App = () => {
   const location = useLocation();
@@ -35,6 +37,10 @@ const App = () => {
         return "Aseguradoras";
       case "/agentes":
         return "Agentes";
+      case "/agentes/editar":
+        return "Agentes";
+      case "/agentes/perfil":
+        return "Perfil";
       case "/administradores":
         return "Administradores";
       case "/configurar-cuotas":
@@ -100,10 +106,13 @@ const App = () => {
         path="/agentes/*"
         element={
           <ProtectedRoute>
-            <Layout title={getTitle()} />
+            <Layout title={getTitle(location.pathname)} />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="editar" element={<EditarAgente />} />
+        <Route path="perfil" element={<AgentesInfo />} />
+      </Route>
 
       <Route
         path="/administradores/*"

@@ -9,18 +9,18 @@ const SolicitudSection = () => {
       <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black miColor rounded-2xl">
         {nombrePostulante}
       </h1>
-      <div className="flex items-center gap-2 mt-5 justify-center">
-        <div className="mt-10">
-          <div className="flex items-center gap-2 mt-5">
-            <label
-              htmlFor="usuario"
-              className="text-sm font-medium text-black w-48"
-            >
-              Correo Electrónico
-            </label>
-            <input
-              type="text"
-              id="usuario"
+        <div className="flex items-center gap-2 mt-5 justify-center">
+          <div className="mt-10">
+            <div className="flex items-center gap-2 mt-5">
+              <label
+                htmlFor="usuario"
+                className="text-sm font-medium text-black w-48"
+              >
+                Correo Electrónico
+              </label>
+              <input
+                type="text"
+                id="usuario"
               name="usuario"
               className="py-2 px-4 font-medium border border-gray-300 flex-1"
               required

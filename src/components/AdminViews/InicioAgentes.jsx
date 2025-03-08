@@ -4,9 +4,16 @@ import { useNavigate } from "react-router-dom";
 const InicioAgentes = () => {
   const navigate = useNavigate();
 
-  const handleAceptar = () => {
-    console.log("Navigating to /solicitudes/solicitud-documentos");
-    navigate("/solicitudes/solicitud-documentos");
+  const handleEditar = () => {
+    if (view === "agentes") {
+      navigate("/agentes/editar");
+    } else {
+      alert("¡Reactivación en proceso!");
+    }
+  };
+
+  const handlePerfil = () => {
+    navigate("/agentes/perfil");
   };
 
   const [view, setView] = useState("agentes");
@@ -97,14 +104,14 @@ const InicioAgentes = () => {
               )}
               <button
                 className="px-8 py-3 text-white rounded botones"
-                onClick={() => handleAceptar()}
+                onClick={handleEditar}
               >
-                {view === "agentes" ? "Editarrrr" : "Reactivar"}
+                {view === "agentes" ? "Editar" : "Reactivar"}
               </button>
               {view === "agentes" && (
                 <button
                   className="px-8 py-3 text-white rounded botones ml-4"
-                  onClick={handleAceptar}
+                  onClick={handlePerfil}
                 >
                   Perfil
                 </button>
