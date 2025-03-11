@@ -14,7 +14,6 @@ const SideBarPostulante = () => {
   };
 
   const handleLogout = () => {
-    // Aquí puedes limpiar el localStorage o contexto de sesión si lo tienes
     navigate("/login");
     console.log("Sesion cerrada");
     

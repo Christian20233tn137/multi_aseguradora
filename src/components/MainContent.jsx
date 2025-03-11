@@ -7,7 +7,7 @@ import SolicitudDocs from "./AdminViews/SolicitudDocumentos";
 import InicioAseguradoras from "./AdminViews/InicioAseguradoras";
 import InicioAgentes from "./AdminViews/InicioAgentes";
 import InicioAdmin from "./AdminViews/InicioAdmin";
-import Notfound from "./NotFound";
+import Notfound from "./Notfound";
 import NuevaAseguradora from "./AdminViews/NuevaAseguradora";
 import EditarAseguradora from "./AdminViews/EditarAseguradora";
 import VerMasAseguradora from "./AdminViews/VerMasAseguradora";

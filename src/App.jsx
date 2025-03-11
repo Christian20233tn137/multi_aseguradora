@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./components/Home/Home";
 import Login from "./components/LoginComponents/Login";
 import Layout from "./components/Layout";
-import NotFound from "./components/NotFound";
+import NotFound from "./components/Notfound";
 import SolicitudSection from "./components/AdminViews/SolicitudSection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NuevaAseguradora from "./components/AdminViews/NuevaAseguradora";
@@ -11,7 +11,8 @@ import EditarAseguradora from "./components/AdminViews/EditarAseguradora";
 import VerMasAseguradora from "./components/AdminViews/VerMasAseguradora";
 import EditarAgente from "./components/AdminViews/EditarAgente";
 import AgentesInfo from "./components/AdminViews/AgentesInfo";
-import LayoutPostulante from "../src/components/PostulanteViews/LayoutPostulanet"
+import LayoutPostulante from "../src/components/PostulanteViews/LayoutPostulanet";
+import LayoutAgente from "../src/components/AgenteViews/LayoutAgente";
 
 const App = () => {
   const location = useLocation();
@@ -46,9 +47,22 @@ const App = () => {
         return "Administradores";
       case "/configurar-cuotas":
         return "Configurar Cuotas";
-      {/* Rutas de postulante (ando calando apenas no confien en mi) */}
+        {
+          /* Rutas de postulante (ando calando apenas no confien en mi) */
+        }
       case "/archivosPostulante":
         return "Carga de Archivos";
+        {
+          /* Rutas de agente (ando calando apenas no confien en mi) */
+        }
+      case "/inicioAgente":
+        return "Inicio";
+      case "/cotizar":
+        return "Cotizar";
+      case "/estadisticas":
+        return "Estadisticas";
+      case "/clientes":
+        return "Clientes";
       default:
         return "Bienvenido al sistema";
     }
@@ -70,7 +84,6 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
 
       {/* Rutas protegidas con Layout */}
       <Route
@@ -144,6 +157,43 @@ const App = () => {
         element={
           <ProtectedRoute>
             <Layout title={getTitle()} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Rutas de agentes */}
+      <Route
+        path="/inicioAgentes/*"
+        element={
+          <ProtectedRoute>
+            <LayoutAgente title={getTitle()} />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/cotizar/*"
+        element={
+          <ProtectedRoute>
+            <LayoutAgente title={getTitle()} />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/estadisticas/*"
+        element={
+          <ProtectedRoute>
+            <LayoutAgente title={getTitle()} />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/clientes/*"
+        element={
+          <ProtectedRoute>
+            <LayoutAgente title={getTitle()} />
           </ProtectedRoute>
         }
       />
