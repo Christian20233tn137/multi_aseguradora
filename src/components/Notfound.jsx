@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Image404 from "../assets/404.png";
+import Image from "../assets/image.png"
 
 const Notfound = () => {
   const navigate = useNavigate();
@@ -12,9 +14,9 @@ const Notfound = () => {
     <div
       className="relative w-full h-screen bg-no-repeat bg-right flex items-center justify-start"
       style={{
-        backgroundImage: 'url("/public/image.png")',
-        backgroundSize: "60% auto", // Ajustamos la imagen para que ocupe solo la mitad derecha
-        backgroundPosition: "right", // Asegura que la imagen esté alineada a la derecha
+        backgroundImage: { Image },
+        backgroundSize: "60% auto", 
+        backgroundPosition: "right", 
       }}
     >
       <div className="w-full md:w-1/2 p-8 text-left">
@@ -34,7 +36,7 @@ const Notfound = () => {
       </div>
 
       <img
-        src="/public/404.png"
+        src={Image404}
         alt="404 Not Found"
         className="absolute top-0 right-0 w-full md:w-1/2 h-auto object-contain md:object-cover"
       />

@@ -11,6 +11,7 @@ import EditarAseguradora from "./components/AdminViews/EditarAseguradora";
 import VerMasAseguradora from "./components/AdminViews/VerMasAseguradora";
 import EditarAgente from "./components/AdminViews/EditarAgente";
 import AgentesInfo from "./components/AdminViews/AgentesInfo";
+import LayoutPostulante from "../src/components/PostulanteViews/LayoutPostulanet"
 
 const App = () => {
   const location = useLocation();
@@ -45,6 +46,9 @@ const App = () => {
         return "Administradores";
       case "/configurar-cuotas":
         return "Configurar Cuotas";
+      {/* Rutas de postulante (ando calando apenas no confien en mi) */}
+      case "/archivosPostulante":
+        return "Carga de Archivos";
       default:
         return "Bienvenido al sistema";
     }
@@ -55,6 +59,18 @@ const App = () => {
       {/* Rutas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
+
+      {/* Rutas de postulante */}
+
+      <Route
+        path="/archivosPostulante/*"
+        element={
+          <ProtectedRoute>
+            <LayoutPostulante title={getTitle()} />
+          </ProtectedRoute>
+        }
+      />
+
 
       {/* Rutas protegidas con Layout */}
       <Route
