@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React from "react";
 import Logo from "./assets/logo-nar-variante.png";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   
     const handleAceptar = () => {
-      navigate("/login");
+      navigate("/login");      
     };
   
   return (
