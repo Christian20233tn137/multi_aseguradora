@@ -1,18 +1,18 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import ProfileSection from "./AdminViews/ProfileSection";
-import SolicitudSection from "./AdminViews/SolicitudSection";
-import InicioSolicitudes from "./AdminViews/InicioSolicitudes";
-import SolicitudDocs from "./AdminViews/SolicitudDocumentos";
-import InicioAseguradoras from "./AdminViews/InicioAseguradoras";
-import InicioAgentes from "./AdminViews/InicioAgentes";
-import InicioAdmin from "./AdminViews/InicioAdmin";
-import Notfound from "./Notfound";
-import NuevaAseguradora from "./AdminViews/NuevaAseguradora";
-import EditarAseguradora from "./AdminViews/EditarAseguradora";
-import VerMasAseguradora from "./AdminViews/VerMasAseguradora";
-import EditarAgente from "./AdminViews/EditarAgente";
-import AgentesInfo from "./AdminViews/AgentesInfo";
+import ProfileSection from "./Views/ProfileSection";
+import InicioSolicitudes from "./Views/InicioSolicitudes";
+import SolicitudSection from "./Views/SolicitudSection";
+import SolicitudDocumentos from "./Views/SolicitudDocumentos";
+import InicioAseguradoras from "./Views/InicioAseguradoras";
+import NuevaAseguradora from "./Views/NuevaAseguradora";
+import EditarAseguradora from "./Views/EditarAseguradora";
+import VerMasAseguradora from "./Views/VerMasAseguradora";
+import InicioAgentes from "./Views/InicioAgentes";
+import EditarAgente from "./Views/EditarAgente";
+import InicioAdmin from "./Views/InicioAdmin";
+import AgentesInfo from "./Views/AgentesInfo";
+import Notfound from "../Notfound";
 
 const MainContent = () => {
   const location = useLocation();
@@ -59,7 +59,7 @@ const MainContent = () => {
       case "/solicitudes/solicitud-section":
         return <SolicitudSection />;
       case "/solicitudes/solicitud-documentos":
-        return <SolicitudDocs />;
+        return <SolicitudDocumentos/>;
       case "/aseguradoras":
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
@@ -69,7 +69,7 @@ const MainContent = () => {
       case "/aseguradoras/seguros":
         return <VerMasAseguradora />;
       case "/agentes":
-        return <InicioAgentes />;
+        return <InicioAgentes/>;
       case "/agentes/editar":
         return <EditarAgente />;
       case "/agentes/perfil":

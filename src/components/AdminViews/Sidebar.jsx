@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UsuarioProfile from "./AdminViews/assets/UsuarioProfile.png";
-import MenuIcon from "./AdminViews/assets/Menu.png";
-import EditIcon from "./AdminViews/assets/BotonEdit.png";
+import MenuIcon from "./assets/Menu.png";
+import UsuarioProfile from "./assets/usuarioProfile.png";
+import EditIcon from "./assets/UsuarioProfile.png";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);

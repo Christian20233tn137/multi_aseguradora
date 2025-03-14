@@ -1,7 +1,7 @@
 import React from "react";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
-import MainContent from "./MainContent";
+import Header from "./Header"
+import MainContent from "./MainContent"
+import Sidebar from "./Sidebar"
 
 const Layout = ({ title }) => {
   return (
