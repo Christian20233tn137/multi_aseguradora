@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const VerMasAseguradora = () => {
+
+ const navigate = useNavigate();
+
   const aseguradoras = [
     { name: "Seguro Total", date: "12-02-2024" },
     { name: "Seguro Plus", date: "12-02-2024" },
@@ -39,12 +43,16 @@ const VerMasAseguradora = () => {
   );
 
   const handlerNavgigationEdit = () => {
-    // Lógica para navegar a la edición
+    navigate('/aseguradoras/seguros/editar')
   };
 
   const handlerInfo = () => {
-    // Lógica para ver más información
+    navigate('/aseguradoras/seguros/informacion')
   };
+
+  const handlerAdd = () => {
+    navigate("/aseguradoras/seguros/agregar")
+  }
 
   return (
     <div className="min-h-screen flex flex-col p-4 overflow-hidden">
@@ -70,6 +78,7 @@ const VerMasAseguradora = () => {
           <button
             type="button"
             className="px-4 py-2 botones text-white rounded w-full md:w-auto"
+            onClick={handlerAdd}
           >
             + Agregar
           </button>

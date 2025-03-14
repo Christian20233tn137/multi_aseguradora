@@ -9,8 +9,11 @@ const InicioAseguradoras = () => {
     navigate("/aseguradoras/nuevaAseguradora")
   }
 
+  
   const handlerInfo = () =>{
     navigate("/aseguradoras/seguros")
+    console.log("Informacion");
+    
   }
 
   const handlerNavgigationEdit = () =>{

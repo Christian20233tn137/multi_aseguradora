@@ -13,6 +13,9 @@ import EditarAgente from "./Views/EditarAgente";
 import InicioAdmin from "./Views/InicioAdmin";
 import AgentesInfo from "./Views/AgentesInfo";
 import Notfound from "../Notfound";
+import EditarSeguro from "./Views/EditarSeguro";
+import InformacionSeguros from "./Views/InformacionSeguros";
+import AgregarSeguros from "./Views/AgregarSeguros";
 
 const MainContent = () => {
   const location = useLocation();
@@ -35,6 +38,12 @@ const MainContent = () => {
         return "Aseguradoras";
       case "/aseguradoras/seguros":
         return "Aseguradoras";
+      case "/aseguradoras/seguros/editar":
+        return "Editar Seguro";
+      case "/aseguradoras/seguros/informacion":
+        return "Información de Seguro";
+      case "/aseguradoras/seguros/agregar":
+        return "Agregar Seguro";
       case "/agentes":
         return "Agentes";
       case "/agentes/editar":
@@ -59,7 +68,7 @@ const MainContent = () => {
       case "/solicitudes/solicitud-section":
         return <SolicitudSection />;
       case "/solicitudes/solicitud-documentos":
-        return <SolicitudDocumentos/>;
+        return <SolicitudDocumentos />;
       case "/aseguradoras":
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
@@ -68,8 +77,14 @@ const MainContent = () => {
         return <EditarAseguradora />;
       case "/aseguradoras/seguros":
         return <VerMasAseguradora />;
+      case "/aseguradoras/seguros/editar":
+        return <EditarSeguro />;
+      case "/aseguradoras/seguros/informacion":
+        return <InformacionSeguros/>;
+      case "/aseguradoras/seguros/agregar":
+        return <AgregarSeguros/>;
       case "/agentes":
-        return <InicioAgentes/>;
+        return <InicioAgentes />;
       case "/agentes/editar":
         return <EditarAgente />;
       case "/agentes/perfil":

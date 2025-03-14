@@ -13,6 +13,9 @@ import EditarAgente from "./components/AdminViews/Views/EditarAgente";
 import AgentesInfo from "./components/AdminViews/Views/AgentesInfo";
 import LayoutPostulante from "../src/components/PostulanteViews/LayoutPostulanet";
 import LayoutAgente from "../src/components/AgenteViews/LayoutAgente";
+import EditarSeguro from "./components/AdminViews/Views/EditarSeguro";
+import InformacionSeguros from "./components/AdminViews/Views/InformacionSeguros";
+import AgregarSeguros from "./components/AdminViews/Views/AgregarSeguros";
 
 const App = () => {
   const location = useLocation();
@@ -37,6 +40,12 @@ const App = () => {
         return "Aseguradoras";
       case "/aseguradoras/seguros":
         return "Aseguradoras";
+      case "/aseguradoras/seguros/editar":
+        return "Editar Seguro";
+      case "/aseguradoras/seguros/informacion":
+        return "Información de Seguro";
+      case "/aseguradoras/seguros/agregar":
+        return "Agregar Seguro";
       case "/agentes":
         return "Agentes";
       case "/agentes/editar":
@@ -129,6 +138,9 @@ const App = () => {
         <Route path="nuevaAseguradora" element={<NuevaAseguradora />} />
         <Route path="editar-Aseguradora" element={<EditarAseguradora />} />
         <Route path="seguros" element={<VerMasAseguradora />} />
+        <Route path="seguros/editar" element={<EditarSeguro />} />
+        <Route path="seguros/informacion" element={<InformacionSeguros />} />
+        <Route path="seguros/agregar" element={<AgregarSeguros />} />
       </Route>
 
       <Route
