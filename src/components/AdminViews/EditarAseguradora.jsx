@@ -1,6 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+
 
 const EditarAseguradora = () => {
+
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate("/aseguradoras");
+  }
+
+  
   return (
     <div className="flex items-center justify-center w-auto h-auto p-6">
       <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">
@@ -60,7 +71,7 @@ const EditarAseguradora = () => {
               type="submit"
               className="botones text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Agregar
+              Editar
             </button>
           </div>
         </form>
