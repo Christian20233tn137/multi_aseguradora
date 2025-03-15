@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const VerMasAseguradora = () => {
 
@@ -18,6 +19,7 @@ const VerMasAseguradora = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [checkedItems, setCheckedItems] = useState({});
   const itemsPerPage = 4;
 
   const handleNextPage = () => {
@@ -53,6 +55,33 @@ const VerMasAseguradora = () => {
   const handlerAdd = () => {
     navigate("/aseguradoras/seguros/agregar")
   }
+
+  //Switch alert
+  const handleToggleSwitch = (index) => {
+    const isCurrentlyChecked = checkedItems[index] || false; // Verifica el estado actual
+  
+    Swal.fire({
+      title: isCurrentlyChecked ? "¿Desea desactivar este seguro?" : "¿Desea activar este seguro?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: isCurrentlyChecked ? "Sí, desactivarlo" : "¡Sí, quiero activarlo!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: isCurrentlyChecked ? "¡Seguro desactivado!" : "¡Seguro activado!",
+          icon: "success",
+        });
+  
+        setCheckedItems((prevState) => ({
+          ...prevState,
+          [index]: !prevState[index], // Alterna el estado del switch
+        }));
+      }
+    });
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col p-4 overflow-hidden">
@@ -106,7 +135,10 @@ const VerMasAseguradora = () => {
             </div>
             <div className="flex items-center space-x-4">
               <label className="switch">
-                <input type="checkbox" className="hidden" />
+                <input type="checkbox"
+                 className="hidden" 
+                 checked={checkedItems[index]||false}
+                 onChange={()=> handleToggleSwitch(index)}/>
                 <span className="slider round"></span>
               </label>
               <button

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const InicioAgentes = () => {
   const navigate = useNavigate();
@@ -19,6 +20,8 @@ const InicioAgentes = () => {
   const [view, setView] = useState("agentes");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+
+  
 
   const profiles = [
     { name: "Christian Aviles Sotelo" },
@@ -51,6 +54,7 @@ const InicioAgentes = () => {
     startIndex + profilesPerPage
   );
 
+  
   return (
     <div className="p-4">
       <div className="flex items-center mb-4">
@@ -96,12 +100,7 @@ const InicioAgentes = () => {
                   No.Reactivaciones: {profile.numReactivaciones}
                 </span>
               )}
-              {view === "agentes" && (
-                <label className="switch">
-                  <input type="checkbox" className="hidden" />
-                  <span className="slider round"></span>
-                </label>
-              )}
+             
               <button
                 className="px-8 py-3 text-white rounded botones"
                 onClick={handleEditar}

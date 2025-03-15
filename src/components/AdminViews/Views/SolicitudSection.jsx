@@ -11,8 +11,8 @@ const SolicitudSection = () => {
   }
   const showAlert = () => {
     Swal.fire({
-      title: "Estas seguro?",
-      text: "No podras revertir esto!",
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esto!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -40,8 +40,8 @@ const SolicitudSection = () => {
     });
     
     swalWithTailwindButtons.fire({
-      title: "Estas seguro?",
-      text: "No podras revertir esto!",
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esto!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Si, eliminalo!",

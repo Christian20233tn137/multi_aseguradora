@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 const InicioAdmin = () => {
   const administradores = [
@@ -13,6 +14,7 @@ const InicioAdmin = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 3;
+  const [checkedItems, setCheckedItems] = useState ({});
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(filteredAdministradores.length / itemsPerPage) - 1));
@@ -30,6 +32,30 @@ const InicioAdmin = () => {
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
+
+  //Switch Alert
+  const handleToggleSwitch = (index) =>{
+    const isCurrentlyChecked = checkedItems [index] || false;
+    Swal.fire({
+      title:isCurrentlyChecked ? "¿Desea desactivar este administrador?": "¿Desea activar este administrador?",
+      icon:"warning",
+      showCancelButton:true,
+      confirmButtonColor:"#3085d6",
+      cancelButtonColor:"#d33",
+      confirmButtonText:isCurrentlyChecked ? "Sí, desactivarlo": "¡Sí, quiero activarlo! ",
+    }).then((result)=>{
+      if(result.isConfirmed){
+        Swal.fire({
+          title: isCurrentlyChecked ? "¡Administrador desactivado!": "¡Administrador activado!",
+          icon:"success",
+        });
+        setCheckedItems((prevState)=>({
+          ...prevState,
+          [index]: !prevState[index],
+        }));
+      }
+    });
+  };
 
   return (
     <div className="p-4">
@@ -61,7 +87,10 @@ const InicioAdmin = () => {
             </div>
             <div className="flex items-center space-x-6">
               <label className="switch">
-                <input type="checkbox" className="hidden" />
+                <input type="checkbox" 
+                className="hidden"
+                checked={checkedItems[index] || false}
+                onChange={()=>handleToggleSwitch(index)} />
                 <span className="slider round"></span>
               </label>
               <button className="px-6 py-3 text-white botones">
