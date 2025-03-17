@@ -1,11 +1,87 @@
-import React from 'react'
+import React, { useRef, useState } from "react";
 
 const InformacionSeguros = () => {
-  return (
-    <div>
-      informacion de seguros
-    </div>
-  )
-}
+  const editorRef = useRef(null);
+  const [nombre, setNombre] = useState("Seguro de vida");
+  const [descripcion, setDescripcion] = useState(
+    "Un seguro de vida es un contrato entre una persona y una aseguradora..."
+  );
+  const [cobertura, setCobertura] = useState("Escribe aquí...");
+  const [icono, setIcono] = useState(null);
 
-export default InformacionSeguros
+  const formatText = (command, value = null) => {
+    document.execCommand(command, false, value);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setIcono(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-6 bg-white rounded-md">
+      <h2 className="text-2xl font-bold text-gray-800">Editar</h2>
+
+
+      {/* Campo del Nombre */}
+      <div className="mb-4">
+        <label className="block font-semibold">Nombre*</label>
+        <input
+          type="text"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          className="w-full border rounded p-2"
+        />
+      </div>
+
+      {/* Campo de Descripción */}
+      <div className="mb-4">
+        <label className="block font-semibold">Descripción*</label>
+        <textarea
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          className="w-full border rounded p-2"
+          rows="3"
+        />
+      </div>
+
+      {/* Campo de Cobertura con Editor de Texto */}
+      <div className="mb-4">
+        <label className="block font-semibold">Cobertura*</label>
+        <div className="border rounded p-2">
+          {/* Barra de herramientas */}
+          <div className="flex space-x-2 mb-2  pb-2">
+            <button onClick={() => formatText("bold")} className="font-bold p-1">B</button>
+            <button onClick={() => formatText("italic")} className="italic p-1">I</button>
+            <button onClick={() => formatText("underline")} className="underline p-1">U</button>
+            <button onClick={() => formatText("insertUnorderedList")} className="p-1">• List</button>
+            <button onClick={() => formatText("justifyLeft")} className="p-1">⬅</button>
+            <button onClick={() => formatText("justifyCenter")} className="p-1">⬆</button>
+            <button onClick={() => formatText("justifyRight")} className="p-1">➡</button>
+            <button onClick={() => formatText("foreColor", "red")} className="p-1 text-red-500">A</button>
+          </div>
+
+          {/* Área de edición */}
+          <div
+            ref={editorRef}
+            contentEditable
+            className="border p-2 min-h-[100px] focus:outline-none text-left"
+            suppressContentEditableWarning={true}
+            style={{ direction: "ltr", unicodeBidi: "plaintext" }} // 🔹 Fijar la dirección del texto
+            onInput={(e) => setCobertura(e.currentTarget.innerText)} // 🔹 Usar innerText para evitar errores con HTML
+          >
+            {cobertura} {/* 🔹 Evitar dangerouslySetInnerHTML */}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default InformacionSeguros;
