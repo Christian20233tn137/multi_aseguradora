@@ -67,7 +67,7 @@ const App = () => {
       case "/inicioAgente":
         return "Inicio";
       case "/cotizar":
-        return "Cotizar";
+        return "Seguros";
       case "/estadisticas":
         return "Estadisticas";
       case "/clientes":

@@ -5,11 +5,12 @@ import Swal from "sweetalert2";
 const NuevaAseguradora = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    logo: null,
-    nombreContacto: "",
     nombre: "",
-    telefonoContacto: "",
-    correoContacto: ""
+    informacion: "",
+    seguros: "",
+    nombreContacto: "",
+    correoContacto: "",
+    telefonoContacto: ""
   });
 
   const handleChange = (e) => {
@@ -20,28 +21,20 @@ const NuevaAseguradora = () => {
     });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      logo: e.target.files[0]
-    });
-  };
-
   const handleSubmit = async () => {
     try {
-      // Aquí ando prbando uniones de para el back
-      const response = await fetch("/api/aseguradoras", {
+      const response = await fetch("http://localhost:3000/nar/aseguradoras", {
         method: "POST",
-        body: JSON.stringify(formData),
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
         Swal.fire({
           title: "Aceptado!",
-          text: "El postulante fue aceptado con éxito",
+          text: "La aseguradora fue registrada con éxito",
           icon: "success"
         });
         navigate("/aseguradoras");
@@ -59,13 +52,13 @@ const NuevaAseguradora = () => {
 
   const showAlert = () => {
     Swal.fire({
-      title: "Deseas agregar esta aseguradora?",
-      text: "No podras revertir esto!",
+      title: "¿Deseas agregar esta aseguradora?",
+      text: "No podrás revertir esto!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si quiero aceptarlo!"
+      confirmButtonText: "Sí, quiero aceptarlo!"
     }).then((result) => {
       if (result.isConfirmed) {
         handleSubmit();
@@ -80,16 +73,6 @@ const NuevaAseguradora = () => {
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Logo*
-            </label>
-            <input
-              type="file"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              onChange={handleFileChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
               Nombre del contacto*
             </label>
             <input
@@ -101,6 +84,7 @@ const NuevaAseguradora = () => {
               onChange={handleChange}
             />
           </div>
+
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Nombre*
@@ -114,6 +98,33 @@ const NuevaAseguradora = () => {
               onChange={handleChange}
             />
           </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Información
+            </label>
+            <textarea
+              name="informacion"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Información"
+              value={formData.informacion}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Seguros
+            </label>
+            <textarea
+              name="seguros"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Seguros"
+              value={formData.seguros}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Teléfono del contacto*
@@ -127,6 +138,7 @@ const NuevaAseguradora = () => {
               onChange={handleChange}
             />
           </div>
+
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Correo electrónico del contacto*
@@ -140,6 +152,7 @@ const NuevaAseguradora = () => {
               onChange={handleChange}
             />
           </div>
+
           <div className="col-span-2 flex items-center justify-center">
             <button
               type="button"
