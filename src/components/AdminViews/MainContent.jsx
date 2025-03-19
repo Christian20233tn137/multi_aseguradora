@@ -16,6 +16,7 @@ import Notfound from "../Notfound";
 import EditarSeguro from "./Views/EditarSeguro";
 import InformacionSeguros from "./Views/InformacionSeguros";
 import AgregarSeguros from "./Views/AgregarSeguros";
+import ConfigurarCuotas from "./Views/ConfigurarCuotas";
 
 const MainContent = () => {
   const location = useLocation();
@@ -92,7 +93,7 @@ const MainContent = () => {
       case "/administradores":
         return <InicioAdmin />;
       case "/configurar-cuotas":
-        return <div>Contenido de las Cuotas</div>;
+        return <ConfigurarCuotas/>;
       default:
         return <Notfound />;
     }

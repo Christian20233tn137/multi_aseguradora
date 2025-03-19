@@ -143,7 +143,7 @@ const SolicitudSection = () => {
           <div className="flex space-x-20 justify-center mt-20">
             <button
               type="button"
-              className="w-30 z-auto text-white py-3 rounded-md hover:bg-blue-700 botones"
+              className="w-30 z-auto text-white py-3 rounded-md botones"
               onClick={showAlertDenegar}
             >
               Denegar
