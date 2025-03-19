@@ -16,6 +16,9 @@ import LayoutAgente from "../src/components/AgenteViews/LayoutAgente";
 import EditarSeguro from "./components/AdminViews/Views/EditarSeguro";
 import InformacionSeguros from "./components/AdminViews/Views/InformacionSeguros";
 import AgregarSeguros from "./components/AdminViews/Views/AgregarSeguros";
+import InformacionAdmin from "./components/AdminViews/Views/InformacionAdmin";
+import EditarAdmin from "./components/AdminViews/Views/EditarAdmin";
+import AgregarAdmin from "./components/AdminViews/Views/AgregarAdmin";
 
 const App = () => {
   const location = useLocation();
@@ -162,7 +165,12 @@ const App = () => {
             <Layout title={getTitle()} />
           </ProtectedRoute>
         }
-      />
+        
+        >
+        <Route path="informacion" element={<InformacionAdmin />} />
+        <Route path="editar" element={<EditarAdmin />} />
+        <Route path="agregar" element={<AgregarAdmin />} />
+      </Route>
 
       <Route
         path="/configurar-cuotas/*"
