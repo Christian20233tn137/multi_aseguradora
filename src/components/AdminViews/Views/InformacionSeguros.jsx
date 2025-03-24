@@ -16,7 +16,7 @@ const InformacionSeguros = () => {
         Seguros
       </h1>
       </div>
-
+ 
       {/* Contenedor de la información */}
       <div className="mt-8 p-8 border rounded-lg shadow-md w-full max-w-3xl text-left">
         {/* Círculo */}

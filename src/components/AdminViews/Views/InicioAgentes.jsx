@@ -9,9 +9,28 @@ const InicioAgentes = () => {
     if (view === "agentes") {
       navigate("/agentes/editar");
     } else {
-      alert("¡Reactivación en proceso!");
+      Swal.fire({
+        title: "¿Estás seguro de continuar?",
+        text: "¡Estamos trabajando en la reactivación! ¿Deseas continuar con la acción?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#0B1956",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, continuar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Reactivación en proceso",
+            text: "¡Estamos trabajando en la reactivación!",
+            icon: "info",
+            confirmButtonColor: "#0B1956",
+          });
+        }
+      });
     }
   };
+  
 
   const handlePerfil = () => {
     navigate("/agentes/perfil");
