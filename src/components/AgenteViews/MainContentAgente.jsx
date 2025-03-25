@@ -6,6 +6,7 @@ import Estadisticas from "./Views/Estadisticas";
 import Clientes from "./Views/Clientes";
 import Notfound from "../Notfound";
 import DatosCotizar from "./Views/DatosCotizar";
+import Polizas from "./Views/Polizas";
 
 const MainContentAgente = () => {
   const location = useLocation();
@@ -22,6 +23,8 @@ const MainContentAgente = () => {
         return "Estadisticas";
       case "/clientes":
         return "Clientes";
+        case "/clientes/polizas":
+          return "Clientes";
       default:
         return "Bienvenido al sistema";
     }
@@ -39,6 +42,8 @@ const MainContentAgente = () => {
         return <Estadisticas />;
       case "/clientes":
         return <Clientes />;
+        case "/clientes/polizas":
+        return <Polizas />;
       default:
         return <Notfound />;
     }

@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const Clientes = () => {
@@ -60,56 +58,51 @@ const Clientes = () => {
       )
     : initialRows;
 
-  const columns = [
-    { field: "nombre", headerName: "Nombre", width: 220 },
-    { field: "apellidos", headerName: "Apellidos", width: 220 },
-    { field: "rfc", headerName: "RFC", width: 200 },
-    { field: "curp", headerName: "CURP", width: 220 },
-    { field: "edad", headerName: "Edad", width: 150 },
-    {
-      field: "poliza",
-      headerName: "Póliza",
-      width: 283,
-      renderCell: (params) => (
-        <Button
-          className="center"
-          variant="contained"
-          sx={{
-            backgroundColor: "#0b1956",
-            "&:hover": { backgroundColor: "#354797" },
-          }}
-          onClick={() => navigate(`/clientes/polizas/${params.row.id}`)}
-        >
-          Ver Pólizas
-        </Button>
-      ),
-      sortable: false,
-      filterable: false,
-    },
-  ];
-
   return (
     <div className="relative p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold"></h1>
-        <TextField
-          label="Buscar cliente"
-          variant="outlined"
-          size="small"
-          className="w-64"
+        <input
+          type="text"
+          placeholder="Buscar cliente"
+          className="border p-2 w-64"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Buscar cliente"
         />
       </div>
-      <div className="h-[500px] w-full">
-        <DataGrid
-          rows={filteredRows}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          getRowId={(row) => row.id}
-        />
+      <div className="overflow-x-auto">
+        <table className="min-w-full">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">Nombre</th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">Apellidos</th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">RFC</th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">CURP</th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">Edad</th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">Póliza</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRows.map((row) => (
+              <tr key={row.id}>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.nombre}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.apellidos}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.rfc}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.curp}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.edad}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">
+                  <button
+                    className="botones text-white py-1 px-3 rounded"
+                    onClick={() => navigate(`/clientes/polizas`)}  //${row.id}
+                  >
+                    Ver Pólizas
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

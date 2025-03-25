@@ -20,6 +20,7 @@ import InformacionAdmin from "./components/AdminViews/Views/InformacionAdmin";
 import EditarAdmin from "./components/AdminViews/Views/EditarAdmin";
 import AgregarAdmin from "./components/AdminViews/Views/AgregarAdmin";
 import DatosCotizar from "./components/AgenteViews/Views/DatosCotizar";
+import Polizas from "./components/AgenteViews/Views/Polizas";
 
 const App = () => {
   const location = useLocation();
@@ -76,6 +77,8 @@ const App = () => {
         return "Estadisticas";
       case "/clientes":
         return "Clientes";
+      case "/clientes/polizas":
+        return "Seguros";
       default:
         return "Administradores";
     }
@@ -166,8 +169,7 @@ const App = () => {
             <Layout title={getTitle()} />
           </ProtectedRoute>
         }
-        
-        >
+      >
         <Route path="informacion" element={<InformacionAdmin />} />
         <Route path="editar" element={<EditarAdmin />} />
         <Route path="agregar" element={<AgregarAdmin />} />
@@ -199,7 +201,7 @@ const App = () => {
             <LayoutAgente title={getTitle()} />
           </ProtectedRoute>
         }
-        >
+      >
         <Route path="informacion" element={<DatosCotizar />} />
       </Route>
 
@@ -219,7 +221,9 @@ const App = () => {
             <LayoutAgente title={getTitle()} />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="polizas" element={<Polizas />} />
+      </Route>
 
       {/* Ruta por defecto (404) */}
       <Route path="*" element={<NotFound />} />
