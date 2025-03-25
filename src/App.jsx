@@ -76,7 +76,7 @@ const App = () => {
       case "/clientes":
         return "Clientes";
       default:
-        return "Bienvenido al sistema";
+        return "Administradores";
     }
   };
 

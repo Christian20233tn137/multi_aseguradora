@@ -56,7 +56,6 @@ const AgregarSeguro = () => {
       text: "¿Quieres agregar este seguro?",
       icon: "warning",
       showCancelButton: true,
-      showCancelButton: true,
       confirmButtonText: "Sí, agregar",
       cancelButtonText: "Cancelar",
     }).then((result) => {
