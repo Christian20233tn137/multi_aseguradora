@@ -121,7 +121,7 @@ const InicioAdmin = () => {
                 <span className="slider round"></span>
               </label>
               <button className="px-6 py-3 text-white botones" onClick={handleEditar}>Editar</button>
-              <button className="px-6 py-3 text-white botones" onClick={handleNavigateInfo}>Ver más</button>
+              <button className="px-6 py-3 text-white botones" onClick={handleNavigateInfo}>Perfil  </button>
             </div>
           </div>
         ))}
