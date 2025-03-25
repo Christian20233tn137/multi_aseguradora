@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 const LoginForm = ({ setUser }) => {
   const navigate = useNavigate();
 
+  const handlePassword = () => {
+    navigate('/recuperacion')
+  }
+
   // Estados para los campos (adaptando el nombre y contraseña)
   const [nombre, setNombre] = useState("");
   const [contra, setContra] = useState("");
@@ -94,6 +98,7 @@ const LoginForm = ({ setUser }) => {
           <a
             href="#"
             className="flex justify-center text-blue-600 hover:underline"
+            onClick={handlePassword}
           >
             ¿Olvidaste tu contraseña?
           </a>

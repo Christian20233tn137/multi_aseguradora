@@ -24,6 +24,9 @@ import Polizas from "./components/AgenteViews/Views/Polizas";
 
 import Cotizaciones from "./components/AgenteViews/Views/Cotizaciones";
 import Seguros from "./components/AgenteViews/Views/Seguros";
+import RecuperarContra from "./components/RecuperarContra";
+import Codigo from "./components/Codigo";
+import NuevaContra from "./components/NuevaContra";
 
 const App = () => {
   const location = useLocation();
@@ -235,6 +238,11 @@ const App = () => {
       >
         <Route path="polizas" element={<Polizas />} />
       </Route>
+
+      {/* Ruta recuperar contra */}
+      <Route path="recuperacion" element={<RecuperarContra />} />
+      <Route path="/recuperacion/codigo" element={<Codigo />} />
+      <Route path="/recuperacion/codigo/nuevaContra" element={<NuevaContra/>} />
 
       {/* Ruta por defecto (404) */}
       <Route path="*" element={<NotFound />} />
