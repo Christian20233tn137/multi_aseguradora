@@ -14,8 +14,11 @@ const SideBarAgente = () => {
   };
 
   const handleLogout = () => {
-    // Aquí puedes limpiar el localStorage o contexto de sesión si lo tienes
     navigate("/login");
+  };
+
+  const handelEditProfile = () => {
+    navigate("/inicioAgentes/EditarPerfil");
   };
 
   const menuItems = [
@@ -41,15 +44,22 @@ const SideBarAgente = () => {
         } transition-transform duration-300 z-50`}
       >
         {/* Perfil */}
-        <div className="mt-11 p-10">
+        <div className="mt-11 p-10  rounded-lg transition-transform transform hover:scale-105">
           <img
-            className="object-cover w-20 h-20 mx-auto"
+            className="object-cover w-20 h-20 mx-auto rounded-full transition-transform transform hover:scale-110"
             src={UsuarioProfile}
             alt="Usuario"
           />
-          <h2 className="mt-4 text-base font-bold text-center flex items-center justify-center gap-2">
+          <h2
+            className="mt-4 text-base font-bold text-center flex items-center justify-center gap-2 cursor-pointer hover:text-blue-400 transition-colors"
+            onClick={handelEditProfile}
+          >
             Editar perfil
-            <img className="w-5 h-5" src={EditIcon} alt="Editar" />
+            <img
+              className="w-5 h-5 transition-transform transform hover:rotate-45"
+              src={EditIcon}
+              alt="Editar"
+            />
           </h2>
         </div>
 
