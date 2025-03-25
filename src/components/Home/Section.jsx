@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Close from "./assets/Close.png"; // Ajusta la ruta de tu ícono de cerrar
+import Close from "./assets/Close.png";
 
 const Section = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -8,7 +8,7 @@ const Section = () => {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <section className="flex flex-col justify-center items-center p-5 lg:p-10 relative">
+    <section className="flex flex-col justify-center items-center p-5 lg:p-10">
       <div className="w-full max-w-[400px] text-center">
         <h1 className="text-2xl lg:text-4xl font-bold text-blue-950">
           BUSCAMOS AGENTES
@@ -18,22 +18,21 @@ const Section = () => {
           atractivos, libertad laboral y el respaldo de una multi aseguradora
           líder. ¡Postúlate hoy y transforma tu futuro!
         </p>
-        <button
-          className="mt-4 lg:mt-6 text-white px-6 py-2 botones w-full bg-[#0B1956] hover:bg-[#0d246e] rounded-md"
+        <button 
+          className="mt-4 lg:mt-6 text-white px-6 py-2 botones w-full"
           onClick={openModal}
         >
           Postularme
         </button>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center px-4 z-50">
+        <div className="fixed inset-0  bg-opacity-50 flex justify-center items-center px-4 z-50">
           <div className="bg-white rounded-lg shadow-lg w-full sm:max-w-lg md:max-w-xl lg:max-w-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center p-2 border-b">
               <h2 className="text-left font-bold text-lg">Postularme</h2>
               <img
-                className="object-cover w-8 h-8 cursor-pointer p-1"
+                className="object-cover w-13vis h-13 cursor-pointer p-2"
                 src={Close}
                 alt="Cerrar"
                 onClick={closeModal}
@@ -65,7 +64,7 @@ const Section = () => {
               <div className="mt-4 flex justify-center">
                 <button
                   type="submit"
-                  className="w-30 px-6 py-3 bg-[#0B1956] text-white rounded-md hover:bg-[#0d246e] botones"
+                  className="w-30 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 botones"
                 >
                   Enviar
                 </button>
