@@ -19,6 +19,7 @@ import AgregarSeguros from "./components/AdminViews/Views/AgregarSeguros";
 import InformacionAdmin from "./components/AdminViews/Views/InformacionAdmin";
 import EditarAdmin from "./components/AdminViews/Views/EditarAdmin";
 import AgregarAdmin from "./components/AdminViews/Views/AgregarAdmin";
+import DatosCotizar from "./components/AgenteViews/Views/DatosCotizar";
 
 const App = () => {
   const location = useLocation();
@@ -198,7 +199,9 @@ const App = () => {
             <LayoutAgente title={getTitle()} />
           </ProtectedRoute>
         }
-      />
+        >
+        <Route path="informacion" element={<DatosCotizar />} />
+      </Route>
 
       <Route
         path="/estadisticas/*"

@@ -5,6 +5,7 @@ import Cotizar from "./Views/Cotizar";
 import Estadisticas from "./Views/Estadisticas";
 import Clientes from "./Views/Clientes";
 import Notfound from "../Notfound";
+import DatosCotizar from "./Views/DatosCotizar";
 
 const MainContentAgente = () => {
   const location = useLocation();
@@ -15,6 +16,8 @@ const MainContentAgente = () => {
         return "Inicio";
       case "/cotizar":
         return "Cotizar";
+      case "/cotizar/informacion":
+        return "";
       case "/estadisticas":
         return "Estadisticas";
       case "/clientes":
@@ -30,7 +33,9 @@ const MainContentAgente = () => {
         return <InicioAgente />;
       case "/cotizar":
         return <Cotizar />;
-      case "/estadisticas":
+      case "/cotizar/informacion":
+        return <DatosCotizar />;
+      case "/estadisticas": 
         return <Estadisticas />;
       case "/clientes":
         return <Clientes />;
