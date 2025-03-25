@@ -21,7 +21,12 @@ const Cotizaciones = () => {
 
   return (
     <div className="relative p-4">
+      <h1 className="text-3xl p-3 text-center font-normal text-black miColor rounded-2xl w-full">
+        Configuración de Cuota
+      </h1>
+      <br />
       <div className="flex justify-between items-center mb-4">
+      
         <h1 className="text-xl font-bold">Selecciona tu Seguro</h1>
         <input
           type="text"
