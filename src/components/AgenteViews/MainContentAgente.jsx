@@ -7,28 +7,10 @@ import Clientes from "./Views/Clientes";
 import Notfound from "../Notfound";
 import DatosCotizar from "./Views/DatosCotizar";
 import Polizas from "./Views/Polizas";
+import Cotizaciones from "./Views/Cotizaciones";
 
 const MainContentAgente = () => {
   const location = useLocation();
-
-  const getTitle = () => {
-    switch (location.pathname) {
-      case "/inicioAgentes":
-        return "Inicio";
-      case "/cotizar":
-        return "Cotizar";
-      case "/cotizar/informacion":
-        return "";
-      case "/estadisticas":
-        return "Estadisticas";
-      case "/clientes":
-        return "Clientes";
-        case "/clientes/polizas":
-          return "Clientes";
-      default:
-        return "Bienvenido al sistema";
-    }
-  };
 
   const renderContent = () => {
     switch (location.pathname) {
@@ -38,11 +20,13 @@ const MainContentAgente = () => {
         return <Cotizar />;
       case "/cotizar/informacion":
         return <DatosCotizar />;
-      case "/estadisticas": 
+      case "/cotizar/informacion/cotizacion":
+        return <Cotizaciones />;
+      case "/estadisticas":
         return <Estadisticas />;
       case "/clientes":
         return <Clientes />;
-        case "/clientes/polizas":
+      case "/clientes/polizas":
         return <Polizas />;
       default:
         return <Notfound />;

@@ -22,6 +22,8 @@ import AgregarAdmin from "./components/AdminViews/Views/AgregarAdmin";
 import DatosCotizar from "./components/AgenteViews/Views/DatosCotizar";
 import Polizas from "./components/AgenteViews/Views/Polizas";
 
+import Cotizaciones from "./components/AgenteViews/Views/Cotizaciones";
+
 const App = () => {
   const location = useLocation();
 
@@ -78,6 +80,10 @@ const App = () => {
       case "/clientes":
         return "Clientes";
       case "/clientes/polizas":
+        return "Seguros";
+      case "/clientes/polizas/asegurado":
+        return "Seguros";
+      case "/clientes/polizas/cotizacion":
         return "Seguros";
       default:
         return "Administradores";
@@ -203,6 +209,7 @@ const App = () => {
         }
       >
         <Route path="informacion" element={<DatosCotizar />} />
+        <Route path="cotizacion" element={<Cotizaciones />} />
       </Route>
 
       <Route
