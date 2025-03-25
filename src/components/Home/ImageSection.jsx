@@ -8,7 +8,7 @@ const ImageSection = () => {
         <img
           src={agentes}
           alt="Agentes"
-          className="object-cover w-full h-full" // Ajusta la imagen para cubrir el contenedor
+          className="object-cover " // Ajusta la imagen para cubrir el contenedor
         />
       </div>
       <div className="absolute opacity-75 w-64 h-64 -z-10 transform rotate-45"></div>
