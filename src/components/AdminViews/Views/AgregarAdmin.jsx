@@ -1,179 +1,153 @@
-import React, {  useState } from 'react';
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 
-const AgregarAdmin = () => {
+const Cotizar = () => {
+  // Estados editables
   const [nombre, setNombre] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [correoElectronico, setCorreoElectronico] = useState("");
   const [apellidoPaterno, setApellidoPaterno] = useState("");
   const [apellidoMaterno, setApellidoMaterno] = useState("");
-  const [correo, setCorreo] = useState("");
-  const[telefono, setTelefono] = useState("");
-  const [domicilio, setDomicilio] = useState("");
-  const [rfc, setRfc] = useState("");
+  const [telefono, setTelefono] = useState("");
 
-  const agregarAdmin = async () => {
+  // Función para enviar la cotización al backend
+  const agregarCotizacion = async () => {
     try {
-      const response = await fetch("/api/seguros", {
+      const response = await fetch("/api/cotizaciones", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           nombre,
+          fechaNacimiento,
+          correoElectronico,
           apellidoPaterno,
           apellidoMaterno,
-          correo,
           telefono,
-          domicilio,
-          rfc
         }),
       });
-  
+
       if (response.ok) {
-        Swal.fire("Agregado", "El seguro ha sido agregado correctamente.", "success");
-        // Opcional: limpiar los campos después de agregar
+        Swal.fire("Cotización Enviada", "La cotización se envió correctamente.", "success");
+        // Opcional: limpiar el formulario
         setNombre("");
+        setFechaNacimiento("");
+        setCorreoElectronico("");
         setApellidoPaterno("");
         setApellidoMaterno("");
-        setCorreo("");
         setTelefono("");
-        setDomicilio("");
-        setRfc("");
       } else {
-        Swal.fire("Error", "Hubo un problema al agregar el seguro.", "error");
+        Swal.fire("Error", "Hubo un problema al enviar la cotización.", "error");
       }
     } catch (error) {
-      console.error("Error al agregar el seguro:", error);
+      console.error("Error al cotizar:", error);
       Swal.fire("Error", "Ocurrió un error inesperado.", "error");
     }
   };
 
+  // Confirmación con SweetAlert
+  const confirmarCotizacion = () => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¿Quieres enviar esta cotización?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, enviar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        agregarCotizacion();
+      }
+    });
+  };
 
-  const confirmarAgregar = () => {
-      Swal.fire({
-        title: "¿Estás seguro?",
-        text: "¿Quieres agregar a este administrador?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, agregar",
-        cancelButtonText: "Cancelar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          agregarAdmin();
-        }
-      });
-    };
+  return (
+    <div className="p-6 w-full h-auto overflow-hidden">
+      <h1 className="text-3xl w-full p-3 text-center font-normal text-black miColor rounded-2xl">
+        Datos del titular
+      </h1>
 
-
-
-    return (
-      <div className="container mx-auto p-6 bg-white rounded-md">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Agregar Administrador</h2>
-    
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Columna Izquierda */}
-          <div className="space-y-4">
-            {/* Campo del Nombre */}
-            <div>
-              <label className="block font-semibold">Nombre*</label>
-              <input
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="w-full border rounded p-2 mt-1"
-            
-              />
-            </div>
-    
-            {/* Campo de Apellido Paterno */}
-            <div>
-              <label className="block font-semibold">Apellido paterno*</label>
-              <input
-                type="text"
-                value={apellidoPaterno}
-                onChange={(e) => setApellidoPaterno(e.target.value)}
-                className="w-full border rounded p-2 mt-1"
-            
-              />
-            </div>
-    
-            {/* Campo de Correo */}
-            <div>
-              <label className="block font-semibold">Correo electrónico*</label>
-              <input
-                type="email"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                className="w-full border rounded p-2 mt-1"
-           
-              />
-            </div>
-          </div>
-    
-          {/* Columna Derecha */}
-          <div className="space-y-4">
-            {/* Campo de RFC */}
-            <div>
-              <label className="block font-semibold">RFC*</label>
-              <input
-                type="text"
-                value={rfc}
-                onChange={(e) => setRfc(e.target.value)}
-                className="w-full border rounded p-2 mt-1"
-                
-              />
-            </div>
-    
-            {/* Campo de Teléfono */}
-            <div>
-              <label className="block font-semibold">Teléfono*</label>
-              <input
-                type="tel"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                className="w-full border rounded p-2 mt-1"
-               
-              />
-            </div>
-    
-            {/* Campo de Apellido Materno */}
-            <div>
-              <label className="block font-semibold">Apellido materno*</label>
-              <input
-                type="text"
-                value={apellidoMaterno}
-                onChange={(e) => setApellidoMaterno(e.target.value)}
-                className="w-full border rounded p-2 mt-1"
-              
-              />
-            </div>
-          </div>
-        </div>
-    
-        {/* Campo de Domicilio (ancho completo) */}
-        <div className="mt-4">
-          <label className="block font-semibold">Domicilio*</label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+        <div className="flex items-center">
+          <label className="text-gray-700 text-sm font-bold mr-2">Nombre*</label>
           <input
+            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            value={domicilio}
-            onChange={(e) => setDomicilio(e.target.value)}
-            className="w-full border rounded p-2 mt-1"
-           
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Nombre"
           />
         </div>
-    
-        {/* Botón Agregar */}
-        <div className="flex items-center justify-center mt-6">
-          <button
-            type="button"
-            className="text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-            style={{ backgroundColor: "#0B1956" }}
-            onClick={confirmarAgregar}
-          >
-            Agregar
-          </button>
+
+        <div className="flex items-center">
+          <label className="text-gray-700 text-sm font-bold mr-2">Fecha de nacimiento*</label>
+          <input
+            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="date"
+            value={fechaNacimiento}
+            onChange={(e) => setFechaNacimiento(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center">
+          <label className="text-gray-700 text-sm font-bold mr-2">Apellido paterno*</label>
+          <input
+            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            value={apellidoPaterno}
+            onChange={(e) => setApellidoPaterno(e.target.value)}
+            placeholder="Apellido Paterno"
+          />
+        </div>
+
+        <div className="flex items-center">
+          <label className="text-gray-700 text-sm font-bold mr-16">Apellido materno</label>
+          <input
+            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            value={apellidoMaterno}
+            onChange={(e) => setApellidoMaterno(e.target.value)}
+            placeholder="Apellido Materno"
+          />
+        </div>
+
+        <div className="flex items-center">
+          <label className="text-gray-700 text-sm font-bold mr-10">Teléfono*</label>
+          <input
+            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+            placeholder="Teléfono"
+          />
+        </div>
+
+        <div className="flex items-center">
+          <label className="text-gray-700 text-sm font-bold mr-10">Correo electrónico*</label>
+          <input
+            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="email"
+            value={correoElectronico}
+            onChange={(e) => setCorreoElectronico(e.target.value)}
+            placeholder="Correo electrónico"
+          />
         </div>
       </div>
-    );
-}
 
-export default AgregarAdmin
+      {/* Botón Cotizar */}
+      <div className="flex items-center justify-center mt-6">
+        <button
+          type="button"
+          className="text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
+          style={{ backgroundColor: "#0B1956" }}
+          onClick={confirmarCotizacion}
+        >
+          Cotizar
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Cotizar;
