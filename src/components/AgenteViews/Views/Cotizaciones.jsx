@@ -51,7 +51,7 @@ const Cotizaciones = () => {
                 <td className="py-2 px-4 border-b border-gray-200 text-center">
                   <button
                     className="botones text-white py-1 px-3 rounded"
-                    onClick={() => navigate(`/aseguradoras/seleccion/`)}//${row.id}
+                    onClick={() => navigate(`/cotizar/informacion/cotizacion/seguros`)}//${row.id}
                   >
                     Seleccionar
                   </button>

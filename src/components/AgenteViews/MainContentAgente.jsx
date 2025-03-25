@@ -8,6 +8,7 @@ import Notfound from "../Notfound";
 import DatosCotizar from "./Views/DatosCotizar";
 import Polizas from "./Views/Polizas";
 import Cotizaciones from "./Views/Cotizaciones";
+import Seguros from "./Views/Seguros";
 
 const MainContentAgente = () => {
   const location = useLocation();
@@ -22,6 +23,8 @@ const MainContentAgente = () => {
         return <DatosCotizar />;
       case "/cotizar/informacion/cotizacion":
         return <Cotizaciones />;
+      case "/cotizar/informacion/cotizacion/seguros":
+        return <Seguros />;
       case "/estadisticas":
         return <Estadisticas />;
       case "/clientes":

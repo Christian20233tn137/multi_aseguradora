@@ -23,6 +23,7 @@ import DatosCotizar from "./components/AgenteViews/Views/DatosCotizar";
 import Polizas from "./components/AgenteViews/Views/Polizas";
 
 import Cotizaciones from "./components/AgenteViews/Views/Cotizaciones";
+import Seguros from "./components/AgenteViews/Views/Seguros";
 
 const App = () => {
   const location = useLocation();
@@ -75,15 +76,17 @@ const App = () => {
         return "Inicio";
       case "/cotizar":
         return "Seguros";
+      case "/cotizar/informacion":
+        return "Seguros";
+      case "/cotizar/informacion/cotizacion":
+        return "Seguros";
+      case "/cotizar/informacion/cotizacion/seguros":
+        return "Seguros";
       case "/estadisticas":
         return "Estadisticas";
       case "/clientes":
         return "Clientes";
       case "/clientes/polizas":
-        return "Seguros";
-      case "/clientes/polizas/asegurado":
-        return "Seguros";
-      case "/clientes/polizas/cotizacion":
         return "Seguros";
       default:
         return "Administradores";
@@ -210,6 +213,7 @@ const App = () => {
       >
         <Route path="informacion" element={<DatosCotizar />} />
         <Route path="cotizacion" element={<Cotizaciones />} />
+        <Route path="cotizacion/seguros" element={<Seguros />} />
       </Route>
 
       <Route
