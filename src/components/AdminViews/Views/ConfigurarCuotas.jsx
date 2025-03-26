@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import Swal from "sweetalert2";
 
 const ConfigurarCuotas = () => {
@@ -6,25 +7,32 @@ const ConfigurarCuotas = () => {
   const [nuevaCantidad, setNuevaCantidad] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+
   // Simulación de carga inicial desde el backend
   useEffect(() => {
     const fetchEmisionesActuales = async () => {
       try {
         setLoading(true);
         // Aquí iría tu llamada real al backend
-        // const response = await fetch('/api/configuracion/cuotas');
-        // const data = await response.json();
-        
+        // const response = await axios.get('/api/configuracion/cuotas');
+        // const data = response.data;
+
         // Simulamos respuesta del backend
         const data = { emisionesRequeridas: 10 };
         setEmisiones(data.emisionesRequeridas);
       } catch (error) {
         console.error("Error al obtener las emisiones:", error);
-        Swal.fire({
+        swalWithTailwindButtons.fire({
           icon: 'error',
           title: 'Error',
           text: 'No se pudieron cargar las emisiones actuales',
-          confirmButtonColor: '#0B1956',
         });
       } finally {
         setLoading(false);
@@ -37,71 +45,66 @@ const ConfigurarCuotas = () => {
   const handleActualizar = async () => {
     // Validación
     if (!nuevaCantidad || isNaN(nuevaCantidad)) {
-      Swal.fire({
+      swalWithTailwindButtons.fire({
         icon: 'warning',
         title: 'Cantidad inválida',
         text: 'Por favor ingresa un número válido',
-        confirmButtonColor: '#0B1956',
       });
       return;
     }
 
     const cantidad = parseInt(nuevaCantidad);
     if (cantidad <= 0) {
-      Swal.fire({
+      swalWithTailwindButtons.fire({
         icon: 'warning',
         title: 'Cantidad inválida',
         text: 'La cantidad debe ser mayor a cero',
-        confirmButtonColor: '#0B1956',
       });
       return;
     }
 
     // Confirmación antes de actualizar
-    Swal.fire({
+    swalWithTailwindButtons.fire({
       title: '¿Estás seguro?',
       text: `Vas a cambiar las emisiones requeridas de ${emisiones} a ${cantidad}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, actualizar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#0B1956',
-      cancelButtonColor: '#d33',
+      reverseButtons: true
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           setLoading(true);
-          
-          // Aquí iría tu llamada real al backend para actualizar
-          // const response = await fetch('/api/configuracion/cuotas', {
-          //   method: 'PUT',
-          //   headers: {
-          //     'Content-Type': 'application/json',
-          //   },
-          //   body: JSON.stringify({ emisionesRequeridas: cantidad }),
-          // });
-          
+
+          // Comenta esta parte para probar los botones sin necesidad de un backend activo
+          /*
+          const response = await axios.put('/api/configuracion/cuotas', {
+            emisionesRequeridas: cantidad,
+          });
+
+          if (response.status === 200) {
+          */
+
           // Simulamos respuesta exitosa del backend
-          // if (response.ok) {
-            setEmisiones(cantidad);
-            setNuevaCantidad("");
-            
-            Swal.fire({
-              icon: 'success',
-              title: '¡Actualizado!',
-              text: `Las emisiones requeridas se han actualizado a ${cantidad}`,
-              confirmButtonColor: '#0B1956',
-            });
+          setEmisiones(cantidad);
+          setNuevaCantidad("");
+
+          swalWithTailwindButtons.fire({
+            icon: 'success',
+            title: '¡Actualizado!',
+            text: `Las emisiones requeridas se han actualizado a ${cantidad}`,
+          });
+
           // } else {
           //   throw new Error('Error en la respuesta del servidor');
           // }
         } catch (error) {
           console.error("Error al actualizar:", error);
-          Swal.fire({
+          swalWithTailwindButtons.fire({
             icon: 'error',
             title: 'Error',
             text: 'No se pudo actualizar la configuración',
-            confirmButtonColor: '#0B1956',
           });
         } finally {
           setLoading(false);
@@ -115,7 +118,7 @@ const ConfigurarCuotas = () => {
       <h1 className="text-3xl p-3 text-center font-normal text-black miColor rounded-2xl w-full">
         Configuración de Cuota
       </h1>
-      
+
       {loading ? (
         <div className="text-center py-10">
           <p>Cargando...</p>
@@ -125,7 +128,7 @@ const ConfigurarCuotas = () => {
           <h2 className="text-3xl p-3 text-center font-semibold text-black miColor rounded-2xl w-full mt-10">
             Actualmente se requieren {emisiones} emisiones mensuales
           </h2>
-          
+
           <div className="w-full flex flex-col items-center mt-10">
             <label
               htmlFor="nuevaCantidad"
@@ -144,7 +147,7 @@ const ConfigurarCuotas = () => {
               min="1"
             />
           </div>
-          
+
           <div className="flex items-center justify-center mt-10">
             <button
               type="button"
