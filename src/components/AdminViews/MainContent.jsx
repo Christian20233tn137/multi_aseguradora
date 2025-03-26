@@ -20,6 +20,7 @@ import ConfigurarCuotas from "./Views/ConfigurarCuotas";
 import InformacionAdmin from "./Views/InformacionAdmin";
 import EditarAdmin from "./Views/EditarAdmin";
 import AgregarAgente from "./Views/AgregarAdmin";
+import EditarPerfilAdmin from "./Views/EditarPerfilAdmin";
 
 const MainContent = () => {
   const location = useLocation();
@@ -28,6 +29,8 @@ const MainContent = () => {
     switch (location.pathname) {
       case "/inicio":
         return <ProfileSection />;
+        case "/inicio/EditarPerfilAdmin":
+          return <EditarPerfilAdmin/>;
       case "/solicitudes":
         return <InicioSolicitudes />;
       case "/solicitudes/solicitud-section":

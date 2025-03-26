@@ -19,7 +19,7 @@ const Sidebar = () => {
   };
 
   const handelEditProfile = () => {
-    navigate("/inicioAgentes/EditarPerfil");
+    navigate("/inicio/EditarPerfilAdmin");
   };
 
   const menuItems = [

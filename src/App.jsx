@@ -7,6 +7,7 @@ import NotFound from "./components/Notfound";
 import SolicitudSection from "./components/AdminViews/Views/SolicitudSection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NuevaAseguradora from "./components/AdminViews/Views/NuevaAseguradora";
+import EditarPerfilAdmin from "./components/AdminViews/Views/EditarPerfilAdmin";
 import EditarAseguradora from "./components/AdminViews/Views/EditarAseguradora";
 import VerMasAseguradora from "./components/AdminViews/Views/VerMasAseguradora";
 import EditarAgente from "./components/AdminViews/Views/EditarAgente";
@@ -125,7 +126,11 @@ const App = () => {
             <Layout title={getTitle()} />
           </ProtectedRoute>
         }
-      />
+      >
+         <Route path="EditarPerfilAdmin" element={<EditarPerfilAdmin />} />
+        </Route>
+      
+     
 
       <Route
         path="/documentos/*"
