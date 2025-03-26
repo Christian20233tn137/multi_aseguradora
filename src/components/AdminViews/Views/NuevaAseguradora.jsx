@@ -21,51 +21,50 @@ const NuevaAseguradora = () => {
     });
   };
 
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+  
   const handleSubmit = async () => {
     try {
       const response = await fetch("http://localhost:3000/nar/aseguradoras", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
-
-      if (response.ok) {
-        Swal.fire({
-          title: "Aceptado!",
-          text: "La aseguradora fue registrada con éxito",
-          icon: "success"
-        });
-        navigate("/aseguradoras");
-      } else {
-        Swal.fire({
-          title: "Error",
-          text: "Hubo un problema al enviar los datos",
-          icon: "error"
-        });
-      }
+  
+      swalWithTailwindButtons.fire({
+        title: response.ok ? "¡Aceptado!" : "Error",
+        text: response.ok
+          ? "La aseguradora fue registrada con éxito"
+          : "Hubo un problema al enviar los datos",
+        icon: response.ok ? "success" : "error"
+      });
+  
+      if (response.ok) navigate("/aseguradoras");
     } catch (error) {
       console.error("Error al enviar los datos:", error);
     }
   };
-
+  
   const showAlert = () => {
-    Swal.fire({
+    swalWithTailwindButtons.fire({
       title: "¿Deseas agregar esta aseguradora?",
       text: "No podrás revertir esto!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, quiero aceptarlo!"
+      confirmButtonText: "Sí, quiero aceptarlo!",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true
     }).then((result) => {
-      if (result.isConfirmed) {
-        handleSubmit();
-      }
+      if (result.isConfirmed) handleSubmit();
     });
   };
-
+  
   return (
     <div className="flex items-center justify-center w-auto h-auto p-6">
       <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">

@@ -12,24 +12,37 @@ const SolicitudDocumentos = () => {
   }
 
   const showAlert = () => {
-      Swal.fire({
-        title: "Estas seguro?",
-        text: "No podras revertir esto!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si quiero aceptarlo!"
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: "Aceptado!",
-            text: "El postulante fue aceptado con exito",
-            icon: "success"
-          });
-          handleBack();
-        }
-      });
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      },
+      buttonsStyling: false
+    });
+    swalWithTailwindButtons.fire({
+      title: "Estas seguro?",
+      text: "No podras revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Si, acepetarlo!",
+      cancelButtonText: "No, cancelarlo!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        swalWithTailwindButtons.fire({
+          title: "¡Aceptado!",
+          text: "El postulante fue aceptado.",
+          icon: "success",
+        });
+        handleBack(); 
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithTailwindButtons.fire({
+          title: "Cancelado",
+          text: "El postulante no fue aceptado",
+          icon: "error"
+        });
+      }
+    });
     }
 
 const showAlertDenegar = () => {

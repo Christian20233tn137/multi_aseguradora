@@ -10,22 +10,36 @@ const SolicitudSection = () => {
     navigate("/solicitudes");
   }
   const showAlert = () => {
-    Swal.fire({
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      },
+      buttonsStyling: false
+    });
+
+swalWithTailwindButtons.fire({
       title: "¿Estás seguro?",
       text: "No podrás revertir esto!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Si quiero aceptarlo!"
+      confirmButtonText: "Si, aceptarlo!",
+      cancelButtonText: "No, cancelarlo!",
+      reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
+        swalWithTailwindButtons.fire({
           title: "Aceptado!",
-          text: "El postulante fue aceptado con exito",
-          icon: "success"
+          text: "El postulante fue aceptado.",
+          icon: "success",
         });
-        handleBack();
+        handleBack(); 
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithTailwindButtons.fire({
+          title: "Cancelado",
+          text: "El postulante no fue aceptado",
+          icon: "error"
+        });
       }
     });
   }

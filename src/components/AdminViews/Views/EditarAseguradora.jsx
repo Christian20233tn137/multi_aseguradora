@@ -9,6 +9,17 @@ const EditarAseguradora = () => {
     navigate("/aseguradoras");
   };
 
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+
+
+
+
   const handleEditSubmit = async () => {
     try {
       // Simulación de envío de datos
@@ -20,40 +31,29 @@ const EditarAseguradora = () => {
         body: JSON.stringify({ mensaje: "Datos actualizados" }),
       });
 
-      if (response.ok) {
-        Swal.fire({
-          title: "¡Editado!",
-          text: "La aseguradora se editó con éxito.",
-          icon: "success",
-        }).then(() => {
-          handleBack();
-        });
-      } else {
-        Swal.fire({
-          title: "Error",
-          text: "Hubo un problema al editar la aseguradora.",
-          icon: "error",
-        });
-      }
+      swalWithTailwindButtons.fire({
+        title: response.ok ?   "¡Editado!" : "Error",
+        text: response.ok
+        ?  "La aseguradora se editó con éxito."
+        : "Error al editar",
+        icon: response.ok ? "success": "error",
+      });
+
+      if (response.ok) navigate("/aseguradoras");
     } catch (error) {
       console.error("Error al editar:", error);
-      Swal.fire({
-        title: "Error",
-        text: "Ocurrió un error inesperado.",
-        icon: "error",
-      });
     }
   };
 
   const showEditAlert = () => {
-    Swal.fire({
+    swalWithTailwindButtons.fire({
       title: "¿Deseas guardar los cambios?",
       text: "Se actualizará la aseguradora.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      cancelButtonText: "Cancelar",
       confirmButtonText: "Sí, guardar cambios",
+      reverseButtons:true
     }).then((result) => {
       if (result.isConfirmed) {
         handleEditSubmit();

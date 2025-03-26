@@ -23,6 +23,14 @@ const AgregarSeguro = () => {
     }
   };
 
+   const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      },
+      buttonsStyling: false
+    });
+
   const agregarSeguro = async () => {
     try {
       // Aquí irá tu endpoint real
@@ -39,25 +47,30 @@ const AgregarSeguro = () => {
         }),
       });
 
-      if (response.ok) {
-        Swal.fire("Agregado", "El seguro ha sido agregado correctamente.", "success");
-      } else {
-        Swal.fire("Error", "Hubo un problema al agregar el seguro.", "error");
+      swalWithTailwindButtons.fire({
+        title: response.ok ?   "¡Agregado!" : "Error",
+        text: response.ok
+        ?  "La aseguradora se agregó con éxito."
+        : "Error al editar",
+        icon: response.ok ? "success": "error",
+      });
+
+      if (response.ok) navigate("/aseguradoras/seguros")
+        
+      }catch (error) {
+        console.error("Error al agregar el seguro:", error);
       }
-    } catch (error) {
-      console.error("Error al agregar el seguro:", error);
-      Swal.fire("Error", "Ocurrió un error inesperado.", "error");
-    }
-  };
+    };
 
   const confirmarAgregar = () => {
-    Swal.fire({
+    swalWithTailwindButtons.fire({
       title: "¿Estás seguro?",
       text: "¿Quieres agregar este seguro?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, agregar",
       cancelButtonText: "Cancelar",
+      reverseButtons:true
     }).then((result) => {
       if (result.isConfirmed) {
         agregarSeguro();
