@@ -28,6 +28,7 @@ import RecuperarContra from "./components/RecuperarContra";
 import Codigo from "./components/Codigo";
 import NuevaContra from "./components/NuevaContra";
 import InformacionPolizas from "./components/AgenteViews/Views/InformacionPolizas";
+import EditarPerfil from "./components/AgenteViews/Views/EditarPerfil";
 
 const App = () => {
   const location = useLocation();
@@ -205,7 +206,9 @@ const App = () => {
             <LayoutAgente title={getTitle()} />
           </ProtectedRoute>
         }
-      />
+        >
+        <Route path="EditarPerfil" element={<EditarPerfil />} />
+      </Route>
 
       <Route
         path="/cotizar/*"
@@ -245,6 +248,8 @@ const App = () => {
       <Route path="recuperacion" element={<RecuperarContra />} />
       <Route path="/recuperacion/codigo" element={<Codigo />} />
       <Route path="/recuperacion/codigo/nuevaContra" element={<NuevaContra/>} />
+
+     
 
       {/* Ruta por defecto (404) */}
       <Route path="*" element={<NotFound />} />

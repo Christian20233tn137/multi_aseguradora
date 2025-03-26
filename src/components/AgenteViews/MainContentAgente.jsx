@@ -10,6 +10,7 @@ import Polizas from "./Views/Polizas";
 import Cotizaciones from "./Views/Cotizaciones";
 import Seguros from "./Views/Seguros";
 import InformacionPolizas from "./Views/InformacionPolizas";
+import EditarPerfil from "./Views/EditarPerfil";
 
 const MainContentAgente = () => {
   const location = useLocation();
@@ -18,6 +19,8 @@ const MainContentAgente = () => {
     switch (location.pathname) {
       case "/inicioAgentes":
         return <InicioAgente />;
+      case "/inicioAgentes/EditarPerfil":
+        return <EditarPerfil />;
       case "/cotizar":
         return <Cotizar />;
       case "/cotizar/informacion":
@@ -32,8 +35,9 @@ const MainContentAgente = () => {
         return <Clientes />;
       case "/clientes/polizas":
         return <Polizas />;
-        case "/clientes/polizas/informacion":
+      case "/clientes/polizas/informacion":
         return <InformacionPolizas />;
+
       default:
         return <Notfound />;
     }
