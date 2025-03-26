@@ -10,22 +10,50 @@ const Seguros = () => {
     imagen: '', // Aquí se cargará la imagen desde el back
   });
 
-  const handleEmitir = () => {
-    Swal.fire({
-      title: '¿Estás seguro de emitir la acción?',
-      text: 'Una vez emitido, no podrás revertir esta acción.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#0B1956',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, emitir',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire('¡Emitido!', 'La póliza ha sido emitida a al correo del cliente.', 'success');
+  
+const handleEmitir = () => {
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+
+  swalWithTailwindButtons.fire({
+    title: '¿Estás seguro de emitir la acción?',
+    text: 'Una vez emitido, no podrás revertir esta acción.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, emitir',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        // Comenta esta parte para probar los botones sin necesidad de un backend activo
+        /*
+        const response = await axios.post("/api/emitir-poliza", {
+          // Aquí irían los datos necesarios para emitir la póliza
+        });
+
+        if (response.status === 200) {
+          swalWithTailwindButtons.fire('¡Emitido!', 'La póliza ha sido emitida al correo del cliente.', 'success');
+        } else {
+          swalWithTailwindButtons.fire('Error', 'Hubo un problema al emitir la póliza.', 'error');
+        }
+        */
+
+        // Para probar sin backend, descomenta la siguiente línea:
+        swalWithTailwindButtons.fire('¡Emitido!', 'La póliza ha sido emitida al correo del cliente.', 'success');
+
+      } catch (error) {
+        console.error("Error al emitir la póliza:", error);
+        swalWithTailwindButtons.fire('Error', 'Ocurrió un error inesperado.', 'error');
       }
-    });
-  };
+    }
+  });
+};
 
   return (
     <div className="relative p-4">

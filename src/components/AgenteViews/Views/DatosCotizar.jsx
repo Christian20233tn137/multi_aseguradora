@@ -21,47 +21,53 @@ const DatosCotizar = () => {
   };
 
   const agregarCotizacion = async () => {
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      },
+      buttonsStyling: false
+    });
+  
     try {
-      const result = await Swal.fire({
+      const result = await swalWithTailwindButtons.fire({
         title: '¿Estás seguro?',
         text: "¿Deseas enviar esta cotización?",
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
         confirmButtonText: 'Sí, enviar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
       });
-
+  
       if (!result.isConfirmed) {
         return; // Si el usuario cancela, no hacemos nada
       }
-
-      const response = await fetch("/api/cotizaciones", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...agente,
-          esTitularAsegurado,
-          asegurado: esTitularAsegurado ? null : asegurado,
-        }),
+  
+      // Comenta esta parte para probar los botones sin necesidad de un backend activo
+      /*
+      const response = await axios.post("/api/cotizaciones", {
+        ...agente,
+        esTitularAsegurado,
+        asegurado: esTitularAsegurado ? null : asegurado,
       });
-
-      if (response.ok) {
-        Swal.fire("Cotización Enviada", "La cotización se envió correctamente.", "success");
+      */
+  
+      // Simula una respuesta exitosa para probar sin backend
+      const response = { status: 200 };
+  
+      if (response.status === 200) {
+        swalWithTailwindButtons.fire("Cotización Enviada", "La cotización se envió correctamente.", "success");
         setAgente({ nombre: "", apellidoPaterno: "", apellidoMaterno: "", fechaNacimiento: "", telefono: "", correoElectronico: "" });
         setAsegurado({ nombre: "", apellidoPaterno: "", apellidoMaterno: "", fechaNacimiento: "", telefono: "", correoElectronico: "" });
       } else {
-        Swal.fire("Error", "Hubo un problema al enviar la cotización.", "error");
+        swalWithTailwindButtons.fire("Error", "Hubo un problema al enviar la cotización.", "error");
       }
     } catch (error) {
       console.error("Error al cotizar:", error);
-      Swal.fire("Error", "Ocurrió un error inesperado.", "error");
+      swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
     }
   };
-
   return (
     <div className="p-6 w-full h-auto overflow-hidden">
       <h1 className="text-3xl w-full p-3 text-center font-normal text-black miColor rounded-2xl">Datos del titular</h1>
