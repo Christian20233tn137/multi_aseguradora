@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
-const Cotizar = () => {
+const AgregarAdmin = () => {
   // Estados editables
   const [nombre, setNombre] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
@@ -11,25 +11,33 @@ const Cotizar = () => {
   const [telefono, setTelefono] = useState("");
 
   // Función para enviar la cotización al backend
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+  
   const agregarCotizacion = async () => {
     try {
-      const response = await fetch("/api/cotizaciones", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre,
-          fechaNacimiento,
-          correoElectronico,
-          apellidoPaterno,
-          apellidoMaterno,
-          telefono,
-        }),
+      // Comenta esta parte para probar los botones sin necesidad de un backend activo
+      /*
+      const response = await axios.post("/api/cotizaciones", {
+        nombre,
+        fechaNacimiento,
+        correoElectronico,
+        apellidoPaterno,
+        apellidoMaterno,
+        telefono,
       });
-
-      if (response.ok) {
-        Swal.fire("Cotización Enviada", "La cotización se envió correctamente.", "success");
+      */
+  
+      // Simula una respuesta exitosa para probar sin backend
+      const response = { status: 200 };
+  
+      if (response.status === 200) {
+        swalWithTailwindButtons.fire("Cotización Enviada", "El administrador se resgistró correctamente.", "success");
         // Opcional: limpiar el formulario
         setNombre("");
         setFechaNacimiento("");
@@ -38,23 +46,24 @@ const Cotizar = () => {
         setApellidoMaterno("");
         setTelefono("");
       } else {
-        Swal.fire("Error", "Hubo un problema al enviar la cotización.", "error");
+        swalWithTailwindButtons.fire("Error", "Hubo un problema al registrar el administrador.", "error");
       }
     } catch (error) {
-      console.error("Error al cotizar:", error);
-      Swal.fire("Error", "Ocurrió un error inesperado.", "error");
+      console.error("Error al registrar:", error);
+      swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
     }
   };
-
+  
   // Confirmación con SweetAlert
   const confirmarCotizacion = () => {
-    Swal.fire({
+    swalWithTailwindButtons.fire({
       title: "¿Estás seguro?",
-      text: "¿Quieres enviar esta cotización?",
+      text: "¿Quieres registrar a este administrador?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, enviar",
       cancelButtonText: "Cancelar",
+      reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
         agregarCotizacion();
@@ -65,7 +74,7 @@ const Cotizar = () => {
   return (
     <div className="p-6 w-full h-auto overflow-hidden">
       <h1 className="text-3xl w-full p-3 text-center font-normal text-black miColor rounded-2xl">
-        Datos del titular
+         Agregar Administrador
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
@@ -135,7 +144,7 @@ const Cotizar = () => {
         </div>
       </div>
 
-      {/* Botón Cotizar */}
+      {/* Botón Agregar*/}
       <div className="flex items-center justify-center mt-6">
         <button
           type="button"
@@ -143,11 +152,11 @@ const Cotizar = () => {
           style={{ backgroundColor: "#0B1956" }}
           onClick={confirmarCotizacion}
         >
-          Cotizar
+          Agregar
         </button>
       </div>
     </div>
   );
 };
 
-export default Cotizar;
+export default AgregarAdmin;

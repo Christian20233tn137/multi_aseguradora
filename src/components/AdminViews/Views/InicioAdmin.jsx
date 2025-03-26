@@ -54,30 +54,70 @@ const InicioAdmin = () => {
 
   //Switch Alert
   const handleToggleSwitch = (index) => {
-    const isCurrentlyChecked = checkedItems[index] || false;
-    Swal.fire({
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      },
+      buttonsStyling: false
+    });
+  
+    const isCurrentlyChecked = checkedItems[index] || false; // Verifica el estado actual
+  
+    swalWithTailwindButtons.fire({
       title: isCurrentlyChecked
         ? "¿Desea desactivar este administrador?"
         : "¿Desea activar este administrador?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
       confirmButtonText: isCurrentlyChecked
         ? "Sí, desactivarlo"
-        : "¡Sí, quiero activarlo! ",
-    }).then((result) => {
+        : "¡Sí, quiero activarlo!",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: isCurrentlyChecked
-            ? "¡Administrador desactivado!"
-            : "¡Administrador activado!",
-          icon: "success",
-        });
-        setCheckedItems((prevState) => ({
-          ...prevState,
-          [index]: !prevState[index],
-        }));
+        try {
+          // Comenta esta parte para probar los botones sin necesidad de un backend activo
+          /*
+          const response = await axios.put(`http://localhost:3000/api/administradores/${index}`, {
+            active: !isCurrentlyChecked, // Envía el nuevo estado al backend
+          });
+  
+          if (response.status === 200) {
+            swalWithTailwindButtons.fire({
+              title: isCurrentlyChecked
+                ? "¡Administrador desactivado!"
+                : "¡Administrador activado!",
+              icon: "success",
+            });
+  
+            setCheckedItems((prevState) => ({
+              ...prevState,
+              [index]: !prevState[index], // Alterna el estado del switch
+            }));
+          } else {
+            swalWithTailwindButtons.fire("Error", "Hubo un problema al actualizar el estado del administrador.", "error");
+          }
+          */
+  
+          // Para probar sin backend, descomenta la siguiente línea:
+          swalWithTailwindButtons.fire({
+            title: isCurrentlyChecked
+              ? "¡Administrador desactivado!"
+              : "¡Administrador activado!",
+            icon: "success",
+          });
+  
+          setCheckedItems((prevState) => ({
+            ...prevState,
+            [index]: !prevState[index], // Alterna el estado del switch
+          }));
+  
+        } catch (error) {
+          console.error("Error al actualizar el estado del administrador:", error);
+          swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
+        }
       }
     });
   };

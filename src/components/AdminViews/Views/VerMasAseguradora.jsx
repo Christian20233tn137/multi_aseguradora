@@ -57,6 +57,7 @@ const VerMasAseguradora = () => {
   }
 
   //Switch alert
+  //Switch alert
   const handleToggleSwitch = (index) => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
