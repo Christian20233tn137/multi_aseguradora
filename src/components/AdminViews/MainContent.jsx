@@ -24,51 +24,6 @@ import AgregarAgente from "./Views/AgregarAdmin";
 const MainContent = () => {
   const location = useLocation();
 
-  const getTitle = () => {
-    switch (location.pathname) {
-      case "/inicio":
-        return "Perfil";
-      case "/solicitudes":
-        return "Solicitudes";
-      case "/solicitudes/solicitud-section":
-        return "Solicitud";
-      case "/solicitudes/solicitud-documentos":
-        return "Solicitud Documentos";
-      case "/aseguradoras":
-        return "Aseguradoras";
-      case "/aseguradoras/nuevaAseguradora":
-        return "Aseguradoras";
-      case "/aseguradoras/editar-Aseguradora":
-        return "Aseguradoras";
-      case "/aseguradoras/seguros":
-        return "Aseguradoras";
-      case "/aseguradoras/seguros/editar":
-        return "Editar Seguro";
-      case "/aseguradoras/seguros/informacion":
-        return "Información de Seguro";
-      case "/aseguradoras/seguros/agregar":
-        return "Agregar Seguro";
-      case "/agentes":
-        return "Agentes";
-      case "/agentes/editar":
-        return "Agentes";
-      case "/agentes/perfil":
-        return "Agentes";
-      case "/administradores":
-        return "Administradores";
-      case "/administradores/informacion":
-        return "Administradores";
-      case "/administradores/editar":
-        return "Administradores";
-      case "/administradores/agregar":
-        return "Administradores";
-      case "/configurar-cuotas":
-        return "Configurar Cuotas";
-      default:
-        return "Bienvenido al sistema";
-    }
-  };
-
   const renderContent = () => {
     switch (location.pathname) {
       case "/inicio":
@@ -83,7 +38,7 @@ const MainContent = () => {
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
-      case "/aseguradoras/editar-Aseguradora":
+      case "/aseguradoras/editar/:_id":
         return <EditarAseguradora />;
       case "/aseguradoras/seguros":
         return <VerMasAseguradora />;

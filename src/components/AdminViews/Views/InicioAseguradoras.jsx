@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
@@ -9,13 +10,13 @@ const InicioAseguradoras = () => {
   const itemsPerPage = 3;
   const [checkedItems, setCheckedItems] = useState({});
 
-  // Cargar datos desde la API
   useEffect(() => {
     const fetchAseguradoras = async () => {
       try {
-        const response = await fetch("http://localhost:3000/nar/aseguradoras"); // Reemplaza con tu URL de API
-        const data = await response.json();
-        setAseguradoras(data);
+        const response = await axios.get(
+          "http://localhost:3000/nar/aseguradoras"
+        );
+        setAseguradoras(response.data);
       } catch (error) {
         console.error("Error al obtener aseguradoras:", error);
       }
@@ -26,7 +27,15 @@ const InicioAseguradoras = () => {
 
   const handlerNavigation = () => navigate("/aseguradoras/nuevaAseguradora");
   const handlerInfo = () => navigate("/aseguradoras/seguros");
-  const handlerNavigationEdit = () => navigate("/aseguradoras/editar-Aseguradora");
+
+  const handlerNavigationEdit = (id, aseguradora) => {
+    if (id) {
+      navigate(`editar/${id}`, { state: { aseguradora } });
+    } else {
+      console.error("ID de aseguradora no definido");
+      console.log(id);
+    }
+  };
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) =>
@@ -43,7 +52,6 @@ const InicioAseguradoras = () => {
     (currentPage + 1) * itemsPerPage
   );
 
-  // Switch alert
   const handleToggleSwitch = (index) => {
     const isCurrentlyChecked = checkedItems[index] || false;
 
@@ -55,11 +63,15 @@ const InicioAseguradoras = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: isCurrentlyChecked ? "Sí, desactivarlo" : "¡Sí, quiero activarlo!",
+      confirmButtonText: isCurrentlyChecked
+        ? "Sí, desactivarlo"
+        : "¡Sí, quiero activarlo!",
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: isCurrentlyChecked ? "¡Aseguradora desactivada!" : "¡Aseguradora activada!",
+          title: isCurrentlyChecked
+            ? "¡Aseguradora desactivada!"
+            : "¡Aseguradora activada!",
           icon: "success",
         });
 
@@ -79,19 +91,27 @@ const InicioAseguradoras = () => {
           placeholder="Buscar..."
           className="px-4 py-3 w-full md:w-auto border rounded order-first md:order-none"
         />
-        <button className="px-6 py-3 text-white botones w-full md:w-auto" onClick={handlerNavigation}>
+        <button
+          className="px-6 py-3 text-white botones w-full md:w-auto"
+          onClick={handlerNavigation}
+        >
           + Agregar
         </button>
       </div>
       <div className="border-0 p-6 space-y-6">
         {currentItems.length > 0 ? (
-          currentItems.map((aseguradora, index) => (
-            <div key={aseguradora.id} className="flex flex-col md:flex-row items-center justify-between border rounded-lg p-6 shadow-md">
+          currentItems.map((aseguradora) => (
+            <div
+              key={aseguradora._id}
+              className="flex flex-col md:flex-row items-center justify-between border rounded-lg p-6 shadow-md"
+            >
               <div className="flex items-center mb-6 md:mb-0">
                 <div className="w-16 h-16 bg-gray-400 rounded-full mr-6"></div>
                 <div>
                   <p className="text-xl font-semibold">{aseguradora.nombre}</p>
-                  <p className="text-gray-600 text-lg">{aseguradora.informacion}</p>
+                  <p className="text-gray-600 text-lg">
+                    {aseguradora.informacion}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-6">
@@ -99,15 +119,23 @@ const InicioAseguradoras = () => {
                   <input
                     type="checkbox"
                     className="hidden"
-                    checked={checkedItems[aseguradora.id] || false}
-                    onChange={() => handleToggleSwitch(aseguradora.id)}
+                    checked={checkedItems[aseguradora._id] || false}
+                    onChange={() => handleToggleSwitch(aseguradora._id)}
                   />
                   <span className="slider round"></span>
                 </label>
-                <button className="px-6 py-3 text-white botones" onClick={handlerNavigationEdit}>
+                <button
+                  className="px-6 py-3 text-white botones"
+                  onClick={() =>
+                    handlerNavigationEdit(aseguradora._id, aseguradora)
+                  }
+                >
                   Editar
                 </button>
-                <button className="px-6 py-3 text-white botones" onClick={handlerInfo}>
+                <button
+                  className="px-6 py-3 text-white botones"
+                  onClick={handlerInfo}
+                >
                   Ver más
                 </button>
               </div>
@@ -118,7 +146,11 @@ const InicioAseguradoras = () => {
         )}
       </div>
       <div className="flex justify-between mt-6">
-        <button onClick={handlePrevPage} disabled={currentPage === 0} className="px-6 py-3 text-white botones">
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 0}
+          className="px-6 py-3 text-white botones"
+        >
           Anterior
         </button>
         <button
