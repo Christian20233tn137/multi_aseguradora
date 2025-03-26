@@ -26,18 +26,45 @@ const EditarSeguro = () => {
   };
 
   const confirmarAgregar = () => {
-    Swal.fire({
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      },
+      buttonsStyling: false
+    });
+  
+    swalWithTailwindButtons.fire({
       title: "¿Estás seguro?",
       text: "¿Quieres agregar este seguro?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#0B1956",
-      cancelButtonColor: "#d33",
       confirmButtonText: "Sí, agregar",
       cancelButtonText: "Cancelar",
-    }).then((result) => {
+      reverseButtons: true
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        Swal.fire("Agregado", "El seguro ha sido agregado correctamente.", "success");
+        try {
+          // Comenta esta parte para probar los botones sin necesidad de un backend activo
+          /*
+          const response = await axios.post("http://localhost:3000/api/seguros", {
+            // Aquí irían los datos del seguro que deseas agregar
+          });
+  
+          if (response.status === 200) {
+            swalWithTailwindButtons.fire("Agregado", "El seguro ha sido agregado correctamente.", "success");
+          } else {
+            swalWithTailwindButtons.fire("Error", "Hubo un problema al agregar el seguro.", "error");
+          }
+          */
+  
+          // Para probar sin backend, descomenta la siguiente línea:
+          swalWithTailwindButtons.fire("Agregado", "El seguro ha sido agregado correctamente.", "success");
+  
+        } catch (error) {
+          console.error("Error al agregar el seguro:", error);
+          swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
+        }
       }
     });
   };
@@ -106,7 +133,7 @@ const EditarSeguro = () => {
           style={{ backgroundColor: "#0B1956" }}
           onClick={confirmarAgregar}
         >
-          Agregar
+          Editar
         </button>
       </div>
     </div>
