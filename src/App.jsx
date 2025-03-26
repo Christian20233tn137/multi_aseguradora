@@ -49,7 +49,9 @@ const App = () => {
         return "Aseguradoras";
       case "/aseguradoras/nuevaAseguradora":
         return "Aseguradoras";
-      case "/aseguradoras/editar-Aseguradora":
+      case "/aseguradoras/editar":
+        return "Aseguradoras";
+      case "/aseguradoras/editar/:id":
         return "Aseguradoras";
       case "/aseguradoras/seguros":
         return "Aseguradoras";
@@ -155,9 +157,9 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        {/* Rutas hijas */}
+        {/* Rutas hijas fuaaa*/}
         <Route path="nuevaAseguradora" element={<NuevaAseguradora />} />
-        <Route path="editar-Aseguradora" element={<EditarAseguradora />} />
+        <Route path="editar/:id" element={<EditarAseguradora />} />
         <Route path="seguros" element={<VerMasAseguradora />} />
         <Route path="seguros/editar" element={<EditarSeguro />} />
         <Route path="seguros/informacion" element={<InformacionSeguros />} />
@@ -247,7 +249,10 @@ const App = () => {
       {/* Ruta recuperar contra */}
       <Route path="recuperacion" element={<RecuperarContra />} />
       <Route path="/recuperacion/codigo" element={<Codigo />} />
-      <Route path="/recuperacion/codigo/nuevaContra" element={<NuevaContra/>} />
+      <Route
+        path="/recuperacion/codigo/nuevaContra"
+        element={<NuevaContra />}
+      />
 
      
 

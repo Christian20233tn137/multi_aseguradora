@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const NuevaAseguradora = () => {
   const navigate = useNavigate();
@@ -28,29 +29,25 @@ const NuevaAseguradora = () => {
     },
     buttonsStyling: false
   });
-  
+
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://localhost:3000/nar/aseguradoras", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-  
+      const response = await axios.post("http://localhost:3000/nar/aseguradoras", formData);
+
       swalWithTailwindButtons.fire({
-        title: response.ok ? "¡Aceptado!" : "Error",
-        text: response.ok
+        title: response.status === 200 ? "¡Aceptado!" : "Error",
+        text: response.status === 200
           ? "La aseguradora fue registrada con éxito"
           : "Hubo un problema al enviar los datos",
-        icon: response.ok ? "success" : "error"
+        icon: response.status === 200 ? "success" : "error"
       });
-  
-      if (response.ok) navigate("/aseguradoras");
+
+      if (response.status === 200) navigate("/aseguradoras");
     } catch (error) {
       console.error("Error al enviar los datos:", error);
     }
   };
-  
+
   const showAlert = () => {
     swalWithTailwindButtons.fire({
       title: "¿Deseas agregar esta aseguradora?",
@@ -64,7 +61,7 @@ const NuevaAseguradora = () => {
       if (result.isConfirmed) handleSubmit();
     });
   };
-  
+
   return (
     <div className="flex items-center justify-center w-auto h-auto p-6">
       <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">
