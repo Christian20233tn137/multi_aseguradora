@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const nombre = "Chris el macho";
 
@@ -12,6 +13,12 @@ const polizas = [
 
 const Polizas = () => {
   const [searchQuery, setSearchQuery] = useState('');
+
+  const navigate = useNavigate();
+
+  const handleInfo = () => {
+    navigate('/clientes/polizas/informacion')
+  }
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -44,7 +51,8 @@ const Polizas = () => {
             <p>{poliza.tipo}</p>
             <p>Vigencia: {poliza.vigencia}</p>
             <p>Costo mensual: {poliza.costo}</p>
-            <button className="mt-4 botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            <button className="mt-4 botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" 
+            onClick={handleInfo}>
               Ver más
             </button>
           </div>

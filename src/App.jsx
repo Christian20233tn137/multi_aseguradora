@@ -27,6 +27,7 @@ import Seguros from "./components/AgenteViews/Views/Seguros";
 import RecuperarContra from "./components/RecuperarContra";
 import Codigo from "./components/Codigo";
 import NuevaContra from "./components/NuevaContra";
+import InformacionPolizas from "./components/AgenteViews/Views/InformacionPolizas";
 
 const App = () => {
   const location = useLocation();
@@ -237,6 +238,7 @@ const App = () => {
         }
       >
         <Route path="polizas" element={<Polizas />} />
+        <Route path="informacion" element={<InformacionPolizas />} />
       </Route>
 
       {/* Ruta recuperar contra */}
