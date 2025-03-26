@@ -12,6 +12,14 @@ const EditarAgente = () => {
     rfc: '',
   });
 
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+
   useEffect(() => {
     const obtenerAgente = async () => {
       const data = {
@@ -35,53 +43,49 @@ const EditarAgente = () => {
       [e.target.name]: e.target.value,
     });
   };
+
   const restablecerContrasena = () => {
-    Swal.fire({
+    swalWithTailwindButtons.fire({
       title: '¿Estás seguro?',
       text: 'La contraseña se restablecerá al correo electrónico del usuario. ¿Deseas continuar?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, restablecer',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#0B1956',
-      cancelButtonColor: '#d33',
+      reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
         // Aquí se haría la lógica real de restablecer la contraseña en el backend
         const nuevaContrasena = agente.correo; // La contraseña predeterminada será el correo
         console.log(`La nueva contraseña es: ${nuevaContrasena}`);
-  
-        Swal.fire({
+
+        swalWithTailwindButtons.fire({
           icon: 'success',
           title: 'Contraseña restablecida',
           text: 'La contraseña ha sido restablecida al correo electrónico del usuario.',
-          confirmButtonColor: '#0B1956',
         });
       }
     });
   };
-  
 
   const validarCampos = () => {
     const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono, rfc } = agente;
 
     if (!nombre || !apellidoPaterno || !apellidoMaterno || !correo || !telefono || !rfc) {
-      Swal.fire({
+      swalWithTailwindButtons.fire({
         icon: 'warning',
         title: 'Campos obligatorios',
         text: 'Por favor, llena todos los campos obligatorios.',
-        confirmButtonColor: '#0B1956',
       });
       return false;
     }
 
     const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regexCorreo.test(correo)) {
-      Swal.fire({
+      swalWithTailwindButtons.fire({
         icon: 'error',
         title: 'Correo inválido',
         text: 'Por favor, ingresa un correo electrónico válido.',
-        confirmButtonColor: '#0B1956',
       });
       return false;
     }
@@ -91,15 +95,14 @@ const EditarAgente = () => {
 
   const guardarDatos = () => {
     if (validarCampos()) {
-      Swal.fire({
+      swalWithTailwindButtons.fire({
         title: "¿Estás seguro?",
         text: "¿Quieres editar este agente?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, guardar",
         cancelButtonText: "Cancelar",
-        confirmButtonColor: "#0B1956",
-        cancelButtonColor: "#d33",
+        reverseButtons: true
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -110,36 +113,32 @@ const EditarAgente = () => {
               },
               body: JSON.stringify(agente),
             });
-  
+
             if (response.ok) {
-              Swal.fire({
+              swalWithTailwindButtons.fire({
                 title: "Éxito",
                 text: "Datos guardados correctamente.",
                 icon: "success",
-                confirmButtonColor: "#0B1956",
               });
             } else {
-              Swal.fire({
+              swalWithTailwindButtons.fire({
                 title: "Error",
                 text: "Hubo un problema al guardar los datos.",
                 icon: "error",
-                confirmButtonColor: "#0B1956",
               });
             }
           } catch (error) {
             console.error("Error al guardar el agente:", error);
-            Swal.fire({
+            swalWithTailwindButtons.fire({
               title: "Error",
               text: "Ocurrió un error inesperado.",
               icon: "error",
-              confirmButtonColor: "#0B1956",
             });
           }
         }
       });
     }
   };
-  
 
   return (
     <div className="p-8 max-w-3xl mx-auto">

@@ -5,32 +5,37 @@ import Swal from "sweetalert2";
 const InicioAgentes = () => {
   const navigate = useNavigate();
 
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+
   const handleEditar = () => {
     if (view === "agentes") {
       navigate("/agentes/editar");
     } else {
-      Swal.fire({
+      swalWithTailwindButtons.fire({
         title: "¿Estás seguro de continuar?",
         text: "¡Estamos trabajando en la reactivación! ¿Deseas continuar con la acción?",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#0B1956",
-        cancelButtonColor: "#d33",
         confirmButtonText: "Sí, continuar",
         cancelButtonText: "Cancelar",
+        reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
+          swalWithTailwindButtons.fire({
             title: "Reactivación en proceso",
             text: "¡Estamos trabajando en la reactivación!",
             icon: "info",
-            confirmButtonColor: "#0B1956",
           });
         }
       });
     }
   };
-  
 
   const handlePerfil = () => {
     navigate("/agentes/perfil");
@@ -39,8 +44,6 @@ const InicioAgentes = () => {
   const [view, setView] = useState("agentes");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-
-  
 
   const profiles = [
     { name: "Christian Aviles Sotelo" },
@@ -73,7 +76,6 @@ const InicioAgentes = () => {
     startIndex + profilesPerPage
   );
 
-  
   return (
     <div className="p-4">
       <div className="flex items-center mb-4">
@@ -119,7 +121,7 @@ const InicioAgentes = () => {
                   No.Reactivaciones: {profile.numReactivaciones}
                 </span>
               )}
-             
+
               <button
                 className="px-8 py-3 text-white rounded botones"
                 onClick={handleEditar}
