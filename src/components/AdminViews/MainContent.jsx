@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import ProfileSection from "./Views/ProfileSection";
 import InicioSolicitudes from "./Views/InicioSolicitudes";
 import SolicitudSection from "./Views/SolicitudSection";
@@ -24,13 +24,23 @@ import EditarPerfilAdmin from "./Views/EditarPerfilAdmin";
 
 const MainContent = () => {
   const location = useLocation();
+  const params = useParams();
 
   const renderContent = () => {
+    // Extraer la ruta base sin parámetros
+    const basePath = location.pathname.split("/").slice(0, -1).join("/");
+
+    // Para rutas con parámetros dinámicos
+    if (location.pathname.includes("/aseguradoras/editar/")) {
+      return <EditarAseguradora />;
+    }
+
+    // Para rutas estáticas
     switch (location.pathname) {
       case "/inicio":
         return <ProfileSection />;
-        case "/inicio/EditarPerfilAdmin":
-          return <EditarPerfilAdmin/>;
+      case "/inicio/EditarPerfilAdmin":
+        return <EditarPerfilAdmin />;
       case "/solicitudes":
         return <InicioSolicitudes />;
       case "/solicitudes/solicitud-section":
@@ -41,8 +51,6 @@ const MainContent = () => {
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
-      case "/aseguradoras/editar/:_id":
-        return <EditarAseguradora />;
       case "/aseguradoras/seguros":
         return <VerMasAseguradora />;
       case "/aseguradoras/seguros/editar":
@@ -63,8 +71,8 @@ const MainContent = () => {
         return <InformacionAdmin />;
       case "/administradores/editar":
         return <EditarAdmin />;
-        case "/administradores/agregar":
-          return <AgregarAgente />;
+      case "/administradores/agregar":
+        return <AgregarAgente />;
       case "/configurar-cuotas":
         return <ConfigurarCuotas />;
       default:

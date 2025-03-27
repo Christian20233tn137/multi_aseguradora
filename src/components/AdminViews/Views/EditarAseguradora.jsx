@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const API_URL = "http://localhost:3000/nar/aseguradoras/id";
+const API_URL = "http://localhost:3000/nar/aseguradoras";
 
 const EditarAseguradora = () => {
   const navigate = useNavigate();
@@ -11,10 +11,11 @@ const EditarAseguradora = () => {
   const { id } = useParams();
   const [aseguradora, setAseguradora] = useState({
     nombre: "",
-    contactoNombre: "",
-    contactoTelefono: "",
-    contactoEmail: "",
-    logo: null,
+    nombreContacto: "",
+    telefonoContacto: "",
+    correoContacto: "",
+    informacion: "",
+    seguros: "",
   });
   const [loading, setLoading] = useState(true);
 
@@ -62,18 +63,13 @@ const EditarAseguradora = () => {
     try {
       const formData = new FormData();
       formData.append("nombre", aseguradora.nombre);
-      formData.append("contactoNombre", aseguradora.contactoNombre);
-      formData.append("contactoTelefono", aseguradora.contactoTelefono);
-      formData.append("contactoEmail", aseguradora.contactoEmail);
-      if (aseguradora.logo) {
-        formData.append("logo", aseguradora.logo);
-      }
+      formData.append("nombreContacto", aseguradora.nombreContacto);
+      formData.append("telefonoContacto", aseguradora.telefonoContacto);
+      formData.append("correoContacto", aseguradora.correoContacto);
+      formData.append("informacion", aseguradora.informacion);
+      formData.append("seguros", aseguradora.seguros);
 
-      const response = await axios.put(`${API_URL}/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(`${API_URL}/${id}`, formData);
 
       swalWithTailwindButtons.fire({
         title: response.status === 200 ? "¡Editado!" : "Error",
@@ -114,12 +110,8 @@ const EditarAseguradora = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "logo") {
-      setAseguradora({ ...aseguradora, logo: files[0] });
-    } else {
-      setAseguradora({ ...aseguradora, [name]: value });
-    }
+    const { name, value } = e.target;
+    setAseguradora({ ...aseguradora, [name]: value });
   };
 
   if (loading) {
@@ -135,29 +127,6 @@ const EditarAseguradora = () => {
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Logo*
-            </label>
-            <input
-              type="file"
-              name="logo"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Nombre del contacto*
-            </label>
-            <input
-              type="text"
-              name="contactoNombre"
-              value={aseguradora.contactoNombre}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
               Nombre*
             </label>
             <input
@@ -170,27 +139,61 @@ const EditarAseguradora = () => {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Teléfono del contacto*
+              Nombre del contacto*
             </label>
             <input
               type="text"
-              name="contactoTelefono"
-              value={aseguradora.contactoTelefono}
+              name="nombreContacto"
+              value={aseguradora.nombreContacto}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               onChange={handleInputChange}
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Teléfono del contacto*
+            </label>
+            <input
+              type="text"
+              name="telefonoContacto"
+              value={aseguradora.telefonoContacto}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Correo electrónico del contacto*
             </label>
             <input
               type="email"
-              name="contactoEmail"
-              value={aseguradora.contactoEmail}
+              name="correoContacto"
+              value={aseguradora.correoContacto}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               onChange={handleInputChange}
             />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Información*
+            </label>
+            <textarea
+              name="informacion"
+              value={aseguradora.informacion}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              onChange={handleInputChange}
+            ></textarea>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Seguros*
+            </label>
+            <textarea
+              name="seguros"
+              value={aseguradora.seguros}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              onChange={handleInputChange}
+            ></textarea>
           </div>
           <div className="col-span-2 flex items-center justify-center">
             <button
