@@ -192,7 +192,7 @@ const App = () => {
         }
       >
         <Route path="informacion" element={<InformacionAdmin />} />
-        <Route path="editar" element={<EditarAdmin />} />
+        <Route path="editar/:id" element={<EditarAdmin />} />
         <Route path="agregar" element={<AgregarAdmin />} />
       </Route>
 
