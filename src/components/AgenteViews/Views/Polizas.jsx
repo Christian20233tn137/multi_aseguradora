@@ -69,7 +69,7 @@ const Polizas = () => {
             <h2 className="font-bold">PÓLIZA N. {poliza.numeroPoliza}</h2>
             <p>{poliza.nombreSeguro}</p>
             <p>Vigencia: {poliza.vigencia}</p>
-            <p>Costo mensual: {poliza.montoTotal}</p>
+            <p>Costo total: ${poliza.montoTotal}</p>
             <button
               className="mt-4 botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               onClick={() => handleInfo(poliza.numeroPoliza)}
