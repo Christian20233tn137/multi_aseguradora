@@ -16,6 +16,14 @@ const MainContentAgente = () => {
   const location = useLocation();
 
   const renderContent = () => {
+    // Para rutas con parámetros dinámicos
+
+    const basePath = location.pathname.split("/").slice(0, -1).join("/");
+
+    if (location.pathname.includes("/clientes/polizas/")) {
+      return <Polizas />;
+    }
+
     switch (location.pathname) {
       case "/inicioAgentes":
         return <InicioAgente />;
@@ -33,8 +41,6 @@ const MainContentAgente = () => {
         return <Estadisticas />;
       case "/clientes":
         return <Clientes />;
-      case "/clientes/polizas":
-        return <Polizas />;
       case "/clientes/polizas/informacion":
         return <InformacionPolizas />;
 

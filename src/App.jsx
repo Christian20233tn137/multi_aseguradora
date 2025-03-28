@@ -94,7 +94,7 @@ const App = () => {
         return "Estadisticas";
       case "/clientes":
         return "Clientes";
-      case "/clientes/polizas":
+      case "/clientes/polizas/:id":
         return "Seguros";
       default:
         return "Administradores";
@@ -247,7 +247,7 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="polizas" element={<Polizas />} />
+        <Route path="polizas/:id" element={<Polizas />} />
         <Route path="informacion" element={<InformacionPolizas />} />
       </Route>
 

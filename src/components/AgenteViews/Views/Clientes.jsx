@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 const Clientes = () => {
@@ -11,6 +11,7 @@ const Clientes = () => {
     const fetchClientes = async () => {
       try {
         const response = await axios.get("http://localhost:3000/nar/clientes");
+        console.log("Respuesta de la API:", response.data); // Verificar la estructura de los datos
         setClientes(response.data);
       } catch (error) {
         console.error("Error al obtener clientes:", error);
@@ -50,7 +51,6 @@ const Clientes = () => {
               <th className="py-2 px-4 border-b border-gray-200 text-center">Nombre</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">Apellidos</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">RFC</th>
-              <th className="py-2 px-4 border-b border-gray-200 text-center">CURP</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">Edad</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">Póliza</th>
             </tr>
@@ -61,12 +61,13 @@ const Clientes = () => {
                 <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.nombre}</td>
                 <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.apellidoPaterno} {cliente.apellidoMaterno}</td>
                 <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.rfc}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.curp}</td>
                 <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.edad}</td>
                 <td className="py-2 px-4 border-b border-gray-200 text-center">
                   <button
                     className="botones text-white py-1 px-3 rounded"
-                    onClick={() => navigate(`/clientes/polizas`)}  //${cliente.id}
+                    onClick={() => {
+                      navigate(`/clientes/polizas/${cliente._id}`);
+                    }}
                   >
                     Ver Pólizas
                   </button>
