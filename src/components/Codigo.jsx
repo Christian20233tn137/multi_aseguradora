@@ -1,26 +1,73 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-let correo = 'chrisaviles@gmail.com';
+// SweetAlert configuration with Tailwind CSS classes
+const swalWithTailwindButtons = Swal.mixin({
+  customClass: {
+    confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+    cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+  },
+  buttonsStyling: false
+});
 
 const Codigo = () => {
-
-const navigate = useNavigate();
-const handleMover = () => {
-    navigate("/recuperacion/codigo/nuevaContra")
-}
+  const navigate = useNavigate();
+  const location = useLocation();
+  const correo = location.state?.correo || '';
   const [codigo, setCodigo] = useState(['', '', '', '']);
+  const [error, setError] = useState('');
+  const inputRefs = useRef([]);
 
   const handleChange = (index, value) => {
     const newCodigo = [...codigo];
     newCodigo[index] = value;
     setCodigo(newCodigo);
+
+    if (value && index < codigo.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const codigoCompleto = codigo.join('');
-    console.log('Código ingresado:', codigoCompleto);
-    handleMover()
+
+    if (!correo) {
+      swalWithTailwindButtons.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El correo es obligatorio.'
+      });
+      return;
+    }
+    if (codigoCompleto.length !== 4) {
+      swalWithTailwindButtons.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debes ingresar el código completo.'
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/nar/usuarios/recuperacion/validar', {
+        correo,
+        codigoRecuperacion: codigoCompleto
+      });
+
+      if (response.status === 200) {
+        navigate("/recuperacion/codigo/nuevaContra", { state: { correo, codigoRecuperacion: codigoCompleto } });
+      } else {
+        setError('Código incorrecto');
+      }
+    } catch (error) {
+      swalWithTailwindButtons.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al comunicarse con el servidor'
+      });
+    }
   };
 
   return (
@@ -44,9 +91,11 @@ const handleMover = () => {
               className="p-2 border border-gray-300 rounded w-12 text-center"
               value={value}
               onChange={(e) => handleChange(index, e.target.value)}
+              ref={el => inputRefs.current[index] = el}
             />
           ))}
         </div>
+        {error && <p className="text-red-500">{error}</p>}
         <button
           className="mt-4 px-4 py-2 botones text-white rounded hover:bg-blue-800"
           onClick={handleSubmit}
