@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -5,92 +6,122 @@ const LoginForm = ({ setUser }) => {
   const navigate = useNavigate();
 
   const handlePassword = () => {
-    navigate('/recuperacion')
-  }
+    navigate("/recuperacion");
+  };
 
-  // Estados para los campos (adaptando el nombre y contraseña)
-  const [nombre, setNombre] = useState("");
-  const [contra, setContra] = useState("");
-  const [errorNombre, setErrorNombre] = useState(false); // Error para nombre
-  const [errorContra, setErrorContra] = useState(false); // Error para contraseña
+  // Estados para los campos
+  const [correo, setCorreo] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [errorCorreo, setErrorCorreo] = useState(false); // Error para correo
+  const [errorContrasena, setErrorContrasena] = useState(false); // Error para contraseña
+  const [errorBackend, setErrorBackend] = useState(""); // Error desde el backend
 
   // Función para manejar el envío del formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
 
-    // Validar nombre
-    if (nombre === "") {
-      setErrorNombre(true);
+    // Validar correo
+    if (!correo) {
+      setErrorCorreo(true);
       hasError = true;
     } else {
-      setErrorNombre(false);
+      setErrorCorreo(false);
     }
 
     // Validar contraseña
-    if (contra === "") {
-      setErrorContra(true);
+    if (!contrasena) {
+      setErrorContrasena(true);
       hasError = true;
     } else {
-      setErrorContra(false);
+      setErrorContrasena(false);
     }
 
-    // Si no hay errores, proceder con el login
+    // Si hay errores en los campos, no continuar
     if (hasError) return;
 
-    setUser([nombre]);
-    navigate("/inicio"); // Redirige al usuario tras login exitoso
-    console.log("Probando");
+    try {
+      // Enviar solicitud al backend
+      const response = await axios.post("http://localhost:3000/nar/usuarios/login", {
+        correo,
+        contrasena,
+      });
+
+      const { success, data, message } = response.data;
+
+      if (success) {
+        setUser(data); // Establecer usuario en el estado global o contexto
+        console.log("Rol del usuario:", data.rol);
+        // Redirigir según el rol
+        if (data.rol === "administrador") {
+          navigate("/inicio");
+        } else if (data.rol === "agente") {
+          navigate("/inicioAgentes");
+        } else if (data.rol === "postulante") {
+          navigate("/archivosPostulante");
+        }
+      } else {
+        setErrorBackend(message); // Mostrar mensaje de error del backend
+      }
+    } catch (error) {
+      setErrorBackend(error.response?.data?.message || "Error al iniciar sesión");
+    }
   };
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       <div>
         <label
-          htmlFor="usuario"
+          htmlFor="correo"
           className="flex justify-start text-sm font-medium text-black"
         >
           Correo Electrónico*
         </label>
         <input
-          type="text"
-          id="usuario"
-          name="usuario"
+          type="email"
+          id="correo"
+          name="correo"
           className="mt-3 block w-full py-2 px-4 font-medium border border-gray-300"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
         />
       </div>
-      {errorNombre && (
+      {errorCorreo && (
         <p className="text-red-600 text-sm font-medium flex justify-start">
-          Correo electrónico invalido, intente de nuevo{" "}
+          Correo electrónico inválido, intente de nuevo
         </p>
       )}
       <div>
         <label
-          htmlFor="password"
+          htmlFor="contrasena"
           className="flex justify-start text-sm font-medium text-black"
         >
           Contraseña*
         </label>
         <input
           type="password"
-          id="password"
-          name="password"
+          id="contrasena"
+          name="contrasena"
           className="mt-3 block w-full py-2 px-4 font-medium border border-gray-300"
-          value={contra}
-          onChange={(e) => setContra(e.target.value)}
+          value={contrasena}
+          onChange={(e) => setContrasena(e.target.value)}
         />
       </div>
-      {errorContra && (
+      {errorContrasena && (
         <p className="text-red-600 text-sm font-medium flex justify-start">
-          Contraseña invalida, intente de nuevo{" "}
+          Contraseña inválida, intente de nuevo
+        </p>
+      )}
+      {errorBackend && (
+        <p className="text-red-600 text-sm font-medium flex justify-start">
+          {errorBackend}
         </p>
       )}
       <div>
         <button
           type="submit"
-          className="w-full mt-3 bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 transition botones"
+          className="w-full mt-3 bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 transition"
+          onClick={handleSubmit}
         >
           Iniciar sesión
         </button>
