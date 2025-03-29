@@ -6,6 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 const InformacionPolizas = () => {
 
   const {id} = useParams();
+  console.log(id);
+  
   const navigate = useNavigate();
 
   const handleRegresar = () => {

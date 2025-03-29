@@ -12,7 +12,6 @@ const Polizas = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(id);
     const fetchInformacionPolizas = async () => {
       try {
         if (id) {
