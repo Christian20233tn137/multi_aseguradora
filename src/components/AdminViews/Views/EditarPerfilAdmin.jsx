@@ -1,189 +1,205 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import axios from "axios";
 
-const EditarPerfilAdmin = () =>{
-    const [formData, setFormData] = useState({
-        nombre: "",
-        apellidoPaterno: "",
-        apellidoMaterno: "",
-        correo: "",
-        telefono: "",
-        domicilio: "",
-        rfc: "",
-        nuevaContrasena: "",
-        confirmarContrasena: "",
+const EditarPerfilAdmin = () => {
+  const [formData, setFormData] = useState({
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    correo: "",
+    telefono: "",
+    domicilio: "",
+    rfc: "",
+    nuevaContrasena: "",
+    confirmarContrasena: "",
+  });
+
+  const [error, setError] = useState("");
+  const [modificarContrasena, setModificarContrasena] = useState(false);
+
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
+
+  // Cargar datos desde el backend al montar el componente
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("https://api.tu-backend.com/perfil");
+        setFormData(response.data);
+      } catch (error) {
+        console.error("Error al cargar los datos del perfil", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validar que las contraseñas coincidan si se desea modificar la contraseña
+    if (modificarContrasena && formData.nuevaContrasena !== formData.confirmarContrasena) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    setError(""); // Limpiar el mensaje de error si la validación pasa
+
+    try {
+      const response = await axios.put("https://api.tu-backend.com/perfil", formData);
+
+      swalWithTailwindButtons.fire({
+        title: response.status === 200 ? "¡Actualizado!" : "Error",
+        text: response.status === 200
+          ? "El perfil se actualizó con éxito."
+          : "Hubo un error al actualizar el perfil.",
+        icon: response.status === 200 ? "success" : "error",
       });
 
-      const [error, setError] = useState("");
+      if (response.status === 200) {
+        // Aquí puedes redirigir o realizar alguna acción adicional
+      }
 
-      const swalWithTailwindButtons = Swal.mixin({
-        customClass: {
-          confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-          cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
-        },
-        buttonsStyling: false
+    } catch (error) {
+      console.error("Error al actualizar el perfil", error);
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "Hubo un error al actualizar el perfil.",
+        icon: "error",
       });
+    }
+  };
 
-      // Cargar datos desde el backend al montar el componente
-      useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const response = await fetch("https://api.tu-backend.com/perfil");
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            const data = await response.json();
-            setFormData(data);
-          } catch (error) {
-            console.error("Error al cargar los datos del perfil", error);
-          }
-        };
+  const confirmarActualizacion = () => {
+    swalWithTailwindButtons.fire({
+      title: "¿Estás seguro?",
+      text: "¿Quieres actualizar este perfil?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, actualizar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleSubmit(new Event('submit'));
+      }
+    });
+  };
 
-        fetchData();
-      }, []);
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white">
+      <form onSubmit={(e) => e.preventDefault()} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label className="block text-sm font-medium">Nombre*</label>
+          <input
+            type="text"
+            name="nombre"
+            value={formData.nombre}
+            onChange={handleChange}
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
+          />
+        </div>
 
-      const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-      };
+        <div>
+          <label className="block text-sm font-medium">Apellido paterno*</label>
+          <input
+            type="text"
+            name="apellidoPaterno"
+            value={formData.apellidoPaterno}
+            onChange={handleChange}
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
+          />
+        </div>
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
+        <div>
+          <label className="block text-sm font-medium">Apellido materno*</label>
+          <input
+            type="text"
+            name="apellidoMaterno"
+            value={formData.apellidoMaterno}
+            onChange={handleChange}
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
+          />
+        </div>
 
-        // Validar que las contraseñas coincidan
-        if (formData.nuevaContrasena !== formData.confirmarContrasena) {
-          setError("Las contraseñas no coinciden");
-          return;
-        }
+        <div>
+          <label className="block text-sm font-medium">Correo electrónico*</label>
+          <input
+            type="email"
+            name="correo"
+            value={formData.correo}
+            onChange={handleChange}
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
+          />
+        </div>
 
-        setError(""); // Limpiar el mensaje de error si la validación pasa
+        <div>
+          <label className="block text-sm font-medium">Teléfono*</label>
+          <input
+            type="text"
+            name="telefono"
+            value={formData.telefono}
+            onChange={handleChange}
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
+          />
+        </div>
 
-        try {
-          const response = await fetch("https://api.tu-backend.com/perfil", {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          });
+        <div>
+          <label className="block text-sm font-medium">Domicilio*</label>
+          <input
+            type="text"
+            name="domicilio"
+            value={formData.domicilio}
+            onChange={handleChange}
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
+          />
+        </div>
 
-          swalWithTailwindButtons.fire({
-            title: response.ok ? "¡Actualizado!" : "Error",
-            text: response.ok
-              ? "El perfil se actualizó con éxito."
-              : "Hubo un error al actualizar el perfil.",
-            icon: response.ok ? "success" : "error",
-          });
+        <div>
+          <label className="block text-sm font-medium">RFC*</label>
+          <input
+            type="text"
+            name="rfc"
+            value={formData.rfc}
+            onChange={handleChange}
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
+          />
+        </div>
 
-          if (response.ok) {
-            // Aquí puedes redirigir o realizar alguna acción adicional
-          }
-
-        } catch (error) {
-          console.error("Error al actualizar el perfil", error);
-          swalWithTailwindButtons.fire({
-            title: "Error",
-            text: "Hubo un error al actualizar el perfil.",
-            icon: "error",
-          });
-        }
-      };
-
-      const confirmarActualizacion = () => {
-        swalWithTailwindButtons.fire({
-          title: "¿Estás seguro?",
-          text: "¿Quieres actualizar este perfil?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Sí, actualizar",
-          cancelButtonText: "Cancelar",
-          reverseButtons: true
-        }).then((result) => {
-          if (result.isConfirmed) {
-            handleSubmit(new Event('submit'));
-          }
-        });
-      };
-
-      return (
-        <div className="max-w-4xl mx-auto p-6 bg-white">
-          <form onSubmit={(e) => e.preventDefault()} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium">Nombre*</label>
+        <div className="mt-6 md:col-span-3">
+          <label className="text-gray-700 text-sm font-bold">¿Desea modificar su contraseña?*</label>
+          <div className="flex items-center">
+            <label className="ml-2">
               <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Apellido paterno*</label>
+                type="radio"
+                name="modificarContrasena"
+                checked={modificarContrasena}
+                onChange={() => setModificarContrasena(true)}
+              /> Sí
+            </label>
+            <label className="ml-4">
               <input
-                type="text"
-                name="apellidoPaterno"
-                value={formData.apellidoPaterno}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
+                type="radio"
+                name="modificarContrasena"
+                checked={!modificarContrasena}
+                onChange={() => setModificarContrasena(false)}
+              /> No
+            </label>
+          </div>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium">Apellido materno*</label>
-              <input
-                type="text"
-                name="apellidoMaterno"
-                value={formData.apellidoMaterno}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Correo electrónico*</label>
-              <input
-                type="email"
-                name="correo"
-                value={formData.correo}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Teléfono*</label>
-              <input
-                type="text"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Domicilio*</label>
-              <input
-                type="text"
-                name="domicilio"
-                value={formData.domicilio}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">RFC*</label>
-              <input
-                type="text"
-                name="rfc"
-                value={formData.rfc}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-
+        {modificarContrasena && (
+          <>
             <div>
               <label className="block text-sm font-medium">Nueva contraseña:</label>
               <input
@@ -205,21 +221,23 @@ const EditarPerfilAdmin = () =>{
                 className="mt-1 w-full border border-gray-300 p-2 rounded"
               />
             </div>
+          </>
+        )}
 
-            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-            <div className="md:col-span-3 flex justify-center mt-4">
-              <button
-                type="button"
-                onClick={confirmarActualizacion}
-                className="botones text-white font-medium px-6 py-2 rounded shadow-md hover:bg-[#0b1956]/90"
-              >
-                Guardar
-              </button>
-            </div>
-          </form>
+        <div className="md:col-span-3 flex justify-center mt-4">
+          <button
+            type="button"
+            onClick={confirmarActualizacion}
+            className="botones text-white font-medium px-6 py-2 rounded shadow-md hover:bg-[#0b1956]/90"
+          >
+            Guardar
+          </button>
         </div>
-      );
+      </form>
+    </div>
+  );
+};
 
-}
 export default EditarPerfilAdmin;

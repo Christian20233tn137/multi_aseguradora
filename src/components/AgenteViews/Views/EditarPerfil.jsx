@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const EditarPerfil = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const EditarPerfil = () => {
   });
 
   const [error, setError] = useState("");
+  const [modificarContrasena, setModificarContrasena] = useState(false);
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -28,12 +30,8 @@ const EditarPerfil = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://api.tu-backend.com/perfil");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setFormData(data);
+        const response = await axios.get("https://api.tu-backend.com/perfil");
+        setFormData(response.data);
       } catch (error) {
         console.error("Error al cargar los datos del perfil", error);
       }
@@ -49,8 +47,8 @@ const EditarPerfil = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validar que las contraseñas coincidan
-    if (formData.nuevaContrasena !== formData.confirmarContrasena) {
+    // Validar que las contraseñas coincidan si se desea modificar la contraseña
+    if (modificarContrasena && formData.nuevaContrasena !== formData.confirmarContrasena) {
       setError("Las contraseñas no coinciden");
       return;
     }
@@ -58,23 +56,17 @@ const EditarPerfil = () => {
     setError(""); // Limpiar el mensaje de error si la validación pasa
 
     try {
-      const response = await fetch("https://api.tu-backend.com/perfil", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await axios.put("https://api.tu-backend.com/perfil", formData);
 
       swalWithTailwindButtons.fire({
-        title: response.ok ? "¡Actualizado!" : "Error",
-        text: response.ok
+        title: response.status === 200 ? "¡Actualizado!" : "Error",
+        text: response.status === 200
           ? "El perfil se actualizó con éxito."
           : "Hubo un error al actualizar el perfil.",
-        icon: response.ok ? "success" : "error",
+        icon: response.status === 200 ? "success" : "error",
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         // Aquí puedes redirigir o realizar alguna acción adicional
       }
 
@@ -114,8 +106,7 @@ const EditarPerfil = () => {
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 bg-gray-200 p-2 rounded"
-            readOnly
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
           />
         </div>
 
@@ -126,8 +117,7 @@ const EditarPerfil = () => {
             name="apellidoPaterno"
             value={formData.apellidoPaterno}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 bg-gray-200 p-2 rounded"
-            readOnly
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
           />
         </div>
 
@@ -138,8 +128,7 @@ const EditarPerfil = () => {
             name="apellidoMaterno"
             value={formData.apellidoMaterno}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 bg-gray-200 p-2 rounded"
-            readOnly
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
           />
         </div>
 
@@ -150,8 +139,7 @@ const EditarPerfil = () => {
             name="correo"
             value={formData.correo}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 bg-gray-200 p-2 rounded"
-            readOnly
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
           />
         </div>
 
@@ -162,8 +150,7 @@ const EditarPerfil = () => {
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 bg-gray-200 p-2 rounded"
-            readOnly
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
           />
         </div>
 
@@ -174,8 +161,7 @@ const EditarPerfil = () => {
             name="domicilio"
             value={formData.domicilio}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 bg-gray-200 p-2 rounded"
-            readOnly
+            className="mt-1 w-full border border-gray-300 p-2 rounded"
           />
         </div>
 
@@ -186,32 +172,57 @@ const EditarPerfil = () => {
             name="rfc"
             value={formData.rfc}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 bg-gray-200 p-2 rounded"
-            readOnly
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Nueva contraseña:</label>
-          <input
-            type="password"
-            name="nuevaContrasena"
-            value={formData.nuevaContrasena}
-            onChange={handleChange}
             className="mt-1 w-full border border-gray-300 p-2 rounded"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium">Confirmar Contraseña*</label>
-          <input
-            type="password"
-            name="confirmarContrasena"
-            value={formData.confirmarContrasena}
-            onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
-          />
+        <div className="mt-6 md:col-span-3">
+          <label className="text-gray-700 text-sm font-bold">¿Desea modificar su contraseña?*</label>
+          <div className="flex items-center">
+            <label className="ml-2">
+              <input
+                type="radio"
+                name="modificarContrasena"
+                checked={modificarContrasena}
+                onChange={() => setModificarContrasena(true)}
+              /> Sí
+            </label>
+            <label className="ml-4">
+              <input
+                type="radio"
+                name="modificarContrasena"
+                checked={!modificarContrasena}
+                onChange={() => setModificarContrasena(false)}
+              /> No
+            </label>
+          </div>
         </div>
+
+        {modificarContrasena && (
+          <>
+            <div>
+              <label className="block text-sm font-medium">Nueva contraseña:</label>
+              <input
+                type="password"
+                name="nuevaContrasena"
+                value={formData.nuevaContrasena}
+                onChange={handleChange}
+                className="mt-1 w-full border border-gray-300 p-2 rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Confirmar Contraseña*</label>
+              <input
+                type="password"
+                name="confirmarContrasena"
+                value={formData.confirmarContrasena}
+                onChange={handleChange}
+                className="mt-1 w-full border border-gray-300 p-2 rounded"
+              />
+            </div>
+          </>
+        )}
 
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
