@@ -12,6 +12,7 @@ const Polizas = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(id);
     const fetchInformacionPolizas = async () => {
       try {
         if (id) {
@@ -33,8 +34,9 @@ const Polizas = () => {
     fetchInformacionPolizas();
   }, [id]);
 
-  const handleInfo = (polizaId) => {
-    navigate(`/clientes/polizas/${polizaId}/informacion`);
+  const handleInfo = () => {
+    console.log(id);
+    navigate(`/clientes/polizas/${id}/informacion`);
   };
 
   const handleSearchChange = (event) => {

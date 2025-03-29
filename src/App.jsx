@@ -54,6 +54,8 @@ const App = () => {
         return "Aseguradoras";
       case "/aseguradoras/editar/:id":
         return "Aseguradoras";
+        case "/aseguradoras/editar/:id/informacion":
+          return "Aseguradoras";
       case "/aseguradoras/seguros":
         return "Aseguradoras";
       case "/aseguradoras/seguros/editar":
@@ -248,7 +250,7 @@ const App = () => {
         }
       >
         <Route path="polizas/:id" element={<Polizas />} />
-        <Route path="informacion" element={<InformacionPolizas />} />
+        <Route path=":id/informacion" element={<InformacionPolizas />} />
       </Route>
 
       {/* Ruta recuperar contra */}

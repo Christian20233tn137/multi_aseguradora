@@ -16,9 +16,14 @@ const MainContentAgente = () => {
   const location = useLocation();
 
   const renderContent = () => {
-    // Para rutas con parámetros dinámicos
-
     const basePath = location.pathname.split("/").slice(0, -1).join("/");
+
+    // Check for dynamic route with regex
+    const polizaInfoMatch = location.pathname.match(/^\/clientes\/polizas\/[^\/]+\/informacion\/?$/);
+
+    if (polizaInfoMatch) {
+      return <InformacionPolizas />;
+    }
 
     if (location.pathname.includes("/clientes/polizas/")) {
       return <Polizas />;
@@ -41,13 +46,11 @@ const MainContentAgente = () => {
         return <Estadisticas />;
       case "/clientes":
         return <Clientes />;
-      case "/clientes/polizas/informacion":
-        return <InformacionPolizas />;
-
       default:
         return <Notfound />;
     }
   };
+
   return <div className="flex-1 p-4 overflow-y-auto">{renderContent()}</div>;
 };
 
