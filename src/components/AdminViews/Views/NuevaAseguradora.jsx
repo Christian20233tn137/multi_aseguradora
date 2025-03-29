@@ -14,6 +14,10 @@ const NuevaAseguradora = () => {
     telefonoContacto: ""
   });
 
+  const handleRegresar = () => {
+    navigate("/aseguradoras"); // 
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -152,10 +156,18 @@ const NuevaAseguradora = () => {
           <div className="col-span-2 flex items-center justify-center">
             <button
               type="button"
-              className="botones text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="botones text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-2"
+              onClick={handleRegresar}
+            >
+                Regresar
+            </button>
+
+            <button
+              type="button"
+              className="botones text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-2"
               onClick={showAlert}
             >
-              Agregar
+           Agregar
             </button>
           </div>
         </form>
