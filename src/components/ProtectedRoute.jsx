@@ -2,7 +2,6 @@
 import React from 'react';
 
 const ProtectedRoute = ({ children }) => {
-  // Permitir acceso sin verificación de autenticación o roles
   return children;
 };
 

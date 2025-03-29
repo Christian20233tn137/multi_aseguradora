@@ -16,20 +16,21 @@ const MainContentAgente = () => {
   const location = useLocation();
 
   const renderContent = () => {
-    const basePath = location.pathname.split("/").slice(0, -1).join("/");
+    // Simplifica la lógica de rutas para hacer debug
+    const path = location.pathname;
+    console.log("Current path:", path); // Para debugging
 
-    // Check for dynamic route with regex
-    const polizaInfoMatch = location.pathname.match(/^\/clientes\/polizas\/[^\/]+\/informacion\/?$/);
-
-    if (polizaInfoMatch) {
+    // Maneja la ruta de información de póliza
+    if (path.includes("/clientes/polizas") && path.includes("/informacion/")) {
       return <InformacionPolizas />;
     }
 
-    if (location.pathname.includes("/clientes/polizas/")) {
+    // Maneja la ruta de pólizas
+    if (path.includes("/clientes/polizas/")) {
       return <Polizas />;
     }
 
-    switch (location.pathname) {
+    switch (path) {
       case "/inicioAgentes":
         return <InicioAgente />;
       case "/inicioAgentes/EditarPerfil":
