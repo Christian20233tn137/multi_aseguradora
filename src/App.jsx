@@ -54,8 +54,8 @@ const App = () => {
         return "Aseguradoras";
       case "/aseguradoras/editar/:id":
         return "Aseguradoras";
-        case "/aseguradoras/editar/:id/informacion/:id":
-          return "Aseguradoras";
+      case "/aseguradoras/editar/:id/informacion/:id":
+        return "Aseguradoras";
       case "/aseguradoras/seguros":
         return "Aseguradoras";
       case "/aseguradoras/seguros/editar":
@@ -110,11 +110,10 @@ const App = () => {
       <Route path="/" element={<Home />} />
 
       {/* Rutas de postulante */}
-
       <Route
         path="/archivosPostulante/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["postulante"]}>
             <LayoutPostulante title={getTitle()} />
           </ProtectedRoute>
         }
@@ -124,15 +123,13 @@ const App = () => {
       <Route
         path="/inicio/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["administrador"]}>
             <Layout title={getTitle()} />
           </ProtectedRoute>
         }
       >
-         <Route path="EditarPerfilAdmin" element={<EditarPerfilAdmin />} />
-        </Route>
-      
-     
+        <Route path="EditarPerfilAdmin" element={<EditarPerfilAdmin />} />
+      </Route>
 
       <Route
         path="/documentos/*"
@@ -211,18 +208,18 @@ const App = () => {
       <Route
         path="/inicioAgentes/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["agente"]}>
             <LayoutAgente title={getTitle()} />
           </ProtectedRoute>
         }
-        >
+      >
         <Route path="EditarPerfil" element={<EditarPerfil />} />
       </Route>
 
       <Route
         path="/cotizar/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["agente"]}>
             <LayoutAgente title={getTitle()} />
           </ProtectedRoute>
         }
@@ -250,7 +247,10 @@ const App = () => {
         }
       >
         <Route path="polizas/:id" element={<Polizas />} />
-        <Route path="polizas/:id/informacion/:idPoliza" element={<InformacionPolizas />} />
+        <Route
+          path="polizas/:id/informacion/:idPoliza"
+          element={<InformacionPolizas />}
+        />
       </Route>
 
       {/* Ruta recuperar contra */}
@@ -260,8 +260,6 @@ const App = () => {
         path="/recuperacion/codigo/nuevaContra"
         element={<NuevaContra />}
       />
-
-     
 
       {/* Ruta por defecto (404) */}
       <Route path="*" element={<NotFound />} />

@@ -42,29 +42,38 @@ const LoginForm = ({ setUser }) => {
 
     try {
       // Enviar solicitud al backend
-      const response = await axios.post("http://localhost:3000/nar/usuarios/login", {
-        correo,
-        contrasena,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/nar/usuarios/login",
+        {
+          correo,
+          contrasena,
+        }
+      );
 
       const { success, data, message } = response.data;
 
       if (success) {
-        setUser(data); // Establecer usuario en el estado global o contexto
-        console.log("Rol del usuario:", data.rol);
+        // Guardar el token y la información del usuario en localStorage
+        localStorage.setItem("token", data.token); // Asumiendo que el backend devuelve un token
+        localStorage.setItem("user", JSON.stringify(data._doc));
+
+        setUser(data); // Establecer usuario en el estado global
+
         // Redirigir según el rol
-        if (data.rol === "administrador") {
+        if (data._doc.rol === "administrador") {
           navigate("/inicio");
-        } else if (data.rol === "agente") {
+        } else if (data._doc.rol === "agente") {
           navigate("/inicioAgentes");
-        } else if (data.rol === "postulante") {
+        } else if (data._doc.rol === "postulante") {
           navigate("/archivosPostulante");
         }
       } else {
         setErrorBackend(message); // Mostrar mensaje de error del backend
       }
     } catch (error) {
-      setErrorBackend(error.response?.data?.message || "Error al iniciar sesión");
+      setErrorBackend(
+        error.response?.data?.message || "Error al iniciar sesión"
+      );
     }
   };
 
