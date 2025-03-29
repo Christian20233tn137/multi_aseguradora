@@ -14,6 +14,11 @@ const SideBarAgente = () => {
   };
 
   const handleLogout = () => {
+    // Eliminar datos de autenticación
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    // Redirigir al login
     navigate("/login");
   };
 
@@ -27,6 +32,7 @@ const SideBarAgente = () => {
     { nombre: "Estadisticas", ruta: "/estadisticas" },
     { nombre: "Clientes", ruta: "/clientes" },
   ];
+
   return (
     <>
       {/* Botón flotante para abrir menú */}
@@ -44,7 +50,7 @@ const SideBarAgente = () => {
         } transition-transform duration-300 z-50`}
       >
         {/* Perfil */}
-        <div className="mt-11 p-10  rounded-lg transition-transform transform hover:scale-105">
+        <div className="mt-11 p-10 rounded-lg transition-transform transform hover:scale-105">
           <img
             className="object-cover w-20 h-20 mx-auto rounded-full transition-transform transform hover:scale-110"
             src={UsuarioProfile}

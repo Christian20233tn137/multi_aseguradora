@@ -21,7 +21,6 @@ const LoginForm = ({ setUser }) => {
     e.preventDefault();
     let hasError = false;
 
-    // Validar correo
     if (!correo) {
       setErrorCorreo(true);
       hasError = true;
@@ -29,7 +28,6 @@ const LoginForm = ({ setUser }) => {
       setErrorCorreo(false);
     }
 
-    // Validar contraseña
     if (!contrasena) {
       setErrorContrasena(true);
       hasError = true;
@@ -37,44 +35,35 @@ const LoginForm = ({ setUser }) => {
       setErrorContrasena(false);
     }
 
-    // Si hay errores en los campos, no continuar
     if (hasError) return;
 
     try {
-      // Enviar solicitud al backend
-      const response = await axios.post(
-        "http://localhost:3000/nar/usuarios/login",
-        {
-          correo,
-          contrasena,
-        }
-      );
+      const response = await axios.post("http://localhost:3000/nar/usuarios/login", {
+        correo,
+        contrasena,
+      });
 
       const { success, data, message } = response.data;
 
       if (success) {
-        localStorage.setItem("token", data.token); 
-        localStorage.setItem("user", JSON.stringify(data._doc));
+        localStorage.setItem("user", JSON.stringify(data));
+        localStorage.setItem("token", data.token);
 
-        setUser(data); // Establecer usuario en el estado global
-
-        // Redirigir según el rol
-        if (data._doc.rol === "administrador") {
+        if (data.rol === "administrador") {
           navigate("/inicio");
-        } else if (data._doc.rol === "agente") {
+        } else if (data.rol === "agente") {
           navigate("/inicioAgentes");
-        } else if (data._doc.rol === "postulante") {
+        } else if (data.rol === "postulante") {
           navigate("/archivosPostulante");
         }
       } else {
-        setErrorBackend(message); // Mostrar mensaje de error del backend
+        setErrorBackend(message);
       }
     } catch (error) {
-      setErrorBackend(
-        error.response?.data?.message || "Error al iniciar sesión"
-      );
+      setErrorBackend(error.response?.data?.message || "Error al iniciar sesión");
     }
   };
+
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
