@@ -3,6 +3,18 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
+// Define the SweetAlert configuration with Tailwind CSS classes and reverse buttons
+const swalWithTailwindButtons = Swal.mixin({
+  customClass: {
+    confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+    cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+  },
+  buttonsStyling: false,
+  reverseButtons: true, // Reverse the order of buttons
+  confirmButtonText: "Confirmar", // Default confirm button text
+  cancelButtonText: "Cancelar" // Default cancel button text
+});
+
 const InicioAseguradoras = () => {
   const navigate = useNavigate();
   const [aseguradoras, setAseguradoras] = useState([]);
@@ -55,20 +67,18 @@ const InicioAseguradoras = () => {
   const handleToggleSwitch = (index) => {
     const isCurrentlyChecked = checkedItems[index] || false;
 
-    Swal.fire({
+    swalWithTailwindButtons.fire({
       title: isCurrentlyChecked
         ? "¿Desea desactivar esta aseguradora?"
         : "¿Desea activar esta aseguradora?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
       confirmButtonText: isCurrentlyChecked
         ? "Sí, desactivarlo"
         : "¡Sí, quiero activarlo!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
+        swalWithTailwindButtons.fire({
           title: isCurrentlyChecked
             ? "¡Aseguradora desactivada!"
             : "¡Aseguradora activada!",
@@ -153,6 +163,7 @@ const InicioAseguradoras = () => {
         >
           Anterior
         </button>
+        
         <button
           onClick={handleNextPage}
           disabled={(currentPage + 1) * itemsPerPage >= aseguradoras.length}
