@@ -1,10 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cotizar from "../assets/cotizar.png";
 import Clientes from "../assets/clientes.png";
 import Estadisticas from "../assets/estadisticas.png";
 
 const InicioAgente = () => {
+
   return (
     <div className="p-6 w-full h-full overflow-hidden">
       <div className="mt-10 md:mt-40">

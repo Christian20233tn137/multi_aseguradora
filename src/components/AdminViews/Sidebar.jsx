@@ -14,7 +14,11 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    // Aquí puedes limpiar el localStorage o contexto de sesión si lo tienes
+    // Eliminar datos de autenticación
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    // Redirigir al login
     navigate("/login");
   };
 

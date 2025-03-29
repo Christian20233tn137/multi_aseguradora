@@ -14,9 +14,12 @@ const SideBarPostulante = () => {
   };
 
   const handleLogout = () => {
+    // Eliminar datos de autenticación
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    // Redirigir al login
     navigate("/login");
-    console.log("Sesion cerrada");
-    
   };
 
   const menuItems = [
