@@ -120,7 +120,7 @@ const LoginForm = ({ setUser }) => {
       <div>
         <button
           type="submit"
-          className="w-full mt-3 bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 transition"
+          className="w-full mt-3 botones text-white py-2 rounded-md hover:bg-blue-700 transition"
           onClick={handleSubmit}
         >
           Iniciar sesión
