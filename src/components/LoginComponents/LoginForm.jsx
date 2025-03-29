@@ -53,8 +53,7 @@ const LoginForm = ({ setUser }) => {
       const { success, data, message } = response.data;
 
       if (success) {
-        // Guardar el token y la información del usuario en localStorage
-        localStorage.setItem("token", data.token); // Asumiendo que el backend devuelve un token
+        localStorage.setItem("token", data.token); 
         localStorage.setItem("user", JSON.stringify(data._doc));
 
         setUser(data); // Establecer usuario en el estado global
