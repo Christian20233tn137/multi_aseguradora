@@ -1,62 +1,35 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 const Clientes = () => {
+  const [clientes, setClientes] = useState([]);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  const initialRows = [
-    {
-      id: 1,
-      nombre: "Juan",
-      apellidos: "Pérez",
-      rfc: "JUAP123456",
-      curp: "JUAP890123HDFRRL01",
-      edad: 30,
-    },
-    {
-      id: 2,
-      nombre: "María",
-      apellidos: "García",
-      rfc: "MARG123456",
-      curp: "MARG890123MDFRRL01",
-      edad: 25,
-    },
-    {
-      id: 3,
-      nombre: "Pedro",
-      apellidos: "Ramírez",
-      rfc: "PERA123456",
-      curp: "PERA890123PDFRRL01",
-      edad: 35,
-    },
-    {
-      id: 4,
-      nombre: "Ana",
-      apellidos: "Martínez",
-      rfc: "ANAM123456",
-      curp: "ANAM890123ADFRRL01",
-      edad: 40,
-    },
-    {
-      id: 5,
-      nombre: "Luis",
-      apellidos: "Hernández",
-      rfc: "LUHE123456",
-      curp: "LUHE890123LDFRRL01",
-      edad: 45,
-    },
-  ];
+  useEffect(() => {
+    const fetchClientes = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/nar/clientes");
+        console.log("Respuesta de la API:", response.data); // Verificar la estructura de los datos
+        setClientes(response.data);
+      } catch (error) {
+        console.error("Error al obtener clientes:", error);
+      }
+    };
+
+    fetchClientes();
+  }, []);
 
   const filteredRows = search.trim()
-    ? initialRows.filter(
-        (row) =>
-          row.nombre.toLowerCase().includes(search.toLowerCase()) ||
-          row.apellidos.toLowerCase().includes(search.toLowerCase()) ||
-          row.rfc.toLowerCase().includes(search.toLowerCase()) ||
-          row.curp.toLowerCase().includes(search.toLowerCase())
+    ? clientes.filter(
+        (cliente) =>
+          cliente.nombre.toLowerCase().includes(search.toLowerCase()) ||
+          cliente.apellidos.toLowerCase().includes(search.toLowerCase()) ||
+          cliente.rfc.toLowerCase().includes(search.toLowerCase()) ||
+          cliente.curp.toLowerCase().includes(search.toLowerCase())
       )
-    : initialRows;
+    : clientes;
 
   return (
     <div className="relative p-4">
@@ -78,23 +51,23 @@ const Clientes = () => {
               <th className="py-2 px-4 border-b border-gray-200 text-center">Nombre</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">Apellidos</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">RFC</th>
-              <th className="py-2 px-4 border-b border-gray-200 text-center">CURP</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">Edad</th>
               <th className="py-2 px-4 border-b border-gray-200 text-center">Póliza</th>
             </tr>
           </thead>
           <tbody>
-            {filteredRows.map((row) => (
-              <tr key={row.id}>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.nombre}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.apellidos}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.rfc}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.curp}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{row.edad}</td>
+            {filteredRows.map((cliente) => (
+              <tr key={cliente.id}>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.nombre}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.apellidoPaterno} {cliente.apellidoMaterno}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.rfc}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.edad}</td>
                 <td className="py-2 px-4 border-b border-gray-200 text-center">
                   <button
                     className="botones text-white py-1 px-3 rounded"
-                    onClick={() => navigate(`/clientes/polizas`)}  //${row.id}
+                    onClick={() => {
+                      navigate(`/clientes/polizas/${cliente._id}`);
+                    }}
                   >
                     Ver Pólizas
                   </button>

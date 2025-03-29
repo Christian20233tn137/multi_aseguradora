@@ -1,8 +1,13 @@
 import React from 'react'
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
 
 const InformacionPolizas = () => {
+
+  const {id} = useParams();
+  console.log(id);
+  
   const navigate = useNavigate();
 
   const handleRegresar = () => {

@@ -35,6 +35,10 @@ const MainContent = () => {
       return <EditarAseguradora />;
     }
 
+    if(location.pathname.includes("/administradores/editar/")){
+      return <EditarAdmin/>
+    }
+
     // Para rutas estáticas
     switch (location.pathname) {
       case "/inicio":
@@ -69,8 +73,6 @@ const MainContent = () => {
         return <InicioAdmin />;
       case "/administradores/informacion":
         return <InformacionAdmin />;
-      case "/administradores/editar":
-        return <EditarAdmin />;
       case "/administradores/agregar":
         return <AgregarAgente />;
       case "/configurar-cuotas":

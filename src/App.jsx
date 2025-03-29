@@ -54,6 +54,8 @@ const App = () => {
         return "Aseguradoras";
       case "/aseguradoras/editar/:id":
         return "Aseguradoras";
+        case "/aseguradoras/editar/:id/informacion":
+          return "Aseguradoras";
       case "/aseguradoras/seguros":
         return "Aseguradoras";
       case "/aseguradoras/seguros/editar":
@@ -94,7 +96,7 @@ const App = () => {
         return "Estadisticas";
       case "/clientes":
         return "Clientes";
-      case "/clientes/polizas":
+      case "/clientes/polizas/:id":
         return "Seguros";
       default:
         return "Administradores";
@@ -192,7 +194,7 @@ const App = () => {
         }
       >
         <Route path="informacion" element={<InformacionAdmin />} />
-        <Route path="editar" element={<EditarAdmin />} />
+        <Route path="editar/:id" element={<EditarAdmin />} />
         <Route path="agregar" element={<AgregarAdmin />} />
       </Route>
 
@@ -247,8 +249,8 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="polizas" element={<Polizas />} />
-        <Route path="informacion" element={<InformacionPolizas />} />
+        <Route path="polizas/:id" element={<Polizas />} />
+        <Route path=":id/informacion" element={<InformacionPolizas />} />
       </Route>
 
       {/* Ruta recuperar contra */}
