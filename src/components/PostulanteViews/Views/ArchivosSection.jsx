@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import FileUploadIcon from "../assets/FileUpload.png";
-import { MdCancel } from 'react-icons/md'; // Importa un ícono de cancelar
-import Swal from 'sweetalert2'; // Importa SweetAlert2
+import { MdCancel } from 'react-icons/md';
+import Swal from 'sweetalert2';
 import { AiOutlineDownload } from "react-icons/ai";
+import axios from 'axios';
 
 const ArchivosSection = () => {
   const [files, setFiles] = useState({
@@ -13,7 +14,8 @@ const ArchivosSection = () => {
     afiliacion: null,
   });
 
-  const [progress, setProgress] = useState({}); // Para manejar la barra de carga
+  const [progress, setProgress] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFileChange = (event, key) => {
     const file = event.target.files[0];
@@ -21,7 +23,13 @@ const ArchivosSection = () => {
 
     // Validar que el archivo sea una imagen o PDF
     if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
-      alert('Solo se permiten imágenes y archivos PDF.');
+      Swal.fire("Error", "Solo se permiten imágenes y archivos PDF.", "error");
+      return;
+    }
+
+    // Validar tamaño del archivo (ejemplo: máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      Swal.fire("Error", "El archivo no debe exceder los 5MB", "error");
       return;
     }
 
@@ -58,69 +66,135 @@ const ArchivosSection = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const swalWithTailwindButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
-      },
-      buttonsStyling: false
-    });
+    try {
+      // Obtener usuario del localStorage
+      const userString = localStorage.getItem("user");
+      if (!userString) {
+        Swal.fire("Error", "No se encontró la información del usuario", "error");
+        return;
+      }
 
-    swalWithTailwindButtons.fire({
-      title: '¿Estás seguro?',
-      text: "¿Estás seguro de enviar los archivos?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, enviar',
-      cancelButtonText: 'No, cancelar',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swalWithTailwindButtons.fire(
-          'Enviado!',
-          'Tus archivos han sido enviados.',
-          'success'
-        ).then(() => {
-          // Recargar la página para limpiar los archivos
-          window.location.reload();
-        });
+      const user = JSON.parse(userString);
+      if (!user || !user._id) {
+        Swal.fire("Error", "No se encontró el ID del usuario", "error");
+        return;
+      }
 
-        // Aquí puedes agregar la lógica para enviar los archivos usando axios
-        // Ejemplo comentado:
-        /*
-        const formData = new FormData();
-        Object.entries(files).forEach(([key, file]) => {
-          if (file) formData.append(key, file);
-        });
+      // Verificar que al menos un archivo haya sido seleccionado
+      const hasFiles = Object.values(files).some(file => file !== null);
+      if (!hasFiles) {
+        Swal.fire("Error", "Debes seleccionar al menos un archivo", "error");
+        return;
+      }
 
-        axios.post('URL_DEL_BACKEND', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }).then(response => {
-          console.log('Archivos enviados exitosamente');
-        }).catch(error => {
-          console.error('Error al enviar los archivos:', error);
-        });
-        */
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
+      const swalWithTailwindButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+          cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+        },
+        buttonsStyling: false
+      });
+
+      const result = await swalWithTailwindButtons.fire({
+        title: '¿Estás seguro?',
+        text: "¿Quieres enviar los archivos?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, enviar',
+        cancelButtonText: 'No, cancelar',
+        reverseButtons: true
+      });
+
+      if (!result.isConfirmed) {
         swalWithTailwindButtons.fire(
           'Cancelado',
           'Tus archivos están seguros :)',
-          'error'
-        )
+          'info'
+        );
+        return;
       }
-    });
+
+      setIsSubmitting(true);
+
+      const formData = new FormData();
+
+      // Agregar cada archivo con su nombre de campo correspondiente
+      Object.entries(files).forEach(([key, file]) => {
+        if (file) formData.append('archivo', file); // Asegúrate de que el nombre coincida con el backend
+      });
+
+      // Agregar solo el ID del usuario
+      formData.append("idUsuario", user._id);
+
+      const response = await axios.post(
+        "http://localhost:3000/nar/documentosPersona/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            // Actualizar el progreso real
+            setProgress((prevProgress) => {
+              const updatedProgress = { ...prevProgress };
+              Object.keys(files).forEach((key) => {
+                if (files[key]) {
+                  updatedProgress[key] = percentCompleted;
+                }
+              });
+              return updatedProgress;
+            });
+          },
+        }
+      );
+
+      console.log("Respuesta del backend:", response.data);
+
+      await swalWithTailwindButtons.fire(
+        "¡Enviado!",
+        "Tus archivos han sido enviados correctamente.",
+        "success"
+      );
+
+      // Limpiar el formulario después del envío exitoso
+      setFiles({
+        domicilio: null,
+        fiscal: null,
+        identificacion: null,
+        banco: null,
+        afiliacion: null,
+      });
+      setProgress({});
+
+    } catch (error) {
+      console.error("Error al enviar los archivos:", error);
+
+      let errorMessage = "No se pudieron enviar los archivos";
+      if (error.response) {
+        // Error del servidor
+        errorMessage = error.response.data.message || errorMessage;
+      } else if (error.request) {
+        // Error de conexión
+        errorMessage = "No se pudo conectar con el servidor";
+      }
+
+      Swal.fire("Error", errorMessage, "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="flex-1 p-4 overflow-y-auto">
       <div className="flex flex-col items-center p-6">
         <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-6 text-center">
-          {Object.entries(files).map(([key, file], index) => (
+          {Object.entries(files).map(([key, file]) => (
             <div key={key} className="flex flex-col items-center">
               <label className="flex flex-col items-center cursor-pointer">
                 <img src={FileUploadIcon} alt="Upload" className="w-20 h-20" />
@@ -135,11 +209,11 @@ const ArchivosSection = () => {
                   type="file"
                   className="hidden"
                   onChange={(e) => handleFileChange(e, key)}
-                  accept="image/*,application/pdf" // Solo acepta imágenes y PDFs
+                  accept="image/*,application/pdf"
+                  disabled={isSubmitting}
                 />
               </label>
 
-              {/* Barra de progreso y botón de eliminar */}
               {file && (
                 <div className="mt-2 w-full flex flex-col items-center">
                   <div className="w-40 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
@@ -149,36 +223,36 @@ const ArchivosSection = () => {
                     ></div>
                   </div>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-xs text-gray-600">{file.name}</span>
+                    <span className="text-xs text-gray-600 truncate max-w-xs">{file.name}</span>
                     <MdCancel
                       className="w-5 h-5 text-red-500 cursor-pointer ml-2"
-                      onClick={() => handleRemoveFile(key)}
+                      onClick={() => !isSubmitting && handleRemoveFile(key)}
                     />
                   </div>
                 </div>
               )}
             </div>
           ))}
+
           <div className="mt-2 w-full flex flex-col items-center">
-            {/* Botón de descargar plantilla en blanco */}
             <a
-              href="afiliacion.pdf" // Cambia esto a la ruta correcta de tu archivo PDF
+              href="afiliacion.pdf"
               download="afiliacion.pdf"
               className="mt-8 px-6 py-3 flex items-center gap-2 botones text-white rounded"
             >
               <AiOutlineDownload className="w-7 h-7" />
               Descarga el documento de afiliación
             </a>
-
           </div>
         </form>
 
         <button
           type="submit"
-          className="mt-8 px-6 py-3 botones text-white rounded"
+          className={`mt-8 px-6 py-3 botones text-white rounded ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           onClick={handleSubmit}
+          disabled={isSubmitting}
         >
-          Enviar archivos
+          {isSubmitting ? 'Enviando...' : 'Enviar archivos'}
         </button>
       </div>
     </div>
