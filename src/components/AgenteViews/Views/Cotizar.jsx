@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import ImagenSeguros from "../assets/imagenSeguros.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Cotizar = () => {
+  const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
 
   const handleFormulario = () => {
-    navigate('/cotizar/informacion')
-  }
+    navigate(`/inicioAgentes/${id}/cotizar/informacion`);
+  };
 
   const aseguradoras = [
     { nombre: "Seguro de vida" },
@@ -42,8 +43,10 @@ const Cotizar = () => {
             <div className="flex-grow">
               <span className="text-lg font-semibold">{aseguradora.nombre}</span>
             </div>
-            <button className="px-8 py-3 text-white rounded botones mt-2 sm:mt-0"
-            onClick={handleFormulario}>
+            <button
+              className="px-8 py-3 text-white rounded botones mt-2 sm:mt-0"
+              onClick={handleFormulario}
+            >
               Cotizar
             </button>
           </div>

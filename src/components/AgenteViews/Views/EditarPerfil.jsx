@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const EditarPerfil = () => {
+  const {id} = useParams();
+  console.log(id);
+  
+  
   const [formData, setFormData] = useState({
     nombre: "",
     apellidoPaterno: "",
@@ -30,7 +35,7 @@ const EditarPerfil = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://api.tu-backend.com/perfil");
+        const response = await axios.get(`http://localhost:3000/nar/usuarios/id/${id}`);
         setFormData(response.data);
       } catch (error) {
         console.error("Error al cargar los datos del perfil", error);

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import UsuarioProfile from "../AdminViews/assets/UsuarioProfile.png";
 import MenuIcon from "../AdminViews/assets/Menu.png";
 import EditIcon from "../AdminViews/assets/BotonEdit.png";
 
 const SideBarAgente = () => {
+  const { id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -23,14 +24,14 @@ const SideBarAgente = () => {
   };
 
   const handelEditProfile = () => {
-    navigate("/inicioAgentes/EditarPerfil");
+    navigate(`/inicioAgentes/${id}/editarPerfil`);
   };
 
   const menuItems = [
-    { nombre: "Inicio", ruta: "/inicioAgentes" },
-    { nombre: "Cotizar", ruta: "/cotizar" },
-    { nombre: "Estadisticas", ruta: "/estadisticas" },
-    { nombre: "Clientes", ruta: "/clientes" },
+    { nombre: "Inicio", ruta: `/inicioAgentes/${id}` },
+    { nombre: "Cotizar", ruta: `/inicioAgentes/${id}/cotizar` },
+    { nombre: "Estadisticas", ruta: `/inicioAgentes/${id}/estadisticas` },
+    { nombre: "Clientes", ruta: `/inicioAgentes/${id}/clientes` },
   ];
 
   return (

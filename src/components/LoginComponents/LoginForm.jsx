@@ -48,11 +48,13 @@ const LoginForm = ({ setUser }) => {
       if (success) {
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("token", data.token);
+        localStorage.setItem("id", data._id)
+        
 
         if (data.rol === "administrador") {
           navigate("/inicio");
         } else if (data.rol === "agente") {
-          navigate("/inicioAgentes");
+          navigate(`/inicioAgentes/${data._id}`);
         } else if (data.rol === "postulante") {
           navigate("/archivosPostulante");
         }

@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import InicioAgente from "./Views/InicioAgente";
 import Cotizar from "./Views/Cotizar";
 import Estadisticas from "./Views/Estadisticas";
@@ -14,9 +14,9 @@ import EditarPerfil from "./Views/EditarPerfil";
 
 const MainContentAgente = () => {
   const location = useLocation();
+  const params = useParams();
 
   const renderContent = () => {
-    // Simplifica la lógica de rutas para hacer debug
     const path = location.pathname;
     console.log("Current path:", path); // Para debugging
 
@@ -31,21 +31,21 @@ const MainContentAgente = () => {
     }
 
     switch (path) {
-      case "/inicioAgentes":
+      case `/inicioAgentes/${params.id}`:
         return <InicioAgente />;
-      case "/inicioAgentes/EditarPerfil":
+      case `/inicioAgentes/${params.id}/editarPerfil`:
         return <EditarPerfil />;
-      case "/cotizar":
+      case `/inicioAgentes/${params.id}/cotizar`:
         return <Cotizar />;
-      case "/cotizar/informacion":
+      case `/inicioAgentes/${params.id}/cotizar/informacion`:
         return <DatosCotizar />;
-      case "/cotizar/informacion/cotizacion":
+      case `/inicioAgentes/${params.id}/cotizar/informacion/cotizacion`:
         return <Cotizaciones />;
-      case "/cotizar/informacion/cotizacion/seguros":
+      case `/inicioAgentes/${params.id}/cotizar/informacion/cotizacion/seguros`:
         return <Seguros />;
-      case "/estadisticas":
+      case `/inicioAgentes/${params.id}/estadisticas`:
         return <Estadisticas />;
-      case "/clientes":
+      case `/inicioAgentes/${params.id}/clientes`:
         return <Clientes />;
       default:
         return <Notfound />;
