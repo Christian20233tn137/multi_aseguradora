@@ -6,7 +6,7 @@ const SolicitudSection = () => {
 
   const navigate = useNavigate();
 
-  const handleBack = () =>{
+  const handleBack = () => {
     navigate("/solicitudes");
   }
   const showAlert = () => {
@@ -18,7 +18,7 @@ const SolicitudSection = () => {
       buttonsStyling: false
     });
 
-swalWithTailwindButtons.fire({
+    swalWithTailwindButtons.fire({
       title: "¿Estás seguro?",
       text: "No podrás revertir esto!",
       icon: "warning",
@@ -33,7 +33,7 @@ swalWithTailwindButtons.fire({
           text: "El postulante fue aceptado.",
           icon: "success",
         });
-        handleBack(); 
+        handleBack();
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         swalWithTailwindButtons.fire({
           title: "Cancelado",
@@ -52,7 +52,7 @@ swalWithTailwindButtons.fire({
       },
       buttonsStyling: false
     });
-    
+
     swalWithTailwindButtons.fire({
       title: "¿Estás seguro?",
       text: "No podrás revertir esto!",
@@ -68,7 +68,7 @@ swalWithTailwindButtons.fire({
           text: "El postulante fue denegado.",
           icon: "success",
         });
-        handleBack(); 
+        handleBack();
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         swalWithTailwindButtons.fire({
           title: "Cancelado",
@@ -77,8 +77,8 @@ swalWithTailwindButtons.fire({
         });
       }
     });
-    
-    
+
+
   }
 
   let nombrePostulante = "Juan Perez";
@@ -88,18 +88,18 @@ swalWithTailwindButtons.fire({
       <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black miColor rounded-2xl">
         {nombrePostulante}
       </h1>
-        <div className="flex items-center gap-2 mt-5 justify-center">
-          <div className="mt-10">
-            <div className="flex items-center gap-2 mt-5">
-              <label
-                htmlFor="usuario"
-                className="text-sm font-medium text-black w-48"
-              >
-                Correo Electrónico
-              </label>
-              <input
-                type="text"
-                id="usuario"
+      <div className="flex items-center gap-2 mt-5 justify-center">
+        <div className="mt-10">
+          <div className="flex items-center gap-2 mt-5">
+            <label
+              htmlFor="usuario"
+              className="text-sm font-medium text-black w-48"
+            >
+              Correo Electrónico
+            </label>
+            <input
+              type="text"
+              id="usuario"
               name="usuario"
               className="py-2 px-4 font-medium border border-gray-300 flex-1"
               required
@@ -161,6 +161,14 @@ swalWithTailwindButtons.fire({
               onClick={showAlertDenegar}
             >
               Denegar
+            </button>
+            <button
+              type="button"
+              className="w-30 text-white py-2 px-4 rounded-md botones"
+              
+              onClick={() => navigate(-1)} // Esto regresará a la página anterior
+            >
+              Regresar
             </button>
             <button
               type="button"

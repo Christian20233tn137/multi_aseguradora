@@ -116,6 +116,14 @@ const showAlertDenegar = () => {
           Denegar
         </button>
         <button
+              type="button"
+              className="w-30 text-white py-2 px-4 rounded-md botones"
+              
+              onClick={() => navigate(-1)} // Esto regresará a la página anterior
+            >
+              Regresar
+            </button>
+        <button
           type="button"
           className="w-32 text-white py-2 rounded-md botones"
           onClick={showAlert}

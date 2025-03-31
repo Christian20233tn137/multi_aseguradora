@@ -38,8 +38,8 @@ const InformacionAdmin = () => {
       <div className="col-span-2 flex items-center justify-center mt-8">
         <button
           type="button"
-          className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          style={{ backgroundColor: "#0B1956" }}
+          className="text-white  py-2 px-4 rounded-md botones"
+          
           onClick={() => navigate(-1)} // Esto regresará a la página anterior
         >
           Regresar

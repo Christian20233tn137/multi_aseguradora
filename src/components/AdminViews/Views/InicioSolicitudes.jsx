@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 
 const InicioSolicitudes = () => {
   const navigate = useNavigate();
@@ -39,31 +40,32 @@ const InicioSolicitudes = () => {
     <div className="p-4">
       <div className="flex items-center mb-4">
         <button
-          className={`px-4 py-2 mr-2 border rounded ${
-            view === "datos" ? "bg-blue-200" : "hover:bg-blue-200"
-          }`}
+          className={`px-4 py-2 mr-2 border rounded ${view === "datos" ? "bg-blue-200" : "hover:bg-blue-200"
+            }`}
           onClick={() => setView("datos")}
         >
           Datos
         </button>
         <button
-          className={`px-4 py-2 mr-2 border rounded ${
-            view === "documentos" ? "bg-blue-200" : "hover:bg-blue-200"
-          }`}
+          className={`px-4 py-2 mr-2 border rounded ${view === "documentos" ? "bg-blue-200" : "hover:bg-blue-200"
+            }`}
           onClick={() => setView("documentos")}
         >
           Documentos
         </button>
-        <input
-          type="text"
-          placeholder="Buscar..."
-          className="px-2 py-2 ml-auto border rounded"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(0);
-          }}
-        />
+        <div className="relative w-full max-w-xs ml-auto">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            className="pr-10 pl-2 py-2 border rounded w-full"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(0);
+            }}
+          />
+          <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        </div>
       </div>
       <div className="border-0 p-4">
         {visibleProfiles.map((profile, index) => (
@@ -94,6 +96,7 @@ const InicioSolicitudes = () => {
           >
             Anterior
           </button>
+          
           <button
             disabled={startIndex + profilesPerPage >= filteredProfiles.length}
             onClick={() => setCurrentPage(currentPage + 1)}
