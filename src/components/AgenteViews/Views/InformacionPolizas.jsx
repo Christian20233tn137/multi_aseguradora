@@ -10,7 +10,6 @@ const InformacionPolizas = () => {
   const [poliza, setPoliza] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  console.log("Todos los parámetros:", useParams());
   console.log("ID del cliente:", id);
   console.log("ID de la póliza:", idPoliza);
 
@@ -58,7 +57,7 @@ const InformacionPolizas = () => {
   return (
     <div className="p-6 flex flex-col items-center">
       <h1 className="text-2xl font-semibold text-black bg-blue-100 py-3 px-6 rounded-xl">
-        Póliza N.{idPoliza}
+        Póliza N.1
       </h1>
 
       <div className="mt-6 p-6 border rounded-lg shadow-lg w-full max-w-3xl bg-white">

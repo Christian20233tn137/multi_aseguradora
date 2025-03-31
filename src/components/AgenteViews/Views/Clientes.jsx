@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
+  const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -66,7 +68,7 @@ const Clientes = () => {
                   <button
                     className="botones text-white py-1 px-3 rounded"
                     onClick={() => {
-                      navigate(`/clientes/polizas/${cliente._id}`);
+                      navigate(`${location.pathname}/polizas/${cliente._id}`);
                     }}
                   >
                     Ver Pólizas

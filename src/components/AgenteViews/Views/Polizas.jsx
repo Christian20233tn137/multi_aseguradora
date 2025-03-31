@@ -49,7 +49,7 @@ const Polizas = () => {
 
   const handleInfo = (idPoliza) => {
     console.log("Id de la poliza", idPoliza);
-    navigate(`/clientes/polizas/${id}/informacion/${idPoliza}`);
+    navigate(`informacion/${idPoliza}`);
   };
 
   const handleSearchChange = (event) => {
