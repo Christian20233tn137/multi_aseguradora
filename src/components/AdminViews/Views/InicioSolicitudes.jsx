@@ -7,7 +7,8 @@ const InicioSolicitudes = () => {
   const navigate = useNavigate();
   const [view, setView] = useState("datos");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPageDatos, setCurrentPageDatos] = useState(0);
+  const [currentPageDocumentos, setCurrentPageDocumentos] = useState(0);
   const [profiles, setProfiles] = useState([]);
   const [error, setError] = useState(null);
 
@@ -44,19 +45,26 @@ const InicioSolicitudes = () => {
 
   const filteredProfiles = profiles.filter((profile) => {
     const fullName = `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`.toLowerCase();
-    return fullName.includes(searchTerm.toLowerCase()) &&
-           (view === "datos" ? profile.type === "datos" : profile.type === "documentos");
+    return fullName.includes(searchTerm.toLowerCase());
   });
 
   const profilesPerPage = 3;
-  const startIndex = currentPage * profilesPerPage;
-  const visibleProfiles = filteredProfiles.slice(startIndex, startIndex + profilesPerPage);
+  const startIndexDatos = currentPageDatos * profilesPerPage;
+  const startIndexDocumentos = currentPageDocumentos * profilesPerPage;
+
+  const visibleProfilesDatos = filteredProfiles
+    .filter(profile => profile.type === "datos")
+    .slice(startIndexDatos, startIndexDatos + profilesPerPage);
+
+  const visibleProfilesDocumentos = filteredProfiles
+    .filter(profile => profile.type === "documentos")
+    .slice(startIndexDocumentos, startIndexDocumentos + profilesPerPage);
 
   const handleVerMas = (profile) => {
     if (view === "datos") {
-      navigate(`/solicitudes/solicitud-section/${profile.nombre}`);
+      navigate(`/solicitudes/solicitud-section`, { state: { profile } });
     } else if (view === "documentos") {
-      navigate(`/solicitudes/solicitud-documentos/${profile.nombre}`);
+      navigate(`/solicitudes/solicitud-documentos`, { state: { profile } });
     }
   };
 
@@ -83,14 +91,30 @@ const InicioSolicitudes = () => {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(0);
+              setCurrentPageDatos(0);
+              setCurrentPageDocumentos(0);
             }}
           />
           <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
       </div>
       <div className="border-0 p-4">
-        {visibleProfiles.map((profile, index) => (
+        {view === "datos" && visibleProfilesDatos.map((profile, index) => (
+          <div key={index} className="flex justify-between items-center border rounded p-9 mb-8">
+            <div className="px-4 py-2 rounded">
+              <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
+            </div>
+            <div className="flex items-center">
+              <button
+                className="px-4 py-2 text-white rounded botones"
+                onClick={() => handleVerMas(profile)}
+              >
+                Ver más
+              </button>
+            </div>
+          </div>
+        ))}
+        {view === "documentos" && visibleProfilesDocumentos.map((profile, index) => (
           <div key={index} className="flex justify-between items-center border rounded p-9 mb-8">
             <div className="px-4 py-2 rounded">
               <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
@@ -106,19 +130,37 @@ const InicioSolicitudes = () => {
           </div>
         ))}
       </div>
-      {filteredProfiles.length > profilesPerPage && (
-        <div className="flex justify-center mt-4">
+      {view === "datos" && filteredProfiles.filter(profile => profile.type === "datos").length > profilesPerPage && (
+        <div className="flex justify-between mt-4">
           <button
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            className="px-4 py-2 mr-2 border botones"
+            onClick={() => setCurrentPageDatos(currentPageDatos - 1)}
+            disabled={currentPageDatos === 0}
+            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
           >
             Anterior
           </button>
           <button
-            disabled={startIndex + profilesPerPage >= filteredProfiles.length}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            className="px-4 py-2 border botones"
+            onClick={() => setCurrentPageDatos(currentPageDatos + 1)}
+            disabled={startIndexDatos + profilesPerPage >= filteredProfiles.filter(profile => profile.type === "datos").length}
+            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
+      {view === "documentos" && filteredProfiles.filter(profile => profile.type === "documentos").length > profilesPerPage && (
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={() => setCurrentPageDocumentos(currentPageDocumentos - 1)}
+            disabled={currentPageDocumentos === 0}
+            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => setCurrentPageDocumentos(currentPageDocumentos + 1)}
+            disabled={startIndexDocumentos + profilesPerPage >= filteredProfiles.filter(profile => profile.type === "documentos").length}
+            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
           >
             Siguiente
           </button>

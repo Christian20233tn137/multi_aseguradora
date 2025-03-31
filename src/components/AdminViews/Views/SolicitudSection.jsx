@@ -1,15 +1,18 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
 
 const SolicitudSection = () => {
-
   const navigate = useNavigate();
+  const location = useLocation();
+  const { profile } = location.state || {};
 
   const handleBack = () => {
     navigate("/solicitudes");
-  }
-  const showAlert = () => {
+  };
+
+  const showAlert = async () => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
         confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
@@ -26,14 +29,24 @@ const SolicitudSection = () => {
       confirmButtonText: "Si, aceptarlo!",
       cancelButtonText: "No, cancelarlo!",
       reverseButtons: true
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        swalWithTailwindButtons.fire({
-          title: "Aceptado!",
-          text: "El postulante fue aceptado.",
-          icon: "success",
-        });
-        handleBack();
+        try {
+          const response = await axios.put(`http://localhost:3000/nar/usuarios/postulanteAceptado/${profile._id}`);
+          swalWithTailwindButtons.fire({
+            title: "¡Aceptado!",
+            text: "El postulante fue aceptado.",
+            icon: "success",
+          });
+          handleBack();
+        } catch (error) {
+          console.error("Error updating postulante:", error);
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "Hubo un problema al aceptar al postulante.",
+            icon: "error",
+          });
+        }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         swalWithTailwindButtons.fire({
           title: "Cancelado",
@@ -42,7 +55,7 @@ const SolicitudSection = () => {
         });
       }
     });
-  }
+  };
 
   const showAlertDenegar = () => {
     const swalWithTailwindButtons = Swal.mixin({
@@ -72,20 +85,18 @@ const SolicitudSection = () => {
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         swalWithTailwindButtons.fire({
           title: "Cancelado",
-          text: "El postulunante fue denegado correctamente",
+          text: "El postulante fue denegado correctamente",
           icon: "error"
         });
       }
     });
+  };
 
-
-  }
-
-  let nombrePostulante = "Juan Perez";
+  const nombrePostulante = `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`;
 
   return (
     <div className="p-6 w-auto h-auto overflow-hidden">
-      <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black miColor rounded-2xl">
+      <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black bg-blue-200 rounded-2xl">
         {nombrePostulante}
       </h1>
       <div className="flex items-center gap-2 mt-5 justify-center">
@@ -102,7 +113,8 @@ const SolicitudSection = () => {
               id="usuario"
               name="usuario"
               className="py-2 px-4 font-medium border border-gray-300 flex-1"
-              required
+              value={profile.correo || ""}
+              readOnly
             />
           </div>
 
@@ -118,7 +130,8 @@ const SolicitudSection = () => {
               id="telefono"
               name="telefono"
               className="py-2 px-4 font-medium border border-gray-300 flex-1"
-              required
+              value={profile.telefono || ""}
+              readOnly
             />
           </div>
 
@@ -127,14 +140,15 @@ const SolicitudSection = () => {
               htmlFor="domicilio"
               className="text-sm font-medium text-black w-48"
             >
-              Domicilio
+             CURP
             </label>
             <input
               type="text"
               id="domicilio"
               name="domicilio"
               className="py-2 px-4 font-medium border border-gray-300 flex-1"
-              required
+              value={profile.curp || ""}
+              readOnly
             />
           </div>
 
@@ -150,7 +164,8 @@ const SolicitudSection = () => {
               id="rfc"
               name="rfc"
               className="py-2 px-4 font-medium border border-gray-300 flex-1"
-              required
+              value={profile.rfc || ""}
+              readOnly
             />
           </div>
 
@@ -165,7 +180,6 @@ const SolicitudSection = () => {
             <button
               type="button"
               className="w-30 text-white py-2 px-4 rounded-md botones"
-              
               onClick={() => navigate(-1)} // Esto regresará a la página anterior
             >
               Regresar
