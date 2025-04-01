@@ -7,7 +7,8 @@ const InicioAgentes = () => {
   const navigate = useNavigate();
   const [view, setView] = useState("agentes");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPageAgentes, setCurrentPageAgentes] = useState(0);
+  const [currentPageReactivaciones, setCurrentPageReactivaciones] = useState(0);
   const [agentesActivos, setAgentesActivos] = useState([]);
   const [agentesInactivos, setAgentesInactivos] = useState([]);
   const [error, setError] = useState(null);
@@ -53,7 +54,7 @@ const InicioAgentes = () => {
 
       await axios.put(`http://localhost:3000/nar/usuarios/active/${agenteId}`);
 
-      setAgentesInactivos(agentesInactivos.filter(agente => agente.id !== agenteId));
+      setAgentesInactivos(agentesInactivos.filter(agente => agente._id !== agenteId));
       setAgentesActivos(prevActivos => [...prevActivos, agenteToReactivate]);
 
       // Forzar la actualización de la vista
@@ -122,11 +123,19 @@ const InicioAgentes = () => {
   );
 
   const profilesPerPage = 3;
-  const startIndex = currentPage * profilesPerPage;
+  const startIndex = view === "agentes" ? currentPageAgentes * profilesPerPage : currentPageReactivaciones * profilesPerPage;
   const visibleProfiles = filteredProfiles.slice(
     startIndex,
     startIndex + profilesPerPage
   );
+
+  const handlePageChange = (newPage) => {
+    if (view === "agentes") {
+      setCurrentPageAgentes(newPage);
+    } else {
+      setCurrentPageReactivaciones(newPage);
+    }
+  };
 
   return (
     <div className="p-4">
@@ -150,7 +159,7 @@ const InicioAgentes = () => {
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(0);
+            handlePageChange(0);
           }}
         />
       </div>
@@ -166,7 +175,7 @@ const InicioAgentes = () => {
             <div className="flex items-center space-x-6">
               {view === "reactivaciones" && (
                 <span className="text-lg font-semibold">
-                  No.Reactivaciones: {profile.numReactivaciones}
+                  No.Reactivaciones: {profile.reactivaciones}
                 </span>
               )}
               <button
@@ -191,15 +200,15 @@ const InicioAgentes = () => {
       {filteredProfiles.length > profilesPerPage && (
         <div className="flex justify-center mt-4">
           <button
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={startIndex === 0}
+            onClick={() => handlePageChange(view === "agentes" ? currentPageAgentes - 1 : currentPageReactivaciones - 1)}
             className="px-4 py-2 mr-2 border botones"
           >
             Anterior
           </button>
           <button
             disabled={startIndex + profilesPerPage >= filteredProfiles.length}
-            onClick={() => setCurrentPage(currentPage + 1)}
+            onClick={() => handlePageChange(view === "agentes" ? currentPageAgentes + 1 : currentPageReactivaciones + 1)}
             className="px-4 py-2 border botones"
           >
             Siguiente
