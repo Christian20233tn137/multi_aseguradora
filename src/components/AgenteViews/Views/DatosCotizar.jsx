@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const DatosCotizar = () => {
+  const location = useLocation();
+  const id = location.state.id;
+  console.log("Primera prueba",id);
+  
   const [agente, setAgente] = useState({
     nombre: "Juan",
     fechaNacimiento: "",

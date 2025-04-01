@@ -17,7 +17,7 @@ const Estadisticas = () => {
   const dataCotizaciones = [
     { name: "Ene", cotizaciones: 4 },
     { name: "Feb", cotizaciones: 3 },
-    { name: "Mar", cotizaciones: 5 },
+    { name: "Mar", cotizaciones: 5 }, 
     { name: "Abr", cotizaciones: 2 },
   ];
 
