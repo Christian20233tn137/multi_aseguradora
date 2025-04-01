@@ -11,7 +11,9 @@ const Cotizar = () => {
   const navigate = useNavigate();
 
   const handleFormulario = () => {
-    navigate(`/inicioAgentes/${id}/cotizar/informacion`);
+    navigate(`${location.pathname}/informacion`, {
+      state: { id: location.state.id },
+    });
   };
 
   const aseguradoras = [
@@ -41,9 +43,15 @@ const Cotizar = () => {
             key={index}
             className="flex flex-col sm:flex-row items-center border rounded p-4 mb-4"
           >
-            <img src={ImagenSeguros} alt="Seguro" className="w-16 h-16 mb-4 sm:mb-0 sm:mr-4" />
+            <img
+              src={ImagenSeguros}
+              alt="Seguro"
+              className="w-16 h-16 mb-4 sm:mb-0 sm:mr-4"
+            />
             <div className="flex-grow">
-              <span className="text-lg font-semibold">{aseguradora.nombre}</span>
+              <span className="text-lg font-semibold">
+                {aseguradora.nombre}
+              </span>
             </div>
             <button
               className="px-8 py-3 text-white rounded botones mt-2 sm:mt-0"

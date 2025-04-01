@@ -33,6 +33,7 @@ import Cotizar from "./components/AgenteViews/Views/Cotizar";
 import InicioAgente from "./components/AgenteViews/Views/InicioAgente";
 import Clientes from "./components/AgenteViews/Views/Clientes";
 import Estadisticas from "./components/AgenteViews/Views/Estadisticas";
+import CotizacionesPendientes from "./components/AgenteViews/Views/CotizacionesPendientes";
 
 const App = () => {
   const location = useLocation();
@@ -82,6 +83,8 @@ const App = () => {
       case "/inicioAgentes":
         return "Inicio";
       case "/inicioAgentes/cotizar":
+        return "Cotizar";
+      case "/inicioAgentes/cotizar/informacion":
         return "Cotizar";
       case "/inicioAgentes/clientes":
         return "Clientes";
@@ -214,6 +217,7 @@ const App = () => {
       >
         <Route index element={<InicioAgente />} />
         <Route path="editarPerfil" element={<EditarPerfil />} />
+        <Route path="cotizaciones" element={<CotizacionesPendientes />} />
         <Route path="cotizar" element={<Cotizar />} />
         <Route path="cotizar/informacion" element={<DatosCotizar />} />
         <Route
