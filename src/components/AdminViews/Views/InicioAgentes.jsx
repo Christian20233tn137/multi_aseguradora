@@ -11,42 +11,26 @@ const InicioAgentes = () => {
   const [agentesActivos, setAgentesActivos] = useState([]);
   const [agentesInactivos, setAgentesInactivos] = useState([]);
   const [error, setError] = useState(null);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
-    const fetchAgentesActivos = async () => {
+    const fetchAgentes = async () => {
       try {
-        console.log("Fetching agentes activos...");
-        const response = await axios.get('http://localhost:3000/nar/usuarios/agentesActivos');
-        console.log("Agentes activos fetched successfully:", response.data);
-        setAgentesActivos(response.data);
+        const [activos, inactivos] = await Promise.all([
+          axios.get('http://localhost:3000/nar/usuarios/agentesActivos'),
+          axios.get('http://localhost:3000/nar/usuarios/agentesInactivos')
+        ]);
+        setAgentesActivos(activos.data);
+        setAgentesInactivos(inactivos.data);
       } catch (error) {
-        console.error("Error fetching agentes activos:", error);
-        setError("Error al obtener los agentes activos. Por favor, inténtalo de nuevo más tarde.");
+        setError("Error al obtener los agentes. Por favor, inténtalo de nuevo más tarde.");
       }
     };
-
-    const fetchAgentesInactivos = async () => {
-      try {
-        console.log("Fetching agentes inactivos...");
-        const response = await axios.get('http://localhost:3000/nar/usuarios/agentesInactivos');
-        console.log("Agentes inactivos fetched successfully:", response.data);
-        setAgentesInactivos(response.data);
-      } catch (error) {
-        console.error("Error fetching agentes inactivos:", error);
-        setError("Error al obtener los agentes inactivos. Por favor, inténtalo de nuevo más tarde.");
-      }
-    };
-
-    fetchAgentesActivos();
-    fetchAgentesInactivos();
-  }, []);
-
-
-
+    fetchAgentes();
+  }, [view, reload]);  // Se recarga cuando 'reload' cambia
 
   const reactivarAgente = async (agenteId) => {
     if (!agenteId) {
-      console.error("Error: agenteId es undefined");
       Swal.fire({
         title: "Error",
         text: "ID de agente no válido. Por favor, inténtalo de nuevo.",
@@ -55,19 +39,34 @@ const InicioAgentes = () => {
       return false;
     }
 
-    const API_URL = `http://localhost:3000/nar/usuarios/inactive/${agenteId}`;
-
     try {
-      console.log("Enviando solicitud a:", API_URL);
-      await axios.put(API_URL);
+      const agenteToReactivate = agentesInactivos.find(agente => agente._id === agenteId);
 
-      // Actualizar el estado local directamente
+      if (!agenteToReactivate) {
+        Swal.fire({
+          title: "Error",
+          text: "No se encontró el agente a reactivar.",
+          icon: "error",
+        });
+        return false;
+      }
+
+      await axios.put(`http://localhost:3000/nar/usuarios/active/${agenteId}`);
+
       setAgentesInactivos(agentesInactivos.filter(agente => agente.id !== agenteId));
-      setAgentesActivos([...agentesActivos, { id: agenteId }]); // Aquí puedes agregar más detalles si los necesitas
+      setAgentesActivos(prevActivos => [...prevActivos, agenteToReactivate]);
+
+      // Forzar la actualización de la vista
+      setReload(prev => !prev);
+
+      Swal.fire({
+        title: "Reactivación exitosa",
+        text: "¡El agente se ha reactivado con éxito!",
+        icon: "success",
+      });
 
       return true;
     } catch (error) {
-      console.error("Error reactivando agente:", error);
       Swal.fire({
         title: "Error",
         text: "Hubo un problema al reactivar el agente. Por favor, inténtalo de nuevo más tarde.",
@@ -133,15 +132,13 @@ const InicioAgentes = () => {
     <div className="p-4">
       <div className="flex items-center mb-4">
         <button
-          className={`px-4 py-2 mr-2 border rounded ${view === "agentes" ? "bg-blue-200" : "hover:bg-blue-200"
-            }`}
+          className={`px-4 py-2 mr-2 border rounded ${view === "agentes" ? "bg-blue-200" : "hover:bg-blue-200"}`}
           onClick={() => setView("agentes")}
         >
           Agentes
         </button>
         <button
-          className={`px-4 py-2 mr-2 border rounded ${view === "reactivaciones" ? "bg-blue-200" : "hover:bg-blue-200"
-            }`}
+          className={`px-4 py-2 mr-2 border rounded ${view === "reactivaciones" ? "bg-blue-200" : "hover:bg-blue-200"}`}
           onClick={() => setView("reactivaciones")}
         >
           Reactivaciones
@@ -160,7 +157,7 @@ const InicioAgentes = () => {
       <div className="border-0 p-4">
         {visibleProfiles.map((profile) => (
           <div
-            key={profile.id}
+            key={profile._id}
             className="flex justify-between items-center border rounded p-8 mb-6"
           >
             <div className="px-6 py-4 rounded">
@@ -172,7 +169,6 @@ const InicioAgentes = () => {
                   No.Reactivaciones: {profile.numReactivaciones}
                 </span>
               )}
-
               <button
                 className="px-8 py-3 text-white rounded botones"
                 onClick={() => handleEditar(profile._id)}
