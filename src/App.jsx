@@ -85,6 +85,8 @@ const App = () => {
         return "Cotizar";
       case "/inicioAgentes/clientes":
         return "Clientes";
+      case "/inicioAgentes/clientes/polizas":
+        return "Polizas";
       case "/inicioAgentes/estadisticas":
         return "Estadisticas";
       case "/inicioAgentes/editarPerfil":
@@ -226,7 +228,7 @@ const App = () => {
         <Route path="clientes" element={<Clientes />} />
         <Route path="clientes/polizas" element={<Polizas />} />
         <Route
-          path="clientes/polizas/:id/informacion/:idPoliza"
+          path="clientes/polizas/informacion"
           element={<InformacionPolizas />}
         />
       </Route>

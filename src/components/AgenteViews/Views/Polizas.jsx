@@ -7,6 +7,7 @@ const API_URL = "http://localhost:3000/nar/emisiones/cliente";
 const Polizas = () => {
   const location = useLocation();
   const id = location.state.id;
+  const idPoliza = location.state.idPoliza;
   console.log(id); 
   
   const [polizas, setPolizas] = useState([]);
@@ -17,13 +18,13 @@ const Polizas = () => {
   useEffect(() => {
     const fetchInformacionPolizas = async () => {
       try {
-        if (!id) {
+        if (!idPoliza) {
           setError("ID del cliente no definido");
           return;
         }
 
-        console.log("Intentando obtener pólizas para el cliente:", id);
-        const response = await axios.get(`${API_URL}/${id}`);
+        console.log("Intentando obtener pólizas para el cliente:", idPoliza);
+        const response = await axios.get(`${API_URL}/${idPoliza}`);
 
         if (response.data.success) {
           setPolizas(response.data.data);
@@ -38,7 +39,7 @@ const Polizas = () => {
     };
 
     fetchInformacionPolizas();
-  }, [id]);
+  }, [idPoliza]);
 
   // Muestra mensaje de error si existe
   if (error) {
@@ -51,7 +52,7 @@ const Polizas = () => {
 
   const handleInfo = (idPoliza) => {
     console.log("Id de la poliza", idPoliza);
-    navigate(`informacion/${idPoliza}`);
+    navigate(`${location.pathname}/informacion`, {state:{id: location.state.id, idPoliza : idPoliza}});
   };
 
   const handleSearchChange = (event) => {

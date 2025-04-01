@@ -6,6 +6,8 @@ const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
+  const id  = location.state.id;
+  
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -87,7 +89,7 @@ const Clientes = () => {
                     <button
                       className="botones text-white py-1 px-3 rounded"
                       onClick={() => {
-                        navigate(`${location.pathname}/polizas`, {state : {id: cliente._id}});
+                        navigate(`${location.pathname}/polizas`, {state : {idPoliza: cliente._id, id: id}});
                     //  
                       }}
                     >

@@ -19,12 +19,13 @@ const MainContentAgente = () => {
     const path = location.pathname;
     console.log("Current path:", path);
 
-
     switch (path) {
       case `/inicioAgentes`:
         return <InicioAgente />;
       case `/inicioAgentes/clientes/polizas`:
         return <Polizas />;
+      case `/inicioAgentes/clientes/polizas/informacion`:
+        return <InformacionPolizas />;
       case `/inicioAgentes/editarPerfil`:
         return <EditarPerfil />;
       case `/inicioAgentes/cotizar`:
