@@ -38,23 +38,28 @@ const LoginForm = ({ setUser }) => {
     if (hasError) return;
 
     try {
-      const response = await axios.post("http://localhost:3000/nar/usuarios/login", {
-        correo,
-        contrasena,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/nar/usuarios/login",
+        {
+          correo,
+          contrasena,
+        }
+      );
 
       const { success, data, message } = response.data;
 
       if (success) {
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("token", data.token);
-        localStorage.setItem("id", data._id)
-        
+        localStorage.setItem("id", data._id);
 
         if (data.rol === "administrador") {
           navigate("/inicio");
         } else if (data.rol === "agente") {
-          navigate(`/inicioAgentes/${data._id}`);
+          navigate("/inicioAgentes", {
+            state: { id: data._id },
+            replace: true, 
+          });
         } else if (data.rol === "postulante") {
           navigate("/archivosPostulante");
         }
@@ -62,10 +67,11 @@ const LoginForm = ({ setUser }) => {
         setErrorBackend(message);
       }
     } catch (error) {
-      setErrorBackend(error.response?.data?.message || "Error al iniciar sesión");
+      setErrorBackend(
+        error.response?.data?.message || "Error al iniciar sesión"
+      );
     }
   };
-
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>

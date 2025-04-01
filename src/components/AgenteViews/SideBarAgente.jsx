@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import UsuarioProfile from "../AdminViews/assets/UsuarioProfile.png";
 import MenuIcon from "../AdminViews/assets/Menu.png";
 import EditIcon from "../AdminViews/assets/BotonEdit.png";
 
 const SideBarAgente = () => {
-  const { id } = useParams();
+  const location = useLocation();
+  const id = location.state?.id || null; 
+  console.log(id);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const manejarNavegacion = (ruta) => {
-    navigate(ruta);
+    navigate(ruta, { state: { id } });
     setIsOpen(false);
   };
 
@@ -24,14 +26,20 @@ const SideBarAgente = () => {
   };
 
   const handelEditProfile = () => {
-    navigate(`/inicioAgentes/${id}/editarPerfil`);
+    if (id) {
+      navigate("/inicioAgentes/editarPerfil", {
+        state: { id },
+      });
+    } else {
+      console.error("ID is missing");
+    }
   };
 
   const menuItems = [
-    { nombre: "Inicio", ruta: `/inicioAgentes/${id}` },
-    { nombre: "Cotizar", ruta: `/inicioAgentes/${id}/cotizar` },
-    { nombre: "Estadisticas", ruta: `/inicioAgentes/${id}/estadisticas` },
-    { nombre: "Clientes", ruta: `/inicioAgentes/${id}/clientes` },
+    { nombre: "Inicio", ruta: "/inicioAgentes" },
+    { nombre: "Cotizar", ruta: "/inicioAgentes/cotizar" },
+    { nombre: "Estadisticas", ruta: "/inicioAgentes/estadisticas" },
+    { nombre: "Clientes", ruta: `/inicioAgentes/clientes` },
   ];
 
   return (

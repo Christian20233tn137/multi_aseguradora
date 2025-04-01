@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
-  const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [search, setSearch] = useState("");
@@ -13,7 +12,6 @@ const Clientes = () => {
     const fetchClientes = async () => {
       try {
         const response = await axios.get("http://localhost:3000/nar/clientes");
-        console.log("Respuesta de la API:", response.data); // Verificar la estructura de los datos
         setClientes(response.data);
       } catch (error) {
         console.error("Error al obtener clientes:", error);
@@ -27,7 +25,9 @@ const Clientes = () => {
     ? clientes.filter(
         (cliente) =>
           cliente.nombre.toLowerCase().includes(search.toLowerCase()) ||
-          cliente.apellidos.toLowerCase().includes(search.toLowerCase()) ||
+          (cliente.apellidoPaterno + " " + cliente.apellidoMaterno)
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
           cliente.rfc.toLowerCase().includes(search.toLowerCase()) ||
           cliente.curp.toLowerCase().includes(search.toLowerCase())
       )
@@ -36,7 +36,7 @@ const Clientes = () => {
   return (
     <div className="relative p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold"></h1>
+        <h1 className="text-xl font-bold">Clientes</h1>
         <input
           type="text"
           placeholder="Buscar cliente"
@@ -50,32 +50,59 @@ const Clientes = () => {
         <table className="min-w-full">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b border-gray-200 text-center">Nombre</th>
-              <th className="py-2 px-4 border-b border-gray-200 text-center">Apellidos</th>
-              <th className="py-2 px-4 border-b border-gray-200 text-center">RFC</th>
-              <th className="py-2 px-4 border-b border-gray-200 text-center">Edad</th>
-              <th className="py-2 px-4 border-b border-gray-200 text-center">Póliza</th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">
+                Nombre
+              </th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">
+                Apellidos
+              </th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">
+                RFC
+              </th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">
+                Edad
+              </th>
+              <th className="py-2 px-4 border-b border-gray-200 text-center">
+                Póliza
+              </th>
             </tr>
           </thead>
           <tbody>
-            {filteredRows.map((cliente) => (
-              <tr key={cliente.id}>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.nombre}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.apellidoPaterno} {cliente.apellidoMaterno}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.rfc}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">{cliente.edad}</td>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">
-                  <button
-                    className="botones text-white py-1 px-3 rounded"
-                    onClick={() => {
-                      navigate(`${location.pathname}/polizas/${cliente._id}`);
-                    }}
-                  >
-                    Ver Pólizas
-                  </button>
+            {filteredRows.length > 0 ? (
+              filteredRows.map((cliente) => (
+                <tr key={cliente.id}>
+                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                    {cliente.nombre}
+                  </td>
+                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                    {cliente.apellidoPaterno} {cliente.apellidoMaterno}
+                  </td>
+                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                    {cliente.rfc}
+                  </td>
+                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                    {cliente.edad}
+                  </td>
+                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                    <button
+                      className="botones text-white py-1 px-3 rounded"
+                      onClick={() => {
+                        navigate(`${location.pathname}/polizas`, {state : {id: cliente._id}});
+                    //  
+                      }}
+                    >
+                      Ver Pólizas
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No se encontraron clientes
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

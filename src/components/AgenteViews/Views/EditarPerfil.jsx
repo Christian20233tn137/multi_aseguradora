@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const EditarPerfil = () => {
-  const {id} = useParams();
+  const location = useLocation();
+  const id = location.state?.id;
   console.log(id);
   
   

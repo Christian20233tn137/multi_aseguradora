@@ -22,7 +22,6 @@ import EditarAdmin from "./components/AdminViews/Views/EditarAdmin";
 import AgregarAdmin from "./components/AdminViews/Views/AgregarAdmin";
 import DatosCotizar from "./components/AgenteViews/Views/DatosCotizar";
 import Polizas from "./components/AgenteViews/Views/Polizas";
-
 import Cotizaciones from "./components/AgenteViews/Views/Cotizaciones";
 import Seguros from "./components/AgenteViews/Views/Seguros";
 import RecuperarContra from "./components/RecuperarContra";
@@ -30,6 +29,10 @@ import Codigo from "./components/Codigo";
 import NuevaContra from "./components/NuevaContra";
 import InformacionPolizas from "./components/AgenteViews/Views/InformacionPolizas";
 import EditarPerfil from "./components/AgenteViews/Views/EditarPerfil";
+import Cotizar from "./components/AgenteViews/Views/Cotizar";
+import InicioAgente from "./components/AgenteViews/Views/InicioAgente";
+import Clientes from "./components/AgenteViews/Views/Clientes";
+import Estadisticas from "./components/AgenteViews/Views/Estadisticas";
 
 const App = () => {
   const location = useLocation();
@@ -74,18 +77,18 @@ const App = () => {
         return "Administradores";
       case "/configurar-cuotas":
         return "Configurar Cuotas";
-        {
-          /* Rutas de postulante (ando calando apenas no confien en mi) */
-        }
       case "/archivosPostulante":
         return "Carga de Archivos";
-        {
-          /* Rutas de agente (ando calando apenas no confien en mi) */
-        }
-      case "/inicioAgentes/:id":
+      case "/inicioAgentes":
         return "Inicio";
-      case "/inicioAgentes/:id/EditarPerfil":
-        return "Inicio";
+      case "/inicioAgentes/cotizar":
+        return "Cotizar";
+      case "/inicioAgentes/clientes":
+        return "Clientes";
+      case "/inicioAgentes/estadisticas":
+        return "Estadisticas";
+      case "/inicioAgentes/editarPerfil":
+        return "Editar Perfil";
       case "/cotizar":
         return "Seguros";
       case "/cotizar/informacion":
@@ -101,6 +104,7 @@ const App = () => {
       case "/clientes/polizas/:id":
         return "Seguros";
       default:
+        console.log("Default case triggered"); // Debug log
         return "Administradores";
     }
   };
@@ -170,7 +174,7 @@ const App = () => {
         path="/agentes/*"
         element={
           <ProtectedRoute>
-            <Layout title={getTitle(location.pathname)} />
+            <Layout title={getTitle()} />
           </ProtectedRoute>
         }
       >
@@ -197,49 +201,32 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-      //Rutas agente
+      {/* Rutas agente */}
       <Route
-        path="/inicioAgentes/:id"
+        path="/inicioAgentes"
         element={
           <ProtectedRoute allowedRoles={["agente"]}>
             <LayoutAgente title={getTitle()} />
-            <Outlet />
           </ProtectedRoute>
         }
       >
+        <Route index element={<InicioAgente />} />
         <Route path="editarPerfil" element={<EditarPerfil />} />
-      </Route>
-      <Route
-        path="/inicioAgentes/:id/cotizar/*"
-        element={
-          <ProtectedRoute allowedRoles={["agente"]}>
-            <LayoutAgente title={getTitle()} />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="inicioAgentes/:id/cotizar/informacion" element={<DatosCotizar />} />
-        <Route path="cotizacion" element={<Cotizaciones />} />
-        <Route path="cotizacion/seguros" element={<Seguros />} />
-      </Route>
-      <Route
-        path="inicioAgentes/:id/estadisticas/*"
-        element={
-          <ProtectedRoute>
-            <LayoutAgente title={getTitle()} />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="inicioAgentes/:id/clientes/*"
-        element={
-          <ProtectedRoute>
-            <LayoutAgente title={getTitle()} />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="polizas/:id" element={<Polizas />} />
+        <Route path="cotizar" element={<Cotizar />} />
+        <Route path="cotizar/informacion" element={<DatosCotizar />} />
         <Route
-          path="polizas/:id/informacion/:idPoliza"
+          path="cotizar/informacion/cotizacion"
+          element={<Cotizaciones />}
+        />
+        <Route
+          path="cotizar/informacion/cotizacion/seguros"
+          element={<Seguros />}
+        />
+        <Route path="estadisticas" element={<Estadisticas />} />
+        <Route path="clientes" element={<Clientes />} />
+        <Route path="clientes/polizas" element={<Polizas />} />
+        <Route
+          path="clientes/polizas/:id/informacion/:idPoliza"
           element={<InformacionPolizas />}
         />
       </Route>

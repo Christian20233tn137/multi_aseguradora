@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ImagenSeguros from "../assets/imagenSeguros.png";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Cotizar = () => {
-  const { id } = useParams();
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log(id);
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();

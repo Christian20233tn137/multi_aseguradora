@@ -6,7 +6,9 @@ const API_URL = "http://localhost:3000/nar/emisiones/cliente";
 
 const Polizas = () => {
   const location = useLocation();
-  const { id } = useParams();
+  const id = location.state.id;
+  console.log(id); 
+  
   const [polizas, setPolizas] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState(null);
