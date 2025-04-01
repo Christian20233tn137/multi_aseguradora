@@ -1,9 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const InicioAgentes = () => {
   const navigate = useNavigate();
+  const [view, setView] = useState("agentes");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [agentesActivos, setAgentesActivos] = useState([]);
+  const [agentesInactivos, setAgentesInactivos] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAgentesActivos = async () => {
+      try {
+        console.log("Fetching agentes activos...");
+        const response = await axios.get('http://localhost:3000/nar/usuarios/agentesActivos');
+        console.log("Agentes activos fetched successfully:", response.data);
+        setAgentesActivos(response.data);
+      } catch (error) {
+        console.error("Error fetching agentes activos:", error);
+        setError("Error al obtener los agentes activos. Por favor, inténtalo de nuevo más tarde.");
+      }
+    };
+
+    const fetchAgentesInactivos = async () => {
+      try {
+        console.log("Fetching agentes inactivos...");
+        const response = await axios.get('http://localhost:3000/nar/usuarios/agentesInactivos');
+        console.log("Agentes inactivos fetched successfully:", response.data);
+        setAgentesInactivos(response.data);
+      } catch (error) {
+        console.error("Error fetching agentes inactivos:", error);
+        setError("Error al obtener los agentes inactivos. Por favor, inténtalo de nuevo más tarde.");
+      }
+    };
+
+    fetchAgentesActivos();
+    fetchAgentesInactivos();
+  }, []);
+
+
+
+
+  const reactivarAgente = async (agenteId) => {
+    if (!agenteId) {
+      console.error("Error: agenteId es undefined");
+      Swal.fire({
+        title: "Error",
+        text: "ID de agente no válido. Por favor, inténtalo de nuevo.",
+        icon: "error",
+      });
+      return false;
+    }
+
+    const API_URL = `http://localhost:3000/nar/usuarios/inactive/${agenteId}`;
+
+    try {
+      console.log("Enviando solicitud a:", API_URL);
+      await axios.put(API_URL);
+
+      // Actualizar el estado local directamente
+      setAgentesInactivos(agentesInactivos.filter(agente => agente.id !== agenteId));
+      setAgentesActivos([...agentesActivos, { id: agenteId }]); // Aquí puedes agregar más detalles si los necesitas
+
+      return true;
+    } catch (error) {
+      console.error("Error reactivando agente:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al reactivar el agente. Por favor, inténtalo de nuevo más tarde.",
+        icon: "error",
+      });
+      return false;
+    }
+  };
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -13,7 +85,7 @@ const InicioAgentes = () => {
     buttonsStyling: false
   });
 
-  const handleEditar = () => {
+  const handleEditar = (agenteId) => {
     if (view === "agentes") {
       navigate("/agentes/editar");
     } else {
@@ -25,13 +97,16 @@ const InicioAgentes = () => {
         confirmButtonText: "Sí, continuar",
         cancelButtonText: "Cancelar",
         reverseButtons: true
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
-          swalWithTailwindButtons.fire({
-            title: "Reactivación en proceso",
-            text: "¡Estamos trabajando en la reactivación!",
-            icon: "info",
-          });
+          const success = await reactivarAgente(agenteId);
+          if (success) {
+            swalWithTailwindButtons.fire({
+              title: "Reactivación exitosa",
+              text: "¡El agente se ha reactivado con éxito!",
+              icon: "success",
+            });
+          }
         }
       });
     }
@@ -41,32 +116,10 @@ const InicioAgentes = () => {
     navigate("/agentes/perfil");
   };
 
-  const [view, setView] = useState("agentes");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const profiles = [
-    { name: "Christian Aviles Sotelo" },
-    { name: "Lalo Garcia Montes" },
-    { name: "Giovanni Pedraza Lopez" },
-    { name: "Mopri Apellidos" },
-    { name: "Albertano Dinamico" },
-    // Esto después será dinámico con nuestra bd
-  ];
-
-  const profilesReserves = [
-    { name: "Dominic Sanchez Rabadan", numReactivaciones: 2 },
-    { name: "Dana Jimenez Barenque", numReactivaciones: 1 },
-    { name: "Andrea Aguilar Medina", numReactivaciones: 1 },
-    { name: "Gabriel Morales Rosales", numReactivaciones: 1 },
-    { name: "Maria Figueroa Sotelo", numReactivaciones: 2 },
-    // Esto después será dinámico con nuestra bd
-  ];
-
-  const currentProfiles = view === "agentes" ? profiles : profilesReserves;
+  const currentProfiles = view === "agentes" ? agentesActivos : agentesInactivos;
 
   const filteredProfiles = currentProfiles.filter((profile) =>
-    profile.name.toLowerCase().includes(searchTerm.toLowerCase())
+    `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const profilesPerPage = 3;
@@ -80,17 +133,15 @@ const InicioAgentes = () => {
     <div className="p-4">
       <div className="flex items-center mb-4">
         <button
-          className={`px-4 py-2 mr-2 border rounded ${
-            view === "agentes" ? "bg-blue-200" : "hover:bg-blue-200"
-          }`}
+          className={`px-4 py-2 mr-2 border rounded ${view === "agentes" ? "bg-blue-200" : "hover:bg-blue-200"
+            }`}
           onClick={() => setView("agentes")}
         >
           Agentes
         </button>
         <button
-          className={`px-4 py-2 mr-2 border rounded ${
-            view === "reactivaciones" ? "bg-blue-200" : "hover:bg-blue-200"
-          }`}
+          className={`px-4 py-2 mr-2 border rounded ${view === "reactivaciones" ? "bg-blue-200" : "hover:bg-blue-200"
+            }`}
           onClick={() => setView("reactivaciones")}
         >
           Reactivaciones
@@ -107,13 +158,13 @@ const InicioAgentes = () => {
         />
       </div>
       <div className="border-0 p-4">
-        {visibleProfiles.map((profile, index) => (
+        {visibleProfiles.map((profile) => (
           <div
-            key={index}
+            key={profile.id}
             className="flex justify-between items-center border rounded p-8 mb-6"
           >
             <div className="px-6 py-4 rounded">
-              <span className="text-lg font-semibold">{profile.name}</span>
+              <span className="text-lg font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
             </div>
             <div className="flex items-center space-x-6">
               {view === "reactivaciones" && (
@@ -124,7 +175,7 @@ const InicioAgentes = () => {
 
               <button
                 className="px-8 py-3 text-white rounded botones"
-                onClick={handleEditar}
+                onClick={() => handleEditar(profile._id)}
               >
                 {view === "agentes" ? "Editar" : "Reactivar"}
               </button>

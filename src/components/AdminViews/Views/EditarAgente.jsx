@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const EditarAgente = () => {
+  const { id } = useParams();
   const [agente, setAgente] = useState({
+    id: '',
     nombre: '',
     apellidoPaterno: '',
     apellidoMaterno: '',
     correo: '',
     telefono: '',
-    domicilio: '',
     rfc: '',
   });
 
@@ -22,20 +25,20 @@ const EditarAgente = () => {
 
   useEffect(() => {
     const obtenerAgente = async () => {
-      const data = {
-        nombre: 'Juan',
-        apellidoPaterno: 'Pérez',
-        apellidoMaterno: 'Gómez',
-        correo: 'juan.perez@example.com',
-        telefono: '555-1234',
-        domicilio: 'Calle Falsa 123',
-        rfc: 'JUAP890123XYZ',
-      };
-      setAgente(data);
+      try {
+        const response = await axios.get(`http://localhost:3000/nar/usuarios/agentesActivos/${id}`);
+        if (response.data) {
+          setAgente(response.data);
+        } else {
+          console.error('No se encontró el agente.');
+        }
+      } catch (error) {
+        console.error('Error al obtener el agente:', error);
+      }
     };
 
     obtenerAgente();
-  }, []);
+  }, [id]);
 
   const handleChange = (e) => {
     setAgente({
@@ -55,8 +58,7 @@ const EditarAgente = () => {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        // Aquí se haría la lógica real de restablecer la contraseña en el backend
-        const nuevaContrasena = agente.correo; // La contraseña predeterminada será el correo
+        const nuevaContrasena = agente.correo;
         console.log(`La nueva contraseña es: ${nuevaContrasena}`);
 
         swalWithTailwindButtons.fire({
@@ -69,9 +71,9 @@ const EditarAgente = () => {
   };
 
   const validarCampos = () => {
-    const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono, rfc } = agente;
+    const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono } = agente;
 
-    if (!nombre || !apellidoPaterno || !apellidoMaterno || !correo || !telefono || !rfc) {
+    if (!nombre || !apellidoPaterno || !apellidoMaterno || !correo || !telefono) {
       swalWithTailwindButtons.fire({
         icon: 'warning',
         title: 'Campos obligatorios',
@@ -106,15 +108,11 @@ const EditarAgente = () => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const response = await fetch("/api/agentes", {
-              method: "PUT", // o "POST" según tu backend
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(agente),
-            });
+            const { rfc, ...formData } = agente; // Excluir el campo 'rfc'
 
-            if (response.ok) {
+            const response = await axios.put(`http://localhost:3000/nar/usuarios/byAdmin/${id}`, formData);
+
+            if (response.status === 200) {
               swalWithTailwindButtons.fire({
                 title: "Éxito",
                 text: "Datos guardados correctamente.",
@@ -189,15 +187,6 @@ const EditarAgente = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="flex flex-col">
-          <label>Domicilio</label>
-          <input
-            className="border border-gray-400 px-2 py-1"
-            name="domicilio"
-            value={agente.domicilio}
-            onChange={handleChange}
-          />
-        </div>
 
         <div className="flex flex-col">
           <label>RFC*</label>
@@ -206,11 +195,11 @@ const EditarAgente = () => {
             name="rfc"
             value={agente.rfc}
             onChange={handleChange}
+            disabled // Deshabilitar el campo RFC
           />
         </div>
       </form>
 
-      {/* Botón Restablecer contraseña */}
       <div className="col-span-2 flex items-center justify-start mt-8">
         <button
           type="button"
@@ -222,7 +211,6 @@ const EditarAgente = () => {
         </button>
       </div>
 
-      {/* Botón Guardar */}
       <div className="col-span-2 flex items-center justify-center mt-8">
         <button
           type="button"
