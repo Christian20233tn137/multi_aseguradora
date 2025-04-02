@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import ImagenSeguros from "../assets/imagenSeguros.png";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import GastosMedicos from "../assets/gastos-medicos.png";
+import GastosViaje from "../assets/seguro-de-viaje.png";
+import GastosVida from "../assets/seguro-de-vida.png";
 
 const Cotizar = () => {
   const location = useLocation();
@@ -21,6 +23,12 @@ const Cotizar = () => {
     { nombre: "Seguro de gastos medicos" },
     { nombre: "Seguro de viajes" },
   ];
+
+  const imagenesSeguros = {
+    "Seguro de vida": GastosVida,
+    "Seguro de gastos medicos": GastosMedicos,
+    "Seguro de viajes": GastosViaje,
+  };
 
   const filteredAseguradoras = aseguradoras.filter((aseguradora) =>
     aseguradora.nombre.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,8 +52,8 @@ const Cotizar = () => {
             className="flex flex-col sm:flex-row items-center border rounded p-4 mb-4"
           >
             <img
-              src={ImagenSeguros}
-              alt="Seguro"
+              src={imagenesSeguros[aseguradora.nombre]}
+              alt={aseguradora.nombre}
               className="w-16 h-16 mb-4 sm:mb-0 sm:mr-4"
             />
             <div className="flex-grow">
