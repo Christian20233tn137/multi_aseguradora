@@ -69,16 +69,25 @@ const EditarAgente = () => {
       confirmButtonText: 'Sí, restablecer',
       cancelButtonText: 'Cancelar',
       reverseButtons: true
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const nuevaContrasena = agente.correo;
-        console.log(`La nueva contraseña es: ${nuevaContrasena}`);
+        try {
+          const nuevaContrasena = agente.correo;
+          await axios.put(`${API_URL}/resetearContra/${id}`, { correo: nuevaContrasena });
 
-        swalWithTailwindButtons.fire({
-          icon: 'success',
-          title: 'Contraseña restablecida',
-          text: 'La contraseña ha sido restablecida al correo electrónico del usuario.',
-        });
+          swalWithTailwindButtons.fire({
+            icon: 'success',
+            title: 'Contraseña restablecida',
+            text: 'La contraseña ha sido restablecida al correo electrónico del usuario.',
+          });
+        } catch (error) {
+          console.error("Error al restablecer la contraseña:", error);
+          swalWithTailwindButtons.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al restablecer la contraseña.',
+          });
+        }
       }
     });
   };
