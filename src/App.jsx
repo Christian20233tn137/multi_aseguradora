@@ -82,6 +82,10 @@ const App = () => {
         return "Carga de Archivos";
       case "/inicioAgentes":
         return "Inicio";
+      case "/inicioAgentes/emisiones":
+        return "Emision";
+      case "/inicioAgentes/cotizaciones":
+        return "Cotizaciones";
       case "/inicioAgentes/cotizar":
         return "Cotizar";
       case "/inicioAgentes/cotizar/informacion":
@@ -89,6 +93,8 @@ const App = () => {
       case "/inicioAgentes/clientes":
         return "Clientes";
       case "/inicioAgentes/clientes/polizas":
+        return "Polizas";
+      case "/inicioAgentes/clientes/polizas/informacion":
         return "Polizas";
       case "/inicioAgentes/estadisticas":
         return "Estadisticas";
@@ -224,11 +230,9 @@ const App = () => {
           path="cotizar/informacion/cotizacion"
           element={<Cotizaciones />}
         />
-        <Route
-          path="cotizar/informacion/cotizacion/seguros"
-          element={<Seguros />}
-        />
+
         <Route path="estadisticas" element={<Estadisticas />} />
+        <Route path="emisiones" element={<Seguros />} />
         <Route path="clientes" element={<Clientes />} />
         <Route path="clientes/polizas" element={<Polizas />} />
         <Route

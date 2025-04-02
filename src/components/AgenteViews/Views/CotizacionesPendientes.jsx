@@ -1,40 +1,99 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const CotizacionesPendientes = () => {
+  const API_URL = "http://localhost:3000/nar/cotizaciones/pendientesByAgente";
 
-    const API_URL = "hhtp://localhost:300/nar/cotizaciones/pendientes"
+  const navigate = useNavigate();
+  const location = useLocation();
+  const id = location.state?.id;
 
-const navigate = useNavigate();
-const location = useLocation();
-const id = location.state.id;
-console.log(id);
+  const handleEmision = (idCotizacion) => {
+    navigate("/inicioAgentes/emisiones", { state: { id: id, idCotizacion: idCotizacion } });
+  };
 
-const [cotizaciones, setCotizaciones] = useState([]);
+  const [cotizaciones, setCotizaciones] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredCotizaciones, setFilteredCotizaciones] = useState([]);
 
-useEffect(()=> {
+  useEffect(() => {
     const fetchCotizaciones = async () => {
-        try {
-            const response = await axios.get(API_URL);
-            setCotizaciones(response.data)
-        } catch (error) {
-            console.error("Error al obtener las cotizaciones", error);
+      try {
+        const response = await axios.get(`${API_URL}/${id}`);
+        if (response.data.success && Array.isArray(response.data.data)) {
+          setCotizaciones(response.data.data);
+        } else {
+          console.error(
+            "La respuesta de la API no contiene datos válidos:",
+            response.data
+          );
         }
-    }
+      } catch (error) {
+        console.error("Error al obtener las cotizaciones", error);
+      }
+    };
 
-    fetchCotizaciones();
-}, [])
+    if (id) {
+      fetchCotizaciones();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const results = cotizaciones.filter((cotizacion) =>
+      cotizacion.nombreCliente.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredCotizaciones(results);
+  }, [searchTerm, cotizaciones]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
-    <div className='p-4'>
-      <div className="flex flex-col sm:flex-row items-center mb-4">
-        <input type="text" placeholder='Buscar' className='border p-2 w-64' value={search} aria-label='Buscar cotizacion'/>
+    <div className="p-6">
+      <div className="flex flex-col sm:flex-row items-center mb-6">
+        <input
+          type="text"
+          placeholder="Buscar cotización"
+          className="border-gray-300 p-3 w-72 rounded-lg shadow-sm focus:outline-none"
+          aria-label="Buscar cotización"
+          value={searchTerm}
+          onChange={handleSearch}
+        />
       </div>
-      <div className="border-0 p-4">
-        
+
+      <div className="border-0 space-y-6">
+        {filteredCotizaciones.map((cotizacion) => (
+          <div
+            key={cotizacion.idCotizacion}
+            className="bg-white shadow-md rounded-lg p-6 border border-gray-200 flex items-center"
+          >
+            <div className="flex flex-col space-y-2 flex-grow">
+              <p className="text-lg font-semibold text-gray-900">
+                {cotizacion.nombreCliente}
+              </p>
+              <p className="text-base text-gray-700">
+                <span className="font-medium">Asegurado:</span>{" "}
+                {cotizacion.nombreAsegurado}
+              </p>
+              <p className="text-base text-gray-700">
+                <span className="font-medium">Tipo de seguro:</span>{" "}
+                {cotizacion.tipoSeguro}
+              </p>
+            </div>
+
+            <button
+              className="px-6 py-2 botones font-medium ml-auto"
+              onClick={() => handleEmision(cotizacion.idCotizacion)}
+            >
+              Información
+            </button>
+          </div>
+        ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CotizacionesPendientes
+export default CotizacionesPendientes;

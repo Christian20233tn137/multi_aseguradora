@@ -4,11 +4,11 @@ import axios from "axios";
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredClientes, setFilteredClientes] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const id  = location.state.id;
-  
-  const [search, setSearch] = useState("");
+  const id = location.state?.id;
 
   useEffect(() => {
     const fetchClientes = async () => {
@@ -23,17 +23,24 @@ const Clientes = () => {
     fetchClientes();
   }, []);
 
-  const filteredRows = search.trim()
-    ? clientes.filter(
-        (cliente) =>
-          cliente.nombre.toLowerCase().includes(search.toLowerCase()) ||
+  useEffect(() => {
+    // Filtra los clientes cada vez que cambia el término de búsqueda
+    const results = clientes.filter(
+      (cliente) =>
+        (cliente.nombre && cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (cliente.apellidoPaterno && cliente.apellidoMaterno &&
           (cliente.apellidoPaterno + " " + cliente.apellidoMaterno)
             .toLowerCase()
-            .includes(search.toLowerCase()) ||
-          cliente.rfc.toLowerCase().includes(search.toLowerCase()) ||
-          cliente.curp.toLowerCase().includes(search.toLowerCase())
-      )
-    : clientes;
+            .includes(searchTerm.toLowerCase())) ||
+        (cliente.rfc && cliente.rfc.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (cliente.curp && cliente.curp.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredClientes(results);
+  }, [searchTerm, clientes]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
   return (
     <div className="relative p-4">
@@ -43,8 +50,8 @@ const Clientes = () => {
           type="text"
           placeholder="Buscar cliente"
           className="border p-2 w-64"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={searchTerm}
+          onChange={handleSearch}
           aria-label="Buscar cliente"
         />
       </div>
@@ -70,8 +77,8 @@ const Clientes = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredRows.length > 0 ? (
-              filteredRows.map((cliente) => (
+            {filteredClientes.length > 0 ? (
+              filteredClientes.map((cliente) => (
                 <tr key={cliente.id}>
                   <td className="py-2 px-4 border-b border-gray-200 text-center">
                     {cliente.nombre}
@@ -89,8 +96,9 @@ const Clientes = () => {
                     <button
                       className="botones text-white py-1 px-3 rounded"
                       onClick={() => {
-                        navigate(`${location.pathname}/polizas`, {state : {idPoliza: cliente._id, id: id}});
-                    //  
+                        navigate(`${location.pathname}/polizas`, {
+                          state: { idPoliza: cliente._id, id: id },
+                        });
                       }}
                     >
                       Ver Pólizas

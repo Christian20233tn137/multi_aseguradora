@@ -38,7 +38,7 @@ const MainContentAgente = () => {
       case `/inicioAgentes/cotizar/informacion/cotizacion`:
         return <Cotizaciones />;
 
-      case `/inicioAgentes/cotizar/informacion/cotizacion/seguros`:
+      case `/inicioAgentes/emisiones`:
         return <Seguros />;
       case `/inicioAgentes/estadisticas`:
         return <Estadisticas />;

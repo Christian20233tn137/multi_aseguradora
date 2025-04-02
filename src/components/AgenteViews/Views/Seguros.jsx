@@ -1,111 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 const Seguros = () => {
-  const [asegurado, setAsegurado] = useState({
-    nombre: 'Prueba',
-    telefono: '78978-5598-989',
-    edad: '80',
-    correo: 'Hola',
-    imagen: '', // Aquí se cargará la imagen desde el back
-  });
+  const API_URL = "http://localhost:3000/nar/cotizaciones/id";
 
-  
-const handleEmitir = () => {
-  const swalWithTailwindButtons = Swal.mixin({
-    customClass: {
-      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
-    },
-    buttonsStyling: false
-  });
+  const [emision, setEmisiones] = useState(null);
+  const location = useLocation();
+  const id = location.state?.id;
+  const idCotizacion = location.state?.idCotizacion;
 
-  swalWithTailwindButtons.fire({
-    title: '¿Estás seguro de emitir la acción?',
-    text: 'Una vez emitido, no podrás revertir esta acción.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, emitir',
-    cancelButtonText: 'Cancelar',
-    reverseButtons: true
-  }).then(async (result) => {
-    if (result.isConfirmed) {
+  useEffect(() => {
+    const fetchCotizaciones = async () => {
       try {
-        // Comenta esta parte para probar los botones sin necesidad de un backend activo
-        /*
-        const response = await axios.post("/api/emitir-poliza", {
-          // Aquí irían los datos necesarios para emitir la póliza
-        });
-
-        if (response.status === 200) {
-          swalWithTailwindButtons.fire('¡Emitido!', 'La póliza ha sido emitida al correo del cliente.', 'success');
+        const response = await axios.get(`${API_URL}/${idCotizacion}`);
+        if (response.data.success) {
+          setEmisiones(response.data.data);
         } else {
-          swalWithTailwindButtons.fire('Error', 'Hubo un problema al emitir la póliza.', 'error');
+          console.error("La respuesta de la API no contiene datos válidos:", response.data);
         }
-        */
-
-        // Para probar sin backend, descomenta la siguiente línea:
-        swalWithTailwindButtons.fire('¡Emitido!', 'La póliza ha sido emitida al correo del cliente.', 'success');
-
       } catch (error) {
-        console.error("Error al emitir la póliza:", error);
-        swalWithTailwindButtons.fire('Error', 'Ocurrió un error inesperado.', 'error');
+        console.error("Error al obtener las cotizaciones", error);
       }
+    };
+
+    if (idCotizacion) {
+      fetchCotizaciones();
     }
-  });
-};
+  }, [idCotizacion]);
+
+  const handleEmitir = () => {
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro de emitir la acción?",
+        text: "Una vez emitido, no podrás revertir esta acción.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, emitir",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            // Comenta esta parte para probar los botones sin necesidad de un backend activo
+            /*
+            const response = await axios.post("/api/emitir-poliza", {
+              // Aquí irían los datos necesarios para emitir la póliza
+            });
+
+            if (response.status === 200) {
+              swalWithTailwindButtons.fire('¡Emitido!', 'La póliza ha sido emitida al correo del cliente.', 'success');
+            } else {
+              swalWithTailwindButtons.fire('Error', 'Hubo un problema al emitir la póliza.', 'error');
+            }
+            */
+
+            // Para probar sin backend, descomenta la siguiente línea:
+            swalWithTailwindButtons.fire(
+              "¡Emitido!",
+              "La póliza ha sido emitida al correo del cliente.",
+              "success"
+            );
+          } catch (error) {
+            console.error("Error al emitir la póliza:", error);
+            swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
+          }
+        }
+      });
+  };
+
+  if (!emision) {
+    return <div>Cargando...</div>;
+  }
 
   return (
-    <div className="relative p-4">
-      <h1 className="text-3xl p-3 text-center font-normal text-black miColor rounded-2xl w-full">
+    <div className="max-h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+      <h1 className="text-2xl font-bold text-center bg-blue-200 w-full py-4 rounded-lg">
         Información sobre el seguro
       </h1>
 
-      <div className="flex flex-col items-center p-4">
-        {/* Contenedor modificado para alinear título e imagen */}
-        <div className="flex items-center justify-center gap-4 mb-4">
-          
-          {/* Imagen asegurado */}
-          <div className="w-24 h-24 rounded-full bg-gray-400 overflow-hidden">
-            {asegurado.imagen ? (
-              <img src={asegurado.imagen} alt="Foto asegurado" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-white">Foto</div>
-            )}
+      {/* Contenedor principal de la tarjeta */}
+      <div className="bg-white p-6 rounded-lg max-w-3xl w-full mt-6 overflow-hidden">
+        {/* Imagen y título alineados */}
+        <div className="flex items-center space-x-6 mb-6">
+          <div className="w-24 h-24 bg-gray-400 rounded-full flex items-center justify-center">
+            <span className="text-white">Foto</span>
           </div>
-          <h2 className="text-2xl font-semibold">SEGURO DE VIDA 1</h2>
+          <h2 className="text-2xl font-semibold">{emision.nombreSeguro}</h2>
         </div>
 
         {/* Datos del asegurado */}
-        <div className="border border-gray-400 rounded-lg p-4 w-full max-w-xl text-sm mt-4">
-          <p><span className="font-semibold">Nombre:</span> {asegurado.nombre}</p>
-          <p><span className="font-semibold">Teléfono:</span> {asegurado.telefono}</p>
-          <p><span className="font-semibold">Edad:</span> {asegurado.edad} años</p>
-          <p><span className="font-semibold">Correo:</span> {asegurado.correo}</p>
+        <div className="border border-gray-300 rounded-lg p-4 mb-4">
+          <p>
+            <strong>Nombre:</strong> {emision.nombreAsegurado}
+          </p>
+          <p>
+            <strong>Teléfono:</strong> {emision.telefonoAsegurado}
+          </p>
+          <p>
+            <strong>Edad:</strong> {emision.edadAsegurado} años
+          </p>
+          <p>
+            <strong>Correo:</strong> {emision.correoAsegurado}
+          </p>
         </div>
 
-        {/* Costos y coberturas */}
-        <div className="border border-gray-400 rounded-lg p-4 w-full max-w-4x1 text-sm mt-4">
-          <p><span className="font-semibold">Costo mensual:</span> $90, $60</p>
+        {/* Coberturas */}
+        <div className="border border-gray-300 rounded-lg p-4">
           <p className="font-semibold">Coberturas:</p>
           <ul className="list-disc pl-6">
-            <li>Muerte Natural – Pago a beneficiarios por fallecimiento.</li>
-            <li>Muerte Accidental – Pago extra si la muerte es por accidente.</li>
-            <li>Invalidez Total – Indemnización si el asegurado queda incapacitado.</li>
-            <li>Enfermedad Terminal – Adelanto del seguro en casos graves.</li>
-            <li>Gastos Funerarios – Cobertura de costos del funeral.</li>
-            <li>Doble Indemnización – Pago doble si la muerte es accidental.</li>
+            <li>{emision.cobertura}</li>
           </ul>
         </div>
 
+        {/* Precio Final */}
+        <div className="border border-gray-300 rounded-lg p-4 mt-4">
+          <p>
+            <strong>Precio Final:</strong> ${emision.precioFinal}
+          </p>
+        </div>
+
         {/* Botones */}
-        <div className="flex space-x-20 justify-center mt-20">
-          <button type='button'  className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
-          onClick={() => navigate('/seguros')}
-          >Regresar</button>
-          <button 
-          type='button'
-             className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
+        <div className="flex justify-between mt-6">
+          <button
+            className="botones text-white px-4 py-2 rounded-lg"
+            onClick={() => navigate("/seguros")}
+          >
+            Regresar
+          </button>
+          <button
+            className="botones text-white px-4 py-2 rounded-lg"
             onClick={handleEmitir}
           >
             Emitir
