@@ -70,7 +70,7 @@ const App = () => {
         return "Agregar Seguro";
       case "/agentes":
         return "Agentes";
-      case "/agentes/editar":
+      case "/agentes/editar/:id":
         return "Agentes";
       case "/agentes/perfil":
         return "Perfil";
@@ -183,7 +183,7 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="editar" element={<EditarAgente />} />
+        <Route path="editar/:id" element={<EditarAgente />} />
         <Route path="perfil" element={<AgentesInfo />} />
       </Route>
       <Route

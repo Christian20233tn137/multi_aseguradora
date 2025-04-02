@@ -87,7 +87,7 @@ const InicioAgentes = () => {
 
   const handleEditar = (agenteId) => {
     if (view === "agentes") {
-      navigate("/agentes/editar");
+      navigate(`/agentes/editar/${agenteId}`);
     } else {
       swalWithTailwindButtons.fire({
         title: "¿Estás seguro de continuar?",

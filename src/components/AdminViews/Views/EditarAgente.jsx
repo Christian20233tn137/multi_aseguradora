@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
+const API_URL = "http://localhost:3000/nar/usuarios";
+
 const EditarAgente = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [agente, setAgente] = useState({
-    id: '',
-    nombre: '',
-    apellidoPaterno: '',
-    apellidoMaterno: '',
-    correo: '',
-    telefono: '',
-    rfc: '',
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    correo: "",
+    telefono: "",
+    rfc: "",
   });
+  const [loading, setLoading] = useState(true);
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -26,19 +30,28 @@ const EditarAgente = () => {
   useEffect(() => {
     const obtenerAgente = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/nar/usuarios/agentesActivos/${id}`);
-        if (response.data) {
+        if (location.state && location.state.agente) {
+          setAgente(location.state.agente);
+        } else if (id) {
+          const response = await axios.get(`${API_URL}/id/${id}`);
           setAgente(response.data);
         } else {
-          console.error('No se encontró el agente.');
+          throw new Error("ID del agente no definido");
         }
       } catch (error) {
-        console.error('Error al obtener el agente:', error);
+        console.error("Error al obtener detalles del agente:", error);
+        Swal.fire({
+          title: "Error",
+          text: "No se pudieron obtener los detalles del agente.",
+          icon: "error",
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
     obtenerAgente();
-  }, [id]);
+  }, [id, location.state]);
 
   const handleChange = (e) => {
     setAgente({
@@ -95,48 +108,66 @@ const EditarAgente = () => {
     return true;
   };
 
-  const guardarDatos = () => {
+  const handleEditSubmit = async () => {
     if (validarCampos()) {
-      swalWithTailwindButtons.fire({
-        title: "¿Estás seguro?",
-        text: "¿Quieres editar este agente?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, guardar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            const { rfc, ...formData } = agente; // Excluir el campo 'rfc'
+      try {
+        // Crear un nuevo objeto excluyendo el campo 'rfc'
+        const formData = {
+          nombre: agente.nombre,
+          apellidoPaterno: agente.apellidoPaterno,
+          apellidoMaterno: agente.apellidoMaterno,
+          correo: agente.correo,
+          telefono: agente.telefono,
+        };
 
-            const response = await axios.put(`http://localhost:3000/nar/usuarios/byAdmin/${id}`, formData);
+        console.log("Datos a enviar:", formData); // Verifica el contenido de formData
 
-            if (response.status === 200) {
-              swalWithTailwindButtons.fire({
-                title: "Éxito",
-                text: "Datos guardados correctamente.",
-                icon: "success",
-              });
-            } else {
-              swalWithTailwindButtons.fire({
-                title: "Error",
-                text: "Hubo un problema al guardar los datos.",
-                icon: "error",
-              });
-            }
-          } catch (error) {
-            console.error("Error al guardar el agente:", error);
-            swalWithTailwindButtons.fire({
-              title: "Error",
-              text: "Ocurrió un error inesperado.",
-              icon: "error",
-            });
-          }
+        const response = await axios.put(`${API_URL}/byAdmin/${id}`, formData);
+
+        if (response.status === 200) {
+          swalWithTailwindButtons.fire({
+            title: "Éxito",
+            text: "Datos guardados correctamente.",
+            icon: "success",
+          });
+          navigate("/agentes"); // Redirigir a la lista de agentes
+        } else {
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "Hubo un problema al guardar los datos.",
+            icon: "error",
+          });
         }
-      });
+      } catch (error) {
+        console.error("Error al guardar el agente:", error);
+        swalWithTailwindButtons.fire({
+          title: "Error",
+          text: "Ocurrió un error inesperado.",
+          icon: "error",
+        });
+      }
     }
   };
+
+  const showEditAlert = () => {
+    swalWithTailwindButtons.fire({
+      title: '¿Deseas guardar los cambios?',
+      text: 'Se actualizará la información del agente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar cambios',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleEditSubmit();
+      }
+    });
+  };
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
@@ -216,7 +247,7 @@ const EditarAgente = () => {
           type="button"
           className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           style={{ backgroundColor: "#0B1956" }}
-          onClick={guardarDatos}
+          onClick={showEditAlert}
         >
           Guardar
         </button>
