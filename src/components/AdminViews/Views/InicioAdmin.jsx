@@ -198,7 +198,7 @@ const InicioAdmin = () => {
               </button>
               <button
                 className="px-6 py-3 text-white botones"
-                onClick={handleNavigateInfo}
+                onClick={() => navigate(`/administradores/informacion/${administrador._id}`)}
               >
                 Perfil
               </button>
