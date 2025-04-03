@@ -43,7 +43,7 @@ const SolicitudDocumentos = () => {
       file: doc.idDocumento,  // Esto debe ser el mismo ID que en GridFS
       type: 'unknown' // Si no guardaste la extensión, lo manejas aparte
     }));
-  };  
+  };
 
   const handleBack = () => {
     navigate("/solicitudes");
@@ -69,7 +69,7 @@ const SolicitudDocumentos = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.put(`http://localhost:3000/nar/usuarios/postulanteAgente/`, profile);
+          const response = await axios.put(`http://localhost:3000/nar/usuarios/postulanteAgente/${profile._id}`);
           swalWithTailwindButtons.fire({
             title: `${action.charAt(0).toUpperCase() + action.slice(1)}!`,
             text: `El postulante fue ${action}.`,
