@@ -34,6 +34,7 @@ import InicioAgente from "./components/AgenteViews/Views/InicioAgente";
 import Clientes from "./components/AgenteViews/Views/Clientes";
 import Estadisticas from "./components/AgenteViews/Views/Estadisticas";
 import CotizacionesPendientes from "./components/AgenteViews/Views/CotizacionesPendientes";
+import SegurosCotizar from "./components/AgenteViews/Views/SegurosCotizar";
 
 const App = () => {
   const location = useLocation();
@@ -224,6 +225,7 @@ const App = () => {
         <Route index element={<InicioAgente />} />
         <Route path="editarPerfil" element={<EditarPerfil />} />
         <Route path="cotizaciones" element={<CotizacionesPendientes />} />
+        <Route path="seguros" element={<SegurosCotizar />} />
         <Route path="cotizar" element={<Cotizar />} />
         <Route path="cotizar/informacion" element={<DatosCotizar />} />
         <Route

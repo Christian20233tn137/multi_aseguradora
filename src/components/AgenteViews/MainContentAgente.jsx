@@ -12,6 +12,7 @@ import Seguros from "./Views/Seguros";
 import InformacionPolizas from "./Views/InformacionPolizas";
 import EditarPerfil from "./Views/EditarPerfil";
 import CotizacionesPendientes from "./Views/CotizacionesPendientes";
+import SegurosCotizar from "./Views/SegurosCotizar";
 
 const MainContentAgente = () => {
   const location = useLocation();
@@ -23,6 +24,8 @@ const MainContentAgente = () => {
     switch (path) {
       case `/inicioAgentes`:
         return <InicioAgente />;
+      case `/inicioAgentes/seguros`:
+        return <SegurosCotizar />;
       case `/inicioAgentes/cotizaciones`:
         return <CotizacionesPendientes />;
       case `/inicioAgentes/clientes/polizas`:
@@ -37,7 +40,6 @@ const MainContentAgente = () => {
         return <DatosCotizar />;
       case `/inicioAgentes/cotizar/informacion/cotizacion`:
         return <Cotizaciones />;
-
       case `/inicioAgentes/emisiones`:
         return <Seguros />;
       case `/inicioAgentes/estadisticas`:

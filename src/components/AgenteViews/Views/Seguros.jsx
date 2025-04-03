@@ -10,6 +10,8 @@ const Seguros = () => {
   const location = useLocation();
   const id = location.state?.id;
   const idCotizacion = location.state?.idCotizacion;
+  console.log("Pruebaaaa", id);
+  console.log("Pruebaaaa dos", idCotizacion);
 
   useEffect(() => {
     const fetchCotizaciones = async () => {

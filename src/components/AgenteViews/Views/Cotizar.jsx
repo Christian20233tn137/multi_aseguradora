@@ -12,9 +12,9 @@ const Cotizar = () => {
 
   const navigate = useNavigate();
 
-  const handleFormulario = () => {
+  const handleFormulario = (nombre) => {
     navigate(`${location.pathname}/informacion`, {
-      state: { id: location.state.id },
+      state: { id: location.state.id, tipoSeguro: nombre },
     });
   };
 
@@ -63,7 +63,7 @@ const Cotizar = () => {
             </div>
             <button
               className="px-8 py-3 text-white rounded botones mt-2 sm:mt-0"
-              onClick={handleFormulario}
+              onClick={() => handleFormulario(aseguradora.nombre)}
             >
               Cotizar
             </button>
