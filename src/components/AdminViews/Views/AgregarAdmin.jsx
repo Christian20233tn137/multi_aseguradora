@@ -1,14 +1,16 @@
 import React, { useState } from "react";
+import axios from "axios";
 import Swal from "sweetalert2";
 
 const AgregarAdmin = () => {
   // Estados editables
   const [nombre, setNombre] = useState("");
-  const [fechaNacimiento, setFechaNacimiento] = useState("");
-  const [correoElectronico, setCorreoElectronico] = useState("");
+  const [correo, setCorreo] = useState("");
   const [apellidoPaterno, setApellidoPaterno] = useState("");
   const [apellidoMaterno, setApellidoMaterno] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [rfc, setRfc] = useState("");
+  const [curp, setCurp] = useState("");
 
   // Función para enviar la cotización al backend
   const swalWithTailwindButtons = Swal.mixin({
@@ -18,33 +20,35 @@ const AgregarAdmin = () => {
     },
     buttonsStyling: false
   });
-  
+
   const agregarCotizacion = async () => {
+    // Validación básica
+    if (!nombre || !correo || !apellidoPaterno || !telefono || !rfc || !curp) {
+      swalWithTailwindButtons.fire("Error", "Todos los campos marcados con * son obligatorios.", "error");
+      return;
+    }
+
     try {
-      // Comenta esta parte para probar los botones sin necesidad de un backend activo
-      /*
-      const response = await axios.post("/api/cotizaciones", {
+      const response = await axios.post("http://localhost:3000/nar/usuarios/admin", {
         nombre,
-        fechaNacimiento,
-        correoElectronico,
+        correo,
         apellidoPaterno,
         apellidoMaterno,
         telefono,
+        rfc,
+        curp,
       });
-      */
-  
-      // Simula una respuesta exitosa para probar sin backend
-      const response = { status: 200 };
-  
+
       if (response.status === 200) {
-        swalWithTailwindButtons.fire("Cotización Enviada", "El administrador se resgistró correctamente.", "success");
+        swalWithTailwindButtons.fire("Administrador agregado", "El administrador se registró correctamente.", "success");
         // Opcional: limpiar el formulario
         setNombre("");
-        setFechaNacimiento("");
-        setCorreoElectronico("");
+        setCorreo("");
         setApellidoPaterno("");
         setApellidoMaterno("");
         setTelefono("");
+        setRfc("");
+        setCurp("");
       } else {
         swalWithTailwindButtons.fire("Error", "Hubo un problema al registrar el administrador.", "error");
       }
@@ -53,7 +57,7 @@ const AgregarAdmin = () => {
       swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
     }
   };
-  
+
   // Confirmación con SweetAlert
   const confirmarCotizacion = () => {
     swalWithTailwindButtons.fire({
@@ -77,71 +81,27 @@ const AgregarAdmin = () => {
          Agregar Administrador
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
-        <div className="flex items-center">
-          <label className="text-gray-700 text-sm font-bold mr-2">Nombre*</label>
-          <input
-            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            placeholder="Nombre"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-gray-700 text-sm font-bold mr-2">Fecha de nacimiento*</label>
-          <input
-            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="date"
-            value={fechaNacimiento}
-            onChange={(e) => setFechaNacimiento(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-gray-700 text-sm font-bold mr-2">Apellido paterno*</label>
-          <input
-            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="text"
-            value={apellidoPaterno}
-            onChange={(e) => setApellidoPaterno(e.target.value)}
-            placeholder="Apellido Paterno"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-gray-700 text-sm font-bold mr-16">Apellido materno</label>
-          <input
-            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="text"
-            value={apellidoMaterno}
-            onChange={(e) => setApellidoMaterno(e.target.value)}
-            placeholder="Apellido Materno"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-gray-700 text-sm font-bold mr-10">Teléfono*</label>
-          <input
-            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="text"
-            value={telefono}
-            onChange={(e) => setTelefono(e.target.value)}
-            placeholder="Teléfono"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-gray-700 text-sm font-bold mr-10">Correo electrónico*</label>
-          <input
-            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="email"
-            value={correoElectronico}
-            onChange={(e) => setCorreoElectronico(e.target.value)}
-            placeholder="Correo electrónico"
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+        {[
+          { label: "Nombre*", value: nombre, setValue: setNombre, type: "text", placeholder: "Nombre" },
+          { label: "Apellido paterno*", value: apellidoPaterno, setValue: setApellidoPaterno, type: "text", placeholder: "Apellido Paterno" },
+          { label: "Apellido materno", value: apellidoMaterno, setValue: setApellidoMaterno, type: "text", placeholder: "Apellido Materno" },
+          { label: "Teléfono*", value: telefono, setValue: setTelefono, type: "text", placeholder: "Teléfono" },
+          { label: "Correo electrónico*", value: correo, setValue: setCorreo, type: "email", placeholder: "Correo electrónico" },
+          { label: "RFC*", value: rfc, setValue: setRfc, type: "text", placeholder: "RFC" },
+          { label: "CURP*", value: curp, setValue: setCurp, type: "text", placeholder: "CURP" },
+        ].map((field, index) => (
+          <div key={index} className="flex flex-col">
+            <label className="text-gray-700 text-sm font-bold mb-2">{field.label}</label>
+            <input
+              className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type={field.type}
+              value={field.value}
+              onChange={(e) => field.setValue(e.target.value)}
+              placeholder={field.placeholder}
+            />
+          </div>
+        ))}
       </div>
 
       {/* Botón Agregar*/}

@@ -95,8 +95,7 @@ const InicioAdmin = () => {
       .then(async (result) => {
         if (result.isConfirmed) {
           try {
-            // Comenta esta parte para probar los botones sin necesidad de un backend activo
-            /*
+           
             const response = await axios.put(`http://localhost:3000/api/administradores/${index}`, {
               active: !isCurrentlyChecked, // Envía el nuevo estado al backend
             });
@@ -116,7 +115,7 @@ const InicioAdmin = () => {
             } else {
               swalWithTailwindButtons.fire("Error", "Hubo un problema al actualizar el estado del administrador.", "error");
             }
-            */
+          
 
             // Para probar sin backend, descomenta la siguiente línea:
             swalWithTailwindButtons.fire({
