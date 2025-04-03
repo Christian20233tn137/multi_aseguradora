@@ -43,6 +43,10 @@ const MainContent = () => {
         return <EditarAgente />;
     }
 
+    if (location.pathname.includes("/informacion")){
+      return <InformacionAdmin />;
+  }
+
     // Para rutas estáticas
     switch (location.pathname) {
       case "/inicio":

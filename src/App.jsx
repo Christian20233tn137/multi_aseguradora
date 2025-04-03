@@ -201,7 +201,7 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="informacion" element={<InformacionAdmin />} />
+        <Route path="informacion/:id" element={<InformacionAdmin />} />
         <Route path="editar/:id" element={<EditarAdmin />} />
         <Route path="agregar" element={<AgregarAdmin />} />
       </Route>
