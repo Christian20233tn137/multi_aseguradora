@@ -229,8 +229,8 @@ const InicioAseguradoras = () => {
                 <button
                   className="px-6 py-3 text-white botones"
                   onClick={() =>
-                    navigate(`/aseguradoras/seguros/${aseguradora._id}`, {
-                      state: { aseguradora },
+                    navigate(`/aseguradoras/seguros`, {
+                      state: { aseguradora, idAseguradora: aseguradora._id, id : id },
                     })
                   }
                 >
