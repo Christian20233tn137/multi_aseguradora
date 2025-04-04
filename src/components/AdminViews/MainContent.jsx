@@ -88,10 +88,7 @@ if (location.pathname.includes("/aseguradoras/seguros/editar/")){
         return <InicioAdmin />;
       case "/administradores/informacion":
         return <InformacionAdmin />;
-      case "/administradores/editar":
-        return <EditarAdmin />;
-      case "/administradores/informacion":
-        return <InformacionAdmin />;
+   
       case "/administradores/agregar":
         return <AgregarAgente />;
       case "/configurar-cuotas":
