@@ -11,7 +11,6 @@ const AgregarSeguro = () => {
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const [nombre, setNombre] = useState("");
-  const [descripcion, setDescripcion] = useState("");
   const [cobertura, setCobertura] = useState("");
   const [icono, setIcono] = useState(null);
   const [tipo, setTipo] = useState("");
@@ -42,7 +41,7 @@ const AgregarSeguro = () => {
 
   const agregarSeguro = async () => {
     // Validación de campos requeridos
-    if (!nombre || !descripcion || !cobertura || !tipo || !precioBase) {
+    if (!nombre || !cobertura || !tipo || !precioBase) {
       swalWithTailwindButtons.fire({
         title: "Error",
         text: "Por favor, complete todos los campos requeridos.",
@@ -53,7 +52,6 @@ const AgregarSeguro = () => {
 
     const dataToSend = {
       nombre,
-      descripcion,
       cobertura: cobertura.replace(/<\/?[^>]+(>|$)/g, ""), // Elimina etiquetas HTML
       icono,
       idAseguradora,
@@ -123,18 +121,6 @@ const AgregarSeguro = () => {
           onChange={(e) => setNombre(e.target.value)}
           className="w-full border rounded p-2"
           placeholder="Nombre del seguro"
-        />
-      </div>
-
-      {/* Campo de Descripción */}
-      <div className="mb-4">
-        <label className="block font-semibold">Descripción*</label>
-        <textarea
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          className="w-full border rounded p-2"
-          rows="3"
-          placeholder="Descripción del seguro"
         />
       </div>
 

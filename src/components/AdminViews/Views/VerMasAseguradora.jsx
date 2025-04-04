@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const VerMasAseguradora = () => {
   const location = useLocation();
-  const id = location.state?.id; // Obtener el ID de la aseguradora desde la URL
-  console.log("Id del agente", id);
-
-  const idAseguradora  = location.state?.idAseguradora;
+  const idAseguradora = location.state?.idAseguradora; // Obtener el ID de la aseguradora desde el estado de navegación
   console.log("ID de aseguradora:", idAseguradora);
-  
+
   const navigate = useNavigate();
 
   const [aseguradoraData, setAseguradoraData] = useState({
@@ -96,9 +93,8 @@ const VerMasAseguradora = () => {
   );
 
   const handlerNavigationEdit = (seguroId) => {
-    navigate(`/aseguradoras/seguros/editar/${seguroId || ""}`);
+    navigate(`/aseguradoras/seguros/editar/${seguroId || ""}`, { state: { id: seguroId, idAseguradora } });
   };
-
   const handlerInfo = (seguroId) => {
     navigate(`/aseguradoras/seguros/informacion/${seguroId}`);
   };
