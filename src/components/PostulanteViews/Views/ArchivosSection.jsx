@@ -191,7 +191,7 @@ const ArchivosSection = () => {
   };
 
   return (
-    <div className="flex-1 p-4 overflow-y-auto">
+    <div className="flex-1 p-4 overflow-y-auto relative">
       <div className="flex flex-col items-center p-6">
         <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-6 text-center">
           {Object.entries(files).map(([key, file]) => (
@@ -254,6 +254,12 @@ const ArchivosSection = () => {
         >
           {isSubmitting ? 'Enviando...' : 'Enviar archivos'}
         </button>
+
+        {isSubmitting && (
+          <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+            <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+          </div>
+        )}
       </div>
     </div>
   );
