@@ -1,4 +1,6 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -10,23 +12,92 @@ import {
 } from "recharts";
 
 const Estadisticas = () => {
+  const API_URL = "http://localhost:3000/nar/usuarios/cotizacionesYEmisiones";
+  const location = useLocation();
+  const id = location.state?.id;
 
   const cuotas = 10;
   let tittle = "Cuotas a cumplir: ";
 
-  const dataCotizaciones = [
-    { name: "Ene", cotizaciones: 4 },
-    { name: "Feb", cotizaciones: 3 },
-    { name: "Mar", cotizaciones: 5 }, 
-    { name: "Abr", cotizaciones: 2 },
-  ];
+  const [dataCotizaciones, setDataCotizaciones] = useState([
+    { name: "Ene", cotizaciones: 0 },
+    { name: "Feb", cotizaciones: 0 },
+    { name: "Mar", cotizaciones: 0 },
+    { name: "Abr", cotizaciones: 0 },
+    { name: "May", cotizaciones: 0 },
+    { name: "Jun", cotizaciones: 0 },
+    { name: "Jul", cotizaciones: 0 },
+    { name: "Ago", cotizaciones: 0 },
+    { name: "Sep", cotizaciones: 0 },
+    { name: "Oct", cotizaciones: 0 },
+    { name: "Nov", cotizaciones: 0 },
+    { name: "Dic", cotizaciones: 0 },
+  ]);
 
-  const dataVentas = [
-    { name: "Ene", ventas: 3 },
-    { name: "Feb", ventas: 4 },
-    { name: "Mar", ventas: 2 },
-    { name: "Abr", ventas: 5 },
-  ];
+  const [dataVentas, setDataVentas] = useState([
+    { name: "Ene", ventas: 0 },
+    { name: "Feb", ventas: 0 },
+    { name: "Mar", ventas: 0 },
+    { name: "Abr", ventas: 0 },
+    { name: "May", ventas: 0 },
+    { name: "Jun", ventas: 0 },
+    { name: "Jul", ventas: 0 },
+    { name: "Ago", ventas: 0 },
+    { name: "Sep", ventas: 0 },
+    { name: "Oct", ventas: 0 },
+    { name: "Nov", ventas: 0 },
+    { name: "Dic", ventas: 0 },
+  ]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/${id}`);
+        const { emisiones, cotizaciones } = response.data;
+
+        // Obtener el mes actual (0-11)
+        const currentMonth = new Date().getMonth();
+
+        // Actualizar los datos del mes actual
+        setDataCotizaciones((prevData) =>
+          prevData.map((data, index) =>
+            index === currentMonth ? { ...data, cotizaciones } : data
+          )
+        );
+
+        setDataVentas((prevData) =>
+          prevData.map((data, index) =>
+            index === currentMonth ? { ...data, ventas: emisiones } : data
+          )
+        );
+      } catch (error) {
+        console.error("Error al obtener los datos:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    // Reiniciar los datos al inicio de cada mes
+    const currentDate = new Date();
+    const nextMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      1
+    );
+
+    const timer = setTimeout(() => {
+      setDataCotizaciones((prevData) =>
+        prevData.map((data) => ({ ...data, cotizaciones: 0 }))
+      );
+      setDataVentas((prevData) =>
+        prevData.map((data) => ({ ...data, ventas: 0 }))
+      );
+    }, nextMonth.getTime() - currentDate.getTime());
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="p-6 w-auto h-auto overflow-hidden">
@@ -46,7 +117,7 @@ const Estadisticas = () => {
           </BarChart>
         </div>
         <div className="flex flex-col items-center">
-          <h2 className="text-xl font-bold mb-4">Ventas por Mes</h2>
+          <h2 className="text-xl font-bold mb-4">Emisiones por Mes</h2>
           <BarChart width={400} height={300} data={dataVentas}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
