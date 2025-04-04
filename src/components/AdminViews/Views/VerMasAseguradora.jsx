@@ -5,9 +5,7 @@ import Swal from "sweetalert2";
 
 const VerMasAseguradora = () => {
   const location = useLocation();
-  const idAseguradora = location.state?.idAseguradora; // Obtener el ID de la aseguradora desde el estado de navegación
-  console.log("ID de aseguradora:", idAseguradora);
-
+  const idAseguradora = location.state?.idAseguradora;
   const navigate = useNavigate();
 
   const [aseguradoraData, setAseguradoraData] = useState({
@@ -31,25 +29,18 @@ const VerMasAseguradora = () => {
           throw new Error("ID de aseguradora no proporcionado");
         }
 
-        // 1. Obtener datos de la aseguradora
         const aseguradoraResponse = await axios.get(
           `http://localhost:3000/nar/aseguradoras/id/${idAseguradora}`
         );
-        console.log("Datos de aseguradora:", aseguradoraResponse.data);
         setAseguradoraData(aseguradoraResponse.data);
 
-        // 2. Obtener seguros de la aseguradora
         const segurosResponse = await axios.get(
           `http://localhost:3000/nar/seguros/segurosByAseguradora/${idAseguradora}`
         );
-        console.log("Datos de seguros:", segurosResponse.data);
         setSeguros(segurosResponse.data);
 
-        // Cargar estado desde localStorage
         const storedState =
           JSON.parse(localStorage.getItem("checkedItems")) || {};
-
-        // Inicializar el estado de los switches
         const initialCheckedItems = {};
         segurosResponse.data.forEach((seguro) => {
           initialCheckedItems[seguro._id] =
@@ -81,7 +72,6 @@ const VerMasAseguradora = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
   };
 
-  // Manejar posibles diferentes estructuras de datos
   const filteredSeguros = seguros.filter((seguro) => {
     const searchField = seguro?.name || seguro?.nombre || "";
     return searchField.toLowerCase().includes(searchTerm.toLowerCase());
@@ -95,14 +85,13 @@ const VerMasAseguradora = () => {
   const handlerNavigationEdit = (seguroId) => {
     navigate(`/aseguradoras/seguros/editar/${seguroId || ""}`, { state: { id: seguroId, idAseguradora } });
   };
+
   const handlerInfo = (seguroId) => {
-    console.log("Navigating to seguroId:", seguroId);
     navigate(`/seguros/informacion/${seguroId || ""}`, { state: { id: seguroId } });
   };
 
   const handlerAdd = () => {
     navigate(`/aseguradoras/seguros/agregar`, { state: { idAseguradora } });
-    // Navegar a la ruta de agregar seguro
   };
 
   const handleToggleSwitch = async (seguroId, isActive) => {
@@ -148,7 +137,7 @@ const VerMasAseguradora = () => {
                   ...prevState,
                   [seguroId]: !isActive,
                 };
-                localStorage.setItem("checkedItems", JSON.stringify(newState)); // Guardar en localStorage
+                localStorage.setItem("checkedItems", JSON.stringify(newState));
                 return newState;
               });
 
@@ -196,7 +185,6 @@ const VerMasAseguradora = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-4 overflow-hidden">
-      {/* Información de la aseguradora */}
       <div className="flex flex-col md:flex-row items-center justify-between mb-6">
         <div className="flex items-center space-x-4 mb-4 md:mb-0">
           <div className="w-16 h-16 bg-gray-300 rounded-lg"></div>
@@ -236,16 +224,13 @@ const VerMasAseguradora = () => {
         </div>
       </div>
 
-      {/* Título de la sección */}
       <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black bg-blue-100 rounded-2xl">
         Seguros
       </h1>
 
-      {/* Lista de seguros */}
       <div className="flex-grow overflow-y-hidden h-full">
         {currentItems.length > 0 ? (
           currentItems.map((seguro) => {
-            // Asegurar compatibilidad con diferentes estructuras de datos
             const seguroId = seguro?.id || seguro?._id;
             const nombreSeguro = seguro?.name || seguro?.nombre || "Sin nombre";
             const fechaSeguro = seguro?.date || seguro?.fecha || "Sin fecha";
@@ -297,7 +282,6 @@ const VerMasAseguradora = () => {
         )}
       </div>
 
-      {/* Botones de paginación */}
       {filteredSeguros.length > 0 && (
         <div className="flex justify-between mt-4">
           <button
