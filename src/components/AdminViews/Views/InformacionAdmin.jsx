@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate} from 'react-router-dom';
 import axios from 'axios';
 
 const API_URL = "http://localhost:3000/nar/usuarios/id";
 
 const InformacionAdmin = () => {
   const location = useLocation();
-
   const navigate = useNavigate();
-  const { id } = useParams(); // Obtener el ID del administrador desde la URL
+  const id = location.state?.id;
+  const idAdmin = location.state?.idAdmin;
+  console.log("ID del administrador:", id);
+  console.log("ID del amdmiministrador seleccionado:", idAdmin);
+  
   const [adminData, setAdminData] = useState({
     nombre: "",
     apellidoPaterno: "",
@@ -23,7 +26,7 @@ const InformacionAdmin = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/${id}`);
+        const response = await axios.get(`${API_URL}/${idAdmin}`);
         setAdminData(response.data);
       } catch (error) {
         console.error("Error al obtener los datos del administrador:", error);
@@ -33,7 +36,7 @@ const InformacionAdmin = () => {
     };
 
     fetchAdminData();
-  }, [id]);
+  }, [idAdmin]);
 
   if (loading) {
     return <div>Cargando...</div>;
@@ -72,7 +75,7 @@ const InformacionAdmin = () => {
         <button
           type="button"
           className="text-white py-2 px-4 rounded-md botones"
-          onClick={() => navigate(-1)} // Esto regresará a la página anterior
+          onClick={() => navigate(-1, {state : {id:id}})} // Esto regresará a la página anterior
         >
           Regresar
         </button>

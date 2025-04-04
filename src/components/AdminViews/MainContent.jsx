@@ -52,7 +52,11 @@ if (location.pathname.includes("/aseguradoras/seguros/editar/")){
   return <EditarSeguro />;
 }
 
+    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
+      return <AgregarSeguros />;
+    }
 
+>>>>>>> 50cc4a4382dc5bbdb85e1827ae14b861938e1006
     // Para rutas estáticas
     switch (location.pathname) {
       case "/inicio":
@@ -69,21 +73,24 @@ if (location.pathname.includes("/aseguradoras/seguros/editar/")){
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
-        case "/aseguradoras/seguros":
-          return <VerMasAseguradora />;
+      case "/aseguradoras/seguros":
+        return <VerMasAseguradora />;
       case "/aseguradoras/seguros/editar":
         return <EditarSeguro />;
       case "/aseguradoras/seguros/informacion":
         return <InformacionSeguros />;
-    
       case "/agentes":
         return <InicioAgentes />;
-        case "/agentes/editar":
-          return <EditarAgente />;
+      case "/agentes/editar":
+        return <EditarAgente />;
       case "/agentes/perfil":
         return <AgentesInfo />;
       case "/administradores":
         return <InicioAdmin />;
+      case "/administradores/informacion":
+        return <InformacionAdmin />;
+      case "/administradores/editar":
+        return <EditarAdmin />;
       case "/administradores/informacion":
         return <InformacionAdmin />;
       case "/administradores/agregar":

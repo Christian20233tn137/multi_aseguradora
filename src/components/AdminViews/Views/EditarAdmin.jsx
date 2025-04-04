@@ -3,12 +3,17 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/nar/usuarios";
+const API_URL = "http://localhost:3000/nar/usuarios/id";
+const API_URL_EDIT = "http://localhost:3000/nar/usuarios";
 
 const EditarAdmin = () => {
   
   const location = useLocation();
-  const { id } = useParams();
+  const id = location.state?.id;
+  const idAdmin = location.state?.idAdmin;
+  console.log("Id del admin:", id);
+  
+  console.log("Id del admin a editar:", idAdmin);
   const navigate = useNavigate();
   const [admin, setAdmin] = useState({
     nombre: "",
@@ -32,8 +37,8 @@ const EditarAdmin = () => {
       try {
         if (location.state && location.state.administrador) {
           setAdmin(location.state.administrador);
-        } else if (id) {
-          const response = await axios.get(`${API_URL}/${id}`);
+        } else if (idAdmin) {
+          const response = await axios.get(`${API_URL}/${idAdmin}`);
           setAdmin(response.data);
         } else {
           throw new Error("ID del admin no definido");
@@ -51,7 +56,7 @@ const EditarAdmin = () => {
     };
 
     obtenerAdmin();
-  }, [id, location.state]);
+  }, [idAdmin, location.state]);
 
   const handleChange = (e) => {
     setAdmin({
@@ -75,7 +80,7 @@ const EditarAdmin = () => {
         if (result.isConfirmed) {
           try {
             const nuevaContrasena = admin.correo;
-            await axios.put(`${API_URL}/resetearContra/${id}`, { correo: nuevaContrasena });
+            await axios.put(`${API_URL_EDIT}/resetearContra/${id}`, { correo: nuevaContrasena });
 
             swalWithTailwindButtons.fire({
               icon: "success",
@@ -122,7 +127,7 @@ const EditarAdmin = () => {
   const handleEditSubmit = async () => {
     if (validarCampos()) {
       try {
-        const response = await axios.put(`${API_URL}/${id}`, admin);
+        const response = await axios.put(`${API_URL_EDIT}/${idAdmin}`, admin);
 
         if (response.status === 200) {
           swalWithTailwindButtons.fire({
@@ -130,7 +135,7 @@ const EditarAdmin = () => {
             text: "Datos del administrador guardados correctamente.",
             icon: "success",
           });
-          navigate("/administradores"); // Redirigir a la lista de administradores
+          navigate("/administradores", {state : {id:id}}); // Redirigir a la lista de administradores
         } else {
           swalWithTailwindButtons.fire({
             title: "Error",

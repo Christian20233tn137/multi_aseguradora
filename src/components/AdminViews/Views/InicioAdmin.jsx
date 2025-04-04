@@ -4,9 +4,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const InicioAdmin = () => {
-  
-
-
   const navigate = useNavigate();
   const [administradores, setAdministradores] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -16,22 +13,25 @@ const InicioAdmin = () => {
   const location = useLocation();
   const id = location.state?.id;
   console.log(id);
-  
 
   useEffect(() => {
     const fetchAdministradores = async () => {
       try {
         const response = await axios.get("http://localhost:3000/nar/usuarios");
-        const admins = response.data.filter((user) => user.rol === "administrador");
+        const admins = response.data.filter(
+          (user) => user.rol === "administrador"
+        );
         setAdministradores(admins);
 
         // Cargar estado desde localStorage
-        const storedState = JSON.parse(localStorage.getItem("checkedItems")) || {};
+        const storedState =
+          JSON.parse(localStorage.getItem("checkedItems")) || {};
 
         // Inicializar el estado de los switches
         const initialCheckedItems = {};
         admins.forEach((admin) => {
-          initialCheckedItems[admin._id] = storedState[admin._id] ?? admin.active;
+          initialCheckedItems[admin._id] =
+            storedState[admin._id] ?? admin.active;
         });
 
         setCheckedItems(initialCheckedItems);
@@ -43,13 +43,9 @@ const InicioAdmin = () => {
     fetchAdministradores();
   }, []);
 
-  const handleNavigateInfo = () => {
-    navigate("/administradores/informacion");
-  };
-
-  const handleEditar = (id, administrador) => {
+  const handleEditar = (idAdmin) => {
     if (id) {
-      navigate(`editar/${id}`, { state: { administrador } });
+      navigate(`editar`, { state: { id: id, idAdmin: idAdmin } });
     } else {
       console.error("El id del administrador no está definido");
       console.log(id);
@@ -74,7 +70,9 @@ const InicioAdmin = () => {
   };
 
   const filteredAdministradores = administradores.filter((administrador) =>
-    `${administrador.nombre} ${administrador.apellidoPaterno} ${administrador.apellidoMaterno}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${administrador.nombre} ${administrador.apellidoPaterno} ${administrador.apellidoMaterno}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   const currentItems = filteredAdministradores.slice(
@@ -134,7 +132,9 @@ const InicioAdmin = () => {
 
               setAdministradores((prevAdmins) =>
                 prevAdmins.map((admin) =>
-                  admin._id === adminId ? { ...admin, active: !isActive } : admin
+                  admin._id === adminId
+                    ? { ...admin, active: !isActive }
+                    : admin
                 )
               );
             } else {
@@ -145,7 +145,10 @@ const InicioAdmin = () => {
               );
             }
           } catch (error) {
-            console.error("Error al actualizar el estado del administrador:", error);
+            console.error(
+              "Error al actualizar el estado del administrador:",
+              error
+            );
             swalWithTailwindButtons.fire(
               "Error",
               error.response?.data?.message || "Ocurrió un error inesperado.",
@@ -193,19 +196,29 @@ const InicioAdmin = () => {
                   type="checkbox"
                   className="hidden"
                   checked={checkedItems[administrador._id] || false}
-                  onChange={() => handleToggleSwitch(administrador._id, checkedItems[administrador._id])}
+                  onChange={() =>
+                    handleToggleSwitch(
+                      administrador._id,
+                      checkedItems[administrador._id]
+                    )
+                  }
                 />
                 <span className="slider round"></span>
               </label>
               <button
                 className="px-6 py-3 text-white botones"
-                onClick={() => handleEditar(administrador._id, administrador)}
+                onClick={() => handleEditar(administrador._id)}
               >
                 Editar
               </button>
               <button
                 className="px-6 py-3 text-white botones"
-                onClick={() => navigate(`/administradores/informacion/${administrador._id}`)}
+                onClick={() =>
+                  navigate(
+                    `/administradores/informacion`,
+                    { state: { id: id, idAdmin: administrador._id } }
+                  )
+                }
               >
                 Perfil
               </button>
