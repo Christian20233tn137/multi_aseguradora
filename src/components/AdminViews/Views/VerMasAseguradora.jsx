@@ -88,7 +88,7 @@ const VerMasAseguradora = () => {
   };
 
   const handlerInfo = (seguroId) => {
-    navigate(`/aseguradoras/seguros/informacion/${seguroId || ""}`);
+    navigate(`/aseguradoras/seguros/informacion/${seguroId}`);
   };
 
   const handlerAdd = () => {

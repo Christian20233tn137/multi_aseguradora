@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -10,6 +10,10 @@ const InicioAdmin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 3;
   const [checkedItems, setCheckedItems] = useState({});
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log(id);
+  
 
   useEffect(() => {
     const fetchAdministradores = async () => {

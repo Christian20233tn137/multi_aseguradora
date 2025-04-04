@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "./assets/Menu.png";
 import UsuarioProfile from "./assets/usuarioProfile.png";
 import EditIcon from "./assets/BotonEdit.png";
@@ -7,10 +7,11 @@ import EditIcon from "./assets/BotonEdit.png";
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const id = location.state?.id || null;
   const manejarNavegacion = (ruta) => {
-    navigate(ruta);
-    setIsOpen(false); // Cierra el sidebar en móviles
+    navigate(ruta, { state: { id } });
+    setIsOpen(false); 
   };
 
   const handleLogout = () => {
@@ -23,7 +24,13 @@ const Sidebar = () => {
   };
 
   const handelEditProfile = () => {
-    navigate("/inicio/EditarPerfilAdmin");
+    if (id) {
+      navigate("/inicio/EditarPerfilAdmin", {
+        state : {id},
+      });
+    }
+    console.error("ID no viene");
+    
   };
 
   const menuItems = [

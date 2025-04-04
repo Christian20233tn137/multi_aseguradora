@@ -1,6 +1,13 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 const ProfileSection = () => {
+
+  const location = useLocation();
+  const id = location.state.id;
+  console.log(id);
+  
+
   return (
     <div className="flex flex-col p-6">
       {/* Dropdown */}

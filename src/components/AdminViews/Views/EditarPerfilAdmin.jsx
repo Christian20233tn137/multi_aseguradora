@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const EditarPerfilAdmin = () => {
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log("Prueba", id);
+
   const [formData, setFormData] = useState({
     nombre: "",
     apellidoPaterno: "",
     apellidoMaterno: "",
     correo: "",
     telefono: "",
-    domicilio: "",
     rfc: "",
     nuevaContrasena: "",
     confirmarContrasena: "",
+    contrasenaActual: "",
   });
 
   const [error, setError] = useState("");
@@ -20,17 +25,21 @@ const EditarPerfilAdmin = () => {
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
-      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      confirmButton:
+        "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton:
+        "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
     },
-    buttonsStyling: false
+    buttonsStyling: false,
   });
 
   // Cargar datos desde el backend al montar el componente
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://api.tu-backend.com/perfil");
+        const response = await axios.get(
+          `http://localhost:3000/nar/usuarios/id/${id}`
+        );
         setFormData(response.data);
       } catch (error) {
         console.error("Error al cargar los datos del perfil", error);
@@ -38,7 +47,7 @@ const EditarPerfilAdmin = () => {
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,28 +57,81 @@ const EditarPerfilAdmin = () => {
     e.preventDefault();
 
     // Validar que las contraseñas coincidan si se desea modificar la contraseña
-    if (modificarContrasena && formData.nuevaContrasena !== formData.confirmarContrasena) {
+    if (
+      modificarContrasena &&
+      formData.nuevaContrasena !== formData.confirmarContrasena
+    ) {
       setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    // Validar que la contraseña tenga al menos 6 dígitos
+    if (modificarContrasena && formData.nuevaContrasena.length < 6) {
+      setError("La contraseña debe tener al menos 6 dígitos");
+      return;
+    }
+
+    // Validar que el correo no exista ya en la base de datos
+    const emailExists = await checkIfEmailExists(formData.correo);
+    if (emailExists) {
+      setError("El correo ya está registrado");
+      return;
+    }
+
+    // Validar que el número de teléfono no exista ya en la base de datos
+    const phoneExists = await checkIfPhoneExists(formData.telefono);
+    if (phoneExists) {
+      setError("El número de teléfono ya está registrado");
       return;
     }
 
     setError(""); // Limpiar el mensaje de error si la validación pasa
 
     try {
-      const response = await axios.put("https://api.tu-backend.com/perfil", formData);
+      if (modificarContrasena) {
+        // Actualizar la contraseña
+        const passwordResponse = await axios.put(
+          `http://localhost:3000/nar/usuarios/updPostulante/${id}`,
+          {
+            contrasenaActual: formData.contrasenaActual,
+            nuevaContrasena: formData.nuevaContrasena,
+          }
+        );
 
-      swalWithTailwindButtons.fire({
-        title: response.status === 200 ? "¡Actualizado!" : "Error",
-        text: response.status === 200
-          ? "El perfil se actualizó con éxito."
-          : "Hubo un error al actualizar el perfil.",
-        icon: response.status === 200 ? "success" : "error",
-      });
+        if (passwordResponse.status !== 200) {
+          throw new Error("Error al actualizar la contraseña");
+        }
+      } else {
+        // Actualizar los datos del perfil - enviar solo los campos requeridos
+        const dataToSend = {
+          nombre: formData.nombre,
+          apellidoPaterno: formData.apellidoPaterno,
+          apellidoMaterno: formData.apellidoMaterno,
+          correo: formData.correo,
+          telefono: formData.telefono,
+        };
 
-      if (response.status === 200) {
-        // Aquí puedes redirigir o realizar alguna acción adicional
+        const response = await axios.put(
+          `http://localhost:3000/nar/usuarios/byAdmin/${id}`,
+          dataToSend
+        );
+
+        if (response.status !== 200) {
+          throw new Error("Error al actualizar el perfil");
+        }
       }
 
+      swalWithTailwindButtons
+        .fire({
+          title: "¡Actualizado!",
+          text: modificarContrasena
+            ? "La contraseña se actualizó con éxito."
+            : "El perfil se actualizó con éxito.",
+          icon: "success",
+        })
+        .then(() => {
+          window.location.reload(); // Recargar la página
+        });
     } catch (error) {
       console.error("Error al actualizar el perfil", error);
       swalWithTailwindButtons.fire({
@@ -80,25 +142,54 @@ const EditarPerfilAdmin = () => {
     }
   };
 
+  const checkIfEmailExists = async (email) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el correo", error);
+      return false;
+    }
+  };
+
+  const checkIfPhoneExists = async (phone) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el número de teléfono", error);
+      return false;
+    }
+  };
+
   const confirmarActualizacion = () => {
-    swalWithTailwindButtons.fire({
-      title: "¿Estás seguro?",
-      text: "¿Quieres actualizar este perfil?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, actualizar",
-      cancelButtonText: "Cancelar",
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleSubmit(new Event('submit'));
-      }
-    });
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro?",
+        text: "¿Quieres actualizar este perfil?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, actualizar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          handleSubmit(new Event("submit"));
+        }
+      });
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white">
-      <form onSubmit={(e) => e.preventDefault()} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
+      >
         <div>
           <label className="block text-sm font-medium">Nombre*</label>
           <input
@@ -133,7 +224,9 @@ const EditarPerfilAdmin = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Correo electrónico*</label>
+          <label className="block text-sm font-medium">
+            Correo electrónico*
+          </label>
           <input
             type="email"
             name="correo"
@@ -155,17 +248,6 @@ const EditarPerfilAdmin = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Domicilio*</label>
-          <input
-            type="text"
-            name="domicilio"
-            value={formData.domicilio}
-            onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
-          />
-        </div>
-
-        <div>
           <label className="block text-sm font-medium">RFC*</label>
           <input
             type="text"
@@ -173,11 +255,14 @@ const EditarPerfilAdmin = () => {
             value={formData.rfc}
             onChange={handleChange}
             className="mt-1 w-full border border-gray-300 p-2 rounded"
+            disabled // Deshabilitar el campo RFC
           />
         </div>
 
         <div className="mt-6 md:col-span-3">
-          <label className="text-gray-700 text-sm font-bold">¿Desea modificar su contraseña?*</label>
+          <label className="text-gray-700 text-sm font-bold">
+            ¿Desea modificar su contraseña?*
+          </label>
           <div className="flex items-center">
             <label className="ml-2">
               <input
@@ -185,7 +270,8 @@ const EditarPerfilAdmin = () => {
                 name="modificarContrasena"
                 checked={modificarContrasena}
                 onChange={() => setModificarContrasena(true)}
-              /> Sí
+              />{" "}
+              Sí
             </label>
             <label className="ml-4">
               <input
@@ -193,7 +279,8 @@ const EditarPerfilAdmin = () => {
                 name="modificarContrasena"
                 checked={!modificarContrasena}
                 onChange={() => setModificarContrasena(false)}
-              /> No
+              />{" "}
+              No
             </label>
           </div>
         </div>
@@ -201,7 +288,21 @@ const EditarPerfilAdmin = () => {
         {modificarContrasena && (
           <>
             <div>
-              <label className="block text-sm font-medium">Nueva contraseña:</label>
+              <label className="block text-sm font-medium">
+                Contraseña actual:
+              </label>
+              <input
+                type="password"
+                name="contrasenaActual"
+                value={formData.contrasenaActual}
+                onChange={handleChange}
+                className="mt-1 w-full border border-gray-300 p-2 rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">
+                Nueva contraseña:
+              </label>
               <input
                 type="password"
                 name="nuevaContrasena"
@@ -212,7 +313,9 @@ const EditarPerfilAdmin = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium">Confirmar Contraseña*</label>
+              <label className="block text-sm font-medium">
+                Confirmar Contraseña*
+              </label>
               <input
                 type="password"
                 name="confirmarContrasena"

@@ -54,7 +54,10 @@ const LoginForm = ({ setUser }) => {
         localStorage.setItem("id", data._id);
 
         if (data.rol === "administrador") {
-          navigate("/inicio");
+          navigate("/inicio", {
+            state: { id: data._id },
+            replace: true, 
+          });
         } else if (data.rol === "agente") {
           navigate("/inicioAgentes", {
             state: { id: data._id },

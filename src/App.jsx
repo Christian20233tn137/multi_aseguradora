@@ -178,8 +178,8 @@ const App = () => {
         <Route path="nuevaAseguradora" element={<NuevaAseguradora />} />
         <Route path="editar/:id" element={<EditarAseguradora />} />
         <Route path="seguros/:id" element={<VerMasAseguradora />} />
-        <Route path="seguros/editar" element={<EditarSeguro />} />
-        <Route path="seguros/informacion" element={<InformacionSeguros />} />
+        <Route path="seguros/:id/editar" element={<EditarSeguro />} />
+        <Route path="seguros/:id/informacion" element={<InformacionSeguros />} />
         <Route path="seguros/agregar/:id" element={<AgregarSeguros />} />
       </Route>
       <Route
