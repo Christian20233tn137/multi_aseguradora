@@ -56,7 +56,6 @@ if (location.pathname.includes("/aseguradoras/seguros/editar/")){
       return <AgregarSeguros />;
     }
 
->>>>>>> 50cc4a4382dc5bbdb85e1827ae14b861938e1006
     // Para rutas estáticas
     switch (location.pathname) {
       case "/inicio":
