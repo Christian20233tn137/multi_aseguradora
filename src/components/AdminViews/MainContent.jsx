@@ -35,29 +35,24 @@ const MainContent = () => {
       return <EditarAseguradora />;
     }
 
-    if(location.pathname.includes("/administradores/editar/")){
-      return <EditarAdmin/>
+    if (location.pathname.includes("/informacion")) {
+      return <InformacionAdmin />;
     }
 
+    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
+      return <AgregarSeguros />;
+    }
 
-    if (location.pathname.includes("/informacion")){
-      return <InformacionAdmin />;
-  }
+    if (location.pathname.includes("/aseguradoras/seguros/editar/")) {
+      return <EditarSeguro />;
+    }
 
-  if (location.pathname.includes("/aseguradoras/seguros/agregar")){
-    return <AgregarSeguros />;
-}
-
-if (location.pathname.includes("/aseguradoras/seguros/editar/")){
-  return <EditarSeguro />;
-}
-
-if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
-  return <AgregarSeguros />;
-}
-if (location.pathname.includes("/aseguradoras/seguros/informacion")) {
-  return <InformacionSeguros />;
-}
+    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
+      return <AgregarSeguros />;
+    }
+    if (location.pathname.includes("/aseguradoras/seguros/informacion")) {
+      return <InformacionSeguros />;
+    }
 
     // Para rutas estáticas
     switch (location.pathname) {
@@ -79,7 +74,7 @@ if (location.pathname.includes("/aseguradoras/seguros/informacion")) {
         return <VerMasAseguradora />;
       case "/aseguradoras/seguros/editar":
         return <EditarSeguro />;
- 
+
       case "/agentes":
         return <InicioAgentes />;
       case "/agentes/editar":
@@ -88,9 +83,11 @@ if (location.pathname.includes("/aseguradoras/seguros/informacion")) {
         return <AgentesInfo />;
       case "/administradores":
         return <InicioAdmin />;
+      case "/administradores/editar":
+        return <EditarAdmin />;
       case "/administradores/informacion":
         return <InformacionAdmin />;
-   
+
       case "/administradores/agregar":
         return <AgregarAgente />;
       case "/configurar-cuotas":

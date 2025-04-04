@@ -16,8 +16,8 @@ const Estadisticas = () => {
   const location = useLocation();
   const id = location.state?.id;
 
-  const cuotas = 10;
-  let tittle = "Cuotas a cumplir: ";
+  const [cuotas, setCuotas] = useState(10);
+  const [tittle, setTittle] = useState("Cuotas a cumplir: ");
 
   const [dataCotizaciones, setDataCotizaciones] = useState([
     { name: "Ene", cotizaciones: 0 },
@@ -48,6 +48,28 @@ const Estadisticas = () => {
     { name: "Nov", ventas: 0 },
     { name: "Dic", ventas: 0 },
   ]);
+
+  useEffect(() => {
+    const fetchEmisionesActuales = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/nar/cuotas/");
+        const data = response.data;
+        setCuotas(data.cuotaMensual);
+        setTittle("Cuotas a cumplir: ");
+        console.log("Cuotas a cumplir: ", data.cuotaMensual);
+        
+      } catch (error) {
+        console.error("Error al obtener las emisiones:", error);
+        swalWithTailwindButtons.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudieron cargar las emisiones actuales",
+        });
+      }
+    };
+
+    fetchEmisionesActuales();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
