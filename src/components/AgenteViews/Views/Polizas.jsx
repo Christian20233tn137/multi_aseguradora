@@ -75,7 +75,7 @@ const Polizas = () => {
           placeholder="Buscar..."
           value={searchQuery}
           onChange={handleSearchChange}
-          className="border border-gray-400 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border-0 shadow-md rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -83,7 +83,7 @@ const Polizas = () => {
         {filteredPolizas.map((poliza) => (
           <div
             key={poliza.numeroPoliza}
-            className="border rounded-lg p-4 shadow-lg"
+            className="border-0 shadow-md rounded-lg p-4"
           >
             <h2 className="font-bold">PÓLIZA N. {poliza.numeroPoliza}</h2>
             <p>{poliza.nombreSeguro}</p>

@@ -1,11 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const AgregarSeguro = () => {
   const location = useLocation();
-  const id = location.state?.id;
-  console.log("Prueba", id);
+  const idAseguradora = location.state?.idAseguradora; // Obtener el ID de la aseguradora desde el estado de navegación
+  console.log("ID de aseguradora:", idAseguradora);
 
   const navigate = useNavigate();
   const editorRef = useRef(null);
@@ -13,6 +14,8 @@ const AgregarSeguro = () => {
   const [descripcion, setDescripcion] = useState("");
   const [cobertura, setCobertura] = useState("");
   const [icono, setIcono] = useState(null);
+  const [tipo, setTipo] = useState("");
+  const [precioBase, setPrecioBase] = useState("");
 
   const formatText = (command, value = null) => {
     document.execCommand(command, false, value);
@@ -39,7 +42,7 @@ const AgregarSeguro = () => {
 
   const agregarSeguro = async () => {
     // Validación de campos requeridos
-    if (!nombre || !descripcion || !cobertura) {
+    if (!nombre || !descripcion || !cobertura || !tipo || !precioBase) {
       swalWithTailwindButtons.fire({
         title: "Error",
         text: "Por favor, complete todos los campos requeridos.",
@@ -48,32 +51,33 @@ const AgregarSeguro = () => {
       return;
     }
 
-    try {
-      const response = await fetch("/api/seguros", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre,
-          descripcion,
-          cobertura,
-          icono,
-        }),
-      });
+    const dataToSend = {
+      nombre,
+      descripcion,
+      cobertura: cobertura.replace(/<\/?[^>]+(>|$)/g, ""), // Elimina etiquetas HTML
+      icono,
+      idAseguradora,
+      tipo,
+      precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
+    };
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al agregar el seguro");
+    console.log("Datos a enviar:", dataToSend); // Depuración: verifica los datos
+
+    try {
+      const response = await axios.post("http://localhost:3000/nar/seguros/", dataToSend);
+
+      if (response.status !== 200) {
+        throw new Error("Error al agregar el seguro");
       }
 
       swalWithTailwindButtons.fire({
         title: "¡Agregado!",
-        text: "La aseguradora se agregó con éxito.",
+        text: "El seguro se agregó con éxito.",
         icon: "success",
       });
 
-      navigate("/aseguradoras/seguros");
+      // Navigate to "VerMasAseguradora" with the correct state
+      navigate("/aseguradoras/seguros", { state: { idAseguradora } });
     } catch (error) {
       console.error("Error al agregar el seguro:", error);
       swalWithTailwindButtons.fire({
@@ -99,6 +103,12 @@ const AgregarSeguro = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (editorRef.current && cobertura !== editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = cobertura;
+    }
+  }, [cobertura]);
 
   return (
     <div className="container mx-auto p-6 bg-white rounded-md">
@@ -128,6 +138,31 @@ const AgregarSeguro = () => {
         />
       </div>
 
+      {/* Campos de Tipo y Precio Base en una fila */}
+      <div className="mb-4 flex space-x-4">
+        <div className="w-1/2">
+          <label className="block font-semibold">Tipo*</label>
+          <input
+            type="text"
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="w-full border rounded p-2"
+            placeholder="Tipo de seguro"
+          />
+        </div>
+        <div className="w-1/2">
+          <label className="block font-semibold">Precio Base*</label>
+          <input
+            type="number"
+            min="0"
+            value={precioBase}
+            onChange={(e) => setPrecioBase(e.target.value)}
+            className="w-full border rounded p-2"
+            placeholder="Precio base del seguro"
+          />
+        </div>
+      </div>
+
       {/* Campo de Cobertura con Editor de Texto */}
       <div className="mb-4">
         <label className="block font-semibold">Cobertura*</label>
@@ -137,7 +172,6 @@ const AgregarSeguro = () => {
             <button onClick={() => formatText("bold")} className="font-bold p-1">B</button>
             <button onClick={() => formatText("italic")} className="italic p-1">I</button>
             <button onClick={() => formatText("underline")} className="underline p-1">U</button>
-            <button onClick={() => formatText("insertUnorderedList")} className="p-1">• List</button>
             <button onClick={() => formatText("justifyLeft")} className="p-1">⬅</button>
             <button onClick={() => formatText("justifyCenter")} className="p-1">⬆</button>
             <button onClick={() => formatText("justifyRight")} className="p-1">➡</button>
@@ -150,11 +184,8 @@ const AgregarSeguro = () => {
             contentEditable
             className="border p-2 min-h-[100px] focus:outline-none text-left"
             suppressContentEditableWarning={true}
-            style={{ direction: "ltr", unicodeBidi: "plaintext" }}
             onInput={(e) => setCobertura(e.currentTarget.innerHTML)}
-          >
-            {cobertura}
-          </div>
+          />
         </div>
       </div>
 

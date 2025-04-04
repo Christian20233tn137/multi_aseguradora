@@ -49,7 +49,7 @@ const Clientes = () => {
         <input
           type="text"
           placeholder="Buscar cliente"
-          className="border p-2 w-64"
+          className="border-0 shadow-md rounded-lg p-2 w-64"
           value={searchTerm}
           onChange={handleSearch}
           aria-label="Buscar cliente"

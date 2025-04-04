@@ -1,19 +1,43 @@
-import React, { useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const EditarSeguro = () => {
-    const location = useLocation();
-    const id = location.state?.id;
-    console.log("Prueba", id);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const id = location.state?.id;
+  console.log("ID del seguro a editar:", id);
 
   const editorRef = useRef(null);
-  const [nombre, setNombre] = useState("Seguro de vida");
-  const [descripcion, setDescripcion] = useState(
-    "Un seguro de vida es un contrato entre una persona y una aseguradora..."
-  );
-  const [cobertura, setCobertura] = useState("Escribe aquí...");
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [cobertura, setCobertura] = useState("");
   const [icono, setIcono] = useState(null);
+  const [tipo, setTipo] = useState("");
+  const [precioBase, setPrecioBase] = useState("");
+
+  useEffect(() => {
+    const fetchSeguroData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/nar/seguros/id/${id}`);
+        const seguroData = response.data;
+        setNombre(seguroData.nombre);
+        setDescripcion(seguroData.descripcion);
+        setCobertura(seguroData.cobertura);
+        setIcono(seguroData.icono);
+        setTipo(seguroData.tipo);
+        setPrecioBase(seguroData.precioBase);
+      } catch (error) {
+        console.error("Error al obtener los datos del seguro:", error);
+        Swal.fire("Error", "No se pudo cargar la información del seguro.", "error");
+      }
+    };
+
+    if (id) {
+      fetchSeguroData();
+    }
+  }, [id]);
 
   const formatText = (command, value = null) => {
     document.execCommand(command, false, value);
@@ -30,53 +54,50 @@ const EditarSeguro = () => {
     }
   };
 
-  const confirmarAgregar = () => {
-    const swalWithTailwindButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
-      },
-      buttonsStyling: false
-    });
-  
-    swalWithTailwindButtons.fire({
+  const editarSeguro = async () => {
+    const dataToSend = {
+      nombre,
+      descripcion,
+      cobertura: cobertura.replace(/<\/?[^>]+(>|$)/g, ""), // Elimina etiquetas HTML
+      icono,
+      tipo,
+      precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
+    };
+
+    try {
+      const response = await axios.put(`http://localhost:3000/nar/seguros/id/${id}`, dataToSend);
+
+      if (response.status === 200) {
+        Swal.fire("Editado", "El seguro ha sido editado correctamente.", "success");
+        navigate("/aseguradoras/ver-mas");
+      } else {
+        Swal.fire("Error", "Hubo un problema al editar el seguro.", "error");
+      }
+    } catch (error) {
+      console.error("Error al editar el seguro:", error);
+      Swal.fire("Error", "Ocurrió un error inesperado.", "error");
+    }
+  };
+
+  const confirmarEditar = () => {
+    Swal.fire({
       title: "¿Estás seguro?",
-      text: "¿Quieres agregar este seguro?",
+      text: "¿Quieres editar este seguro?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, agregar",
+      confirmButtonText: "Sí, editar",
       cancelButtonText: "Cancelar",
       reverseButtons: true
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-        try {
-          // Comenta esta parte para probar los botones sin necesidad de un backend activo
-          /*
-          const response = await axios.post("http://localhost:3000/api/seguros", {
-            // Aquí irían los datos del seguro que deseas agregar
-          });
-  
-          if (response.status === 200) {
-            swalWithTailwindButtons.fire("Agregado", "El seguro ha sido agregado correctamente.", "success");
-          } else {
-            swalWithTailwindButtons.fire("Error", "Hubo un problema al agregar el seguro.", "error");
-          }
-          */
-  
-          // Para probar sin backend, descomenta la siguiente línea:
-          swalWithTailwindButtons.fire("Agregado", "El seguro ha sido agregado correctamente.", "success");
-  
-        } catch (error) {
-          console.error("Error al agregar el seguro:", error);
-          swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
-        }
+        editarSeguro();
       }
     });
   };
 
   return (
     <div className="container mx-auto p-6 bg-white rounded-md">
-      <h2 className="text-2xl font-bold text-gray-800">Editar</h2>
+      <h2 className="text-2xl font-bold text-gray-800">Editar Seguro</h2>
 
       {/* Campo del Nombre */}
       <div className="mb-4">
@@ -97,6 +118,31 @@ const EditarSeguro = () => {
           onChange={(e) => setDescripcion(e.target.value)}
           className="w-full border rounded p-2"
           rows="3"
+        />
+      </div>
+
+      {/* Campo de Tipo */}
+      <div className="mb-4 mb-4 flex space-x-4">
+        <label className="block font-semibold">Tipo*</label>
+        <input
+          type="text"
+          value={tipo}
+          onChange={(e) => setTipo(e.target.value)}
+          className="w-full border rounded p-2"
+          placeholder="Tipo de seguro"
+        />
+      </div>
+
+      {/* Campo de Precio Base */}
+      <div className="mb-4">
+        <label className="block font-semibold">Precio Base*</label>
+        <input
+          type="number"
+          min="0"
+          value={precioBase}
+          onChange={(e) => setPrecioBase(e.target.value)}
+          className="w-full border rounded p-2"
+          placeholder="Precio base del seguro"
         />
       </div>
 
@@ -122,21 +168,20 @@ const EditarSeguro = () => {
             contentEditable
             className="border p-2 min-h-[100px] focus:outline-none text-left"
             suppressContentEditableWarning={true}
-            style={{ direction: "ltr", unicodeBidi: "plaintext" }}
-            onInput={(e) => setCobertura(e.currentTarget.innerText)}
+            onInput={(e) => setCobertura(e.currentTarget.innerHTML)}
           >
             {cobertura}
           </div>
         </div>
       </div>
 
-      {/* Botón Agregar */}
+      {/* Botón Editar */}
       <div className="col-span-2 flex items-center justify-center mt-4">
         <button
           type="button"
           className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           style={{ backgroundColor: "#0B1956" }}
-          onClick={confirmarAgregar}
+          onClick={confirmarEditar}
         >
           Editar
         </button>
@@ -146,17 +191,3 @@ const EditarSeguro = () => {
 };
 
 export default EditarSeguro;
-
-
-
-
-
-
-
-
-
-
-
-
-
-

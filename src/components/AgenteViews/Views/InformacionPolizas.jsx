@@ -61,7 +61,7 @@ const InformacionPolizas = () => {
         Póliza N.1
       </h1>
 
-      <div className="mt-6 p-6 border rounded-lg shadow-lg w-full max-w-3xl bg-white">
+      <div className="mt-6 p-6 border-0 shadow-md rounded-lg w-full max-w-3xl bg-white">
         <h2 className="text-lg font-bold">INFORMACIÓN DE LA PÓLIZA</h2>
         <p>
           <strong>Nombre Asegurado:</strong> {poliza.nombreAsegurado}
@@ -91,7 +91,7 @@ const InformacionPolizas = () => {
 
       <button
         onClick={handleRegresar}
-        className="mt-6 botones text-white px-6 py-2 transition font-medium"
+        className="mt-6 botones rounded-lg text-white px-6 py-2 transition font-medium"
       >
         Regresar
       </button>

@@ -35,10 +35,28 @@ const MainContent = () => {
       return <EditarAseguradora />;
     }
 
+    if(location.pathname.includes("/administradores/editar/")){
+      return <EditarAdmin/>
+    }
+
+
+    if (location.pathname.includes("/informacion")){
+      return <InformacionAdmin />;
+  }
+
+  if (location.pathname.includes("/aseguradoras/seguros/agregar")){
+    return <AgregarSeguros />;
+}
+
+if (location.pathname.includes("/aseguradoras/seguros/editar/")){
+  return <EditarSeguro />;
+}
+
     if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
       return <AgregarSeguros />;
     }
 
+>>>>>>> 50cc4a4382dc5bbdb85e1827ae14b861938e1006
     // Para rutas estáticas
     switch (location.pathname) {
       case "/inicio":
