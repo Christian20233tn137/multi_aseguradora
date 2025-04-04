@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 const InicioAgentes = () => {
-
   const location = useLocation();
   const id = location.state?.id;
   console.log("Prueba", id);
@@ -189,14 +188,12 @@ const InicioAgentes = () => {
               >
                 {view === "agentes" ? "Editar" : "Reactivar"}
               </button>
-              {view === "agentes" && (
-                <button
-                  className="px-8 py-3 text-white rounded botones ml-4"
-                  onClick={() => handlePerfil(profile._id)}
-                >
-                  Perfil
-                </button>
-              )}
+              <button
+                className="px-8 py-3 text-white rounded botones ml-4"
+                onClick={() => handlePerfil(profile._id)}
+              >
+                Perfil
+              </button>
             </div>
           </div>
         ))}
