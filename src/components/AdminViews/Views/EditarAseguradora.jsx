@@ -188,12 +188,17 @@ const EditarAseguradora = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Seguros*
             </label>
-            <textarea
+            <select
               name="seguros"
               value={aseguradora.seguros}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               onChange={handleInputChange}
-            ></textarea>
+            >
+              <option value="">Selecciona un tipo de seguro</option>
+              <option value="Seguro de vida">Seguro de vida</option>
+              <option value="Seguro de gastos medicos">Seguro de gastos médicos</option>
+              <option value="Seguro de viajes">Seguro de viajes</option>
+            </select>
           </div>
           <div className="col-span-2 flex items-center justify-center">
             <button

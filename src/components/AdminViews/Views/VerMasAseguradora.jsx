@@ -96,7 +96,8 @@ const VerMasAseguradora = () => {
     navigate(`/aseguradoras/seguros/editar/${seguroId || ""}`, { state: { id: seguroId, idAseguradora } });
   };
   const handlerInfo = (seguroId) => {
-    navigate(`/seguros/informacion/${seguroId}`, { state: { id: seguroId } });
+    console.log("Navigating to seguroId:", seguroId);
+    navigate(`/seguros/informacion/${seguroId || ""}`, { state: { id: seguroId } });
   };
 
   const handlerAdd = () => {
