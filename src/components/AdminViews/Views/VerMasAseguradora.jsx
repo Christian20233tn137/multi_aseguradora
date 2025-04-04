@@ -4,12 +4,14 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const VerMasAseguradora = () => {
- 
   const location = useLocation();
-    console.log("Prueba", id);
+  const id = location.state?.id; // Obtener el ID de la aseguradora desde la URL
+  console.log("Id del agente", id);
 
+  const idAseguradora  = location.state?.idAseguradora;
+  console.log("ID de aseguradora:", idAseguradora);
+  
   const navigate = useNavigate();
-  const { id } = useParams(); // Obtener el ID de la aseguradora desde la URL
 
   const [aseguradoraData, setAseguradoraData] = useState({
     nombre: "",
@@ -28,27 +30,33 @@ const VerMasAseguradora = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!id) {
+        if (!idAseguradora) {
           throw new Error("ID de aseguradora no proporcionado");
         }
 
         // 1. Obtener datos de la aseguradora
-        const aseguradoraResponse = await axios.get(`http://localhost:3000/nar/aseguradoras/id/${id}`);
+        const aseguradoraResponse = await axios.get(
+          `http://localhost:3000/nar/aseguradoras/id/${idAseguradora}`
+        );
         console.log("Datos de aseguradora:", aseguradoraResponse.data);
         setAseguradoraData(aseguradoraResponse.data);
 
         // 2. Obtener seguros de la aseguradora
-        const segurosResponse = await axios.get(`http://localhost:3000/nar/seguros/segurosByAseguradora/${id}`);
+        const segurosResponse = await axios.get(
+          `http://localhost:3000/nar/seguros/segurosByAseguradora/${idAseguradora}`
+        );
         console.log("Datos de seguros:", segurosResponse.data);
         setSeguros(segurosResponse.data);
 
         // Cargar estado desde localStorage
-        const storedState = JSON.parse(localStorage.getItem("checkedItems")) || {};
+        const storedState =
+          JSON.parse(localStorage.getItem("checkedItems")) || {};
 
         // Inicializar el estado de los switches
         const initialCheckedItems = {};
         segurosResponse.data.forEach((seguro) => {
-          initialCheckedItems[seguro._id] = storedState[seguro._id] ?? seguro.active;
+          initialCheckedItems[seguro._id] =
+            storedState[seguro._id] ?? seguro.active;
         });
 
         setCheckedItems(initialCheckedItems);
@@ -61,7 +69,7 @@ const VerMasAseguradora = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [idAseguradora]);
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) =>
@@ -103,64 +111,74 @@ const VerMasAseguradora = () => {
   const handleToggleSwitch = async (seguroId, isActive) => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+        confirmButton:
+          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton:
+          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     });
 
     const action = isActive ? "inactive" : "active";
 
-    swalWithTailwindButtons.fire({
-      title: isActive ? "¿Desea desactivar este seguro?" : "¿Desea activar este seguro?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: isActive ? "Sí, desactivarlo" : "¡Sí, quiero activarlo!",
-      cancelButtonText: "Cancelar",
-      reverseButtons: true
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const endpoint = `http://localhost:3000/nar/seguros/${action}/${seguroId}`;
-          const response = await axios.put(endpoint);
+    swalWithTailwindButtons
+      .fire({
+        title: isActive
+          ? "¿Desea desactivar este seguro?"
+          : "¿Desea activar este seguro?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: isActive
+          ? "Sí, desactivarlo"
+          : "¡Sí, quiero activarlo!",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const endpoint = `http://localhost:3000/nar/seguros/${action}/${seguroId}`;
+            const response = await axios.put(endpoint);
 
-          if (response.status === 200) {
-            swalWithTailwindButtons.fire({
-              title: isActive ? "¡Seguro desactivado!" : "¡Seguro activado!",
-              icon: "success",
-            });
+            if (response.status === 200) {
+              swalWithTailwindButtons.fire({
+                title: isActive ? "¡Seguro desactivado!" : "¡Seguro activado!",
+                icon: "success",
+              });
 
-            setCheckedItems((prevState) => {
-              const newState = {
-                ...prevState,
-                [seguroId]: !isActive,
-              };
-              localStorage.setItem("checkedItems", JSON.stringify(newState)); // Guardar en localStorage
-              return newState;
-            });
+              setCheckedItems((prevState) => {
+                const newState = {
+                  ...prevState,
+                  [seguroId]: !isActive,
+                };
+                localStorage.setItem("checkedItems", JSON.stringify(newState)); // Guardar en localStorage
+                return newState;
+              });
 
-            setSeguros((prevSeguros) =>
-              prevSeguros.map((seguro) =>
-                seguro._id === seguroId ? { ...seguro, active: !isActive } : seguro
-              )
-            );
-          } else {
+              setSeguros((prevSeguros) =>
+                prevSeguros.map((seguro) =>
+                  seguro._id === seguroId
+                    ? { ...seguro, active: !isActive }
+                    : seguro
+                )
+              );
+            } else {
+              swalWithTailwindButtons.fire(
+                "Error",
+                "Hubo un problema al actualizar el estado del seguro.",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.error("Error al actualizar el estado del seguro:", error);
             swalWithTailwindButtons.fire(
               "Error",
-              "Hubo un problema al actualizar el estado del seguro.",
+              error.response?.data?.message || "Ocurrió un error inesperado.",
               "error"
             );
           }
-        } catch (error) {
-          console.error("Error al actualizar el estado del seguro:", error);
-          swalWithTailwindButtons.fire(
-            "Error",
-            error.response?.data?.message || "Ocurrió un error inesperado.",
-            "error"
-          );
         }
-      }
-    });
+      });
   };
 
   if (loading) {
@@ -186,10 +204,18 @@ const VerMasAseguradora = () => {
         <div className="flex items-center space-x-4 mb-4 md:mb-0">
           <div className="w-16 h-16 bg-gray-300 rounded-lg"></div>
           <div className="flex flex-col">
-            <p><strong>Aseguradora:</strong> {aseguradoraData.nombre}</p>
-            <p><strong>Contacto:</strong> {aseguradoraData.nombreContacto}</p>
-            <p><strong>Teléfono:</strong> {aseguradoraData.telefonoContacto}</p>
-            <p><strong>Correo:</strong> {aseguradoraData.correoContacto}</p>
+            <p>
+              <strong>Aseguradora:</strong> {aseguradoraData.nombre}
+            </p>
+            <p>
+              <strong>Contacto:</strong> {aseguradoraData.nombreContacto}
+            </p>
+            <p>
+              <strong>Teléfono:</strong> {aseguradoraData.telefonoContacto}
+            </p>
+            <p>
+              <strong>Correo:</strong> {aseguradoraData.correoContacto}
+            </p>
           </div>
         </div>
         <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
@@ -245,7 +271,9 @@ const VerMasAseguradora = () => {
                       type="checkbox"
                       className="hidden"
                       checked={checkedItems[seguroId] || false}
-                      onChange={() => handleToggleSwitch(seguroId, checkedItems[seguroId])}
+                      onChange={() =>
+                        handleToggleSwitch(seguroId, checkedItems[seguroId])
+                      }
                     />
                     <span className="slider round"></span>
                   </label>
