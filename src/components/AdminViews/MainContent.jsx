@@ -35,6 +35,10 @@ const MainContent = () => {
       return <EditarAseguradora />;
     }
 
+    if (location.pathname.includes("/aseguradoras/seguros")) {
+      return <VerMasAseguradora />;
+    }
+
     if(location.pathname.includes("/administradores/editar/")){
       return <EditarAdmin/>
     }
@@ -46,6 +50,11 @@ const MainContent = () => {
     if (location.pathname.includes("/informacion")){
       return <InformacionAdmin />;
   }
+
+  if (location.pathname.includes("/aseguradoras/seguros/agregar")){
+    return <AgregarSeguros />;
+}
+
 
     // Para rutas estáticas
     switch (location.pathname) {
@@ -63,14 +72,12 @@ const MainContent = () => {
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
-      case "/aseguradoras/seguros":
-        return <VerMasAseguradora />;
+      
       case "/aseguradoras/seguros/editar":
         return <EditarSeguro />;
       case "/aseguradoras/seguros/informacion":
         return <InformacionSeguros />;
-      case "/aseguradoras/seguros/agregar":
-        return <AgregarSeguros />;
+    
       case "/agentes":
         return <InicioAgentes />;
       case "/agentes/perfil":

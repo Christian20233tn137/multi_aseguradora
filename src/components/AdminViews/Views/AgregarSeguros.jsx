@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const AgregarSeguro = () => {
+  const navigate = useNavigate();
   const editorRef = useRef(null);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -23,17 +25,26 @@ const AgregarSeguro = () => {
     }
   };
 
-   const swalWithTailwindButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
-      },
-      buttonsStyling: false
-    });
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    },
+    buttonsStyling: false
+  });
 
   const agregarSeguro = async () => {
+    // Validación de campos requeridos
+    if (!nombre || !descripcion || !cobertura) {
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "Por favor, complete todos los campos requeridos.",
+        icon: "error",
+      });
+      return;
+    }
+
     try {
-      // Aquí irá tu endpoint real
       const response = await fetch("/api/seguros", {
         method: "POST",
         headers: {
@@ -47,20 +58,27 @@ const AgregarSeguro = () => {
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al agregar el seguro");
+      }
+
       swalWithTailwindButtons.fire({
-        title: response.ok ?   "¡Agregado!" : "Error",
-        text: response.ok
-        ?  "La aseguradora se agregó con éxito."
-        : "Error al editar",
-        icon: response.ok ? "success": "error",
+        title: "¡Agregado!",
+        text: "La aseguradora se agregó con éxito.",
+        icon: "success",
       });
 
-      if (response.ok) navigate("/aseguradoras/seguros")
-        
-      }catch (error) {
-        console.error("Error al agregar el seguro:", error);
-      }
-    };
+      navigate("/aseguradoras/seguros");
+    } catch (error) {
+      console.error("Error al agregar el seguro:", error);
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: error.message || "Ocurrió un error al agregar el seguro",
+        icon: "error",
+      });
+    }
+  };
 
   const confirmarAgregar = () => {
     swalWithTailwindButtons.fire({
@@ -70,7 +88,7 @@ const AgregarSeguro = () => {
       showCancelButton: true,
       confirmButtonText: "Sí, agregar",
       cancelButtonText: "Cancelar",
-      reverseButtons:true
+      reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
         agregarSeguro();
@@ -135,8 +153,6 @@ const AgregarSeguro = () => {
           </div>
         </div>
       </div>
-
-
 
       {/* Botón Agregar */}
       <div className="col-span-2 flex items-center justify-center mt-4">
