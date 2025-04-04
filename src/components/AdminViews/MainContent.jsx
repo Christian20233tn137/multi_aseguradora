@@ -52,9 +52,12 @@ if (location.pathname.includes("/aseguradoras/seguros/editar/")){
   return <EditarSeguro />;
 }
 
-    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
-      return <AgregarSeguros />;
-    }
+if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
+  return <AgregarSeguros />;
+}
+if (location.pathname.includes("/aseguradoras/seguros/informacion")) {
+  return <InformacionSeguros />;
+}
 
     // Para rutas estáticas
     switch (location.pathname) {
@@ -76,8 +79,7 @@ if (location.pathname.includes("/aseguradoras/seguros/editar/")){
         return <VerMasAseguradora />;
       case "/aseguradoras/seguros/editar":
         return <EditarSeguro />;
-      case "/aseguradoras/seguros/informacion":
-        return <InformacionSeguros />;
+ 
       case "/agentes":
         return <InicioAgentes />;
       case "/agentes/editar":
