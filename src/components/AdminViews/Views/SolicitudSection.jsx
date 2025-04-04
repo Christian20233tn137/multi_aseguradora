@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const SolicitudSection = () => {
-
   const navigate = useNavigate();
   const location = useLocation();
   const id = location.state?.id;
   const { profile } = location.state || {};
-  console.log("Prueba", id);
+  const [isLoading, setIsLoading] = useState(false); // Estado para el loader
 
   const handleBack = () => {
     navigate("/solicitudes");
@@ -18,10 +17,8 @@ const SolicitudSection = () => {
   const showAlert = async () => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton:
-          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton:
-          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
       buttonsStyling: false,
     });
@@ -38,6 +35,7 @@ const SolicitudSection = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
+          setIsLoading(true); // Mostrar el loader
           try {
             const response = await axios.put(
               `http://localhost:3000/nar/usuarios/postulanteAceptado/${profile._id}`
@@ -55,6 +53,8 @@ const SolicitudSection = () => {
               text: "Hubo un problema al aceptar al postulante.",
               icon: "error",
             });
+          } finally {
+            setIsLoading(false); // Ocultar el loader
           }
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           swalWithTailwindButtons.fire({
@@ -69,10 +69,8 @@ const SolicitudSection = () => {
   const showAlertDenegar = () => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton:
-          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton:
-          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
       buttonsStyling: false,
     });
@@ -89,6 +87,7 @@ const SolicitudSection = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
+          setIsLoading(true); // Mostrar el loader
           swalWithTailwindButtons.fire({
             title: "Denegado!",
             text: "El postulante fue denegado.",
@@ -108,17 +107,14 @@ const SolicitudSection = () => {
   const nombrePostulante = `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`;
 
   return (
-    <div className="p-6 w-auto h-auto overflow-hidden">
+    <div className="p-6 w-auto h-auto overflow-hidden relative">
       <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black bg-blue-200 rounded-2xl">
         {nombrePostulante}
       </h1>
       <div className="flex items-center gap-2 mt-5 justify-center">
         <div className="mt-10">
           <div className="flex items-center gap-2 mt-5">
-            <label
-              htmlFor="usuario"
-              className="text-sm font-medium text-black w-48"
-            >
+            <label htmlFor="usuario" className="text-sm font-medium text-black w-48">
               Correo Electrónico
             </label>
             <input
@@ -132,10 +128,7 @@ const SolicitudSection = () => {
           </div>
 
           <div className="flex items-center gap-2 mt-5">
-            <label
-              htmlFor="telefono"
-              className="text-sm font-medium text-black w-48"
-            >
+            <label htmlFor="telefono" className="text-sm font-medium text-black w-48">
               Teléfono
             </label>
             <input
@@ -149,10 +142,7 @@ const SolicitudSection = () => {
           </div>
 
           <div className="flex items-center gap-2 mt-5">
-            <label
-              htmlFor="domicilio"
-              className="text-sm font-medium text-black w-48"
-            >
+            <label htmlFor="domicilio" className="text-sm font-medium text-black w-48">
               CURP
             </label>
             <input
@@ -166,10 +156,7 @@ const SolicitudSection = () => {
           </div>
 
           <div className="flex items-center gap-2 mt-5">
-            <label
-              htmlFor="rfc"
-              className="text-sm font-medium text-black w-48"
-            >
+            <label htmlFor="rfc" className="text-sm font-medium text-black w-48">
               RFC
             </label>
             <input
@@ -207,6 +194,11 @@ const SolicitudSection = () => {
           </div>
         </div>
       </div>
+      {isLoading && (
+        <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+          <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+        </div>
+      )}
     </div>
   );
 };
