@@ -190,7 +190,7 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="editar/:id" element={<EditarAgente />} />
+        <Route path="editar" element={<EditarAgente />} />
         <Route path="perfil" element={<AgentesInfo />} />
       </Route>
       <Route

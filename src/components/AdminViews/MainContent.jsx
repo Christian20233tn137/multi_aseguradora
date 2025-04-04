@@ -39,9 +39,6 @@ const MainContent = () => {
       return <EditarAdmin/>
     }
 
-    if (location.pathname.includes("/agentes/editar")){
-        return <EditarAgente />;
-    }
 
     if (location.pathname.includes("/informacion")){
       return <InformacionAdmin />;
@@ -77,6 +74,8 @@ const MainContent = () => {
     
       case "/agentes":
         return <InicioAgentes />;
+        case "/agentes/editar":
+          return <EditarAgente />;
       case "/agentes/perfil":
         return <AgentesInfo />;
       case "/administradores":

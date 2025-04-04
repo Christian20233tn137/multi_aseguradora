@@ -66,9 +66,9 @@ const InicioSolicitudes = () => {
 
   const handleVerMas = (profile) => {
     if (view === "datos") {
-      navigate(`/solicitudes/solicitud-section`, { state: { profile } });
+      navigate(`/solicitudes/solicitud-section`, { state: { profile, id : id } });
     } else if (view === "documentos") {
-      navigate(`/solicitudes/solicitud-documentos`, { state: { profile } });
+      navigate(`/solicitudes/solicitud-documentos`, { state: { profile, id : id } });
     }
   };
 
