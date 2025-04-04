@@ -35,19 +35,9 @@ const MainContent = () => {
       return <EditarAseguradora />;
     }
 
-    if(location.pathname.includes("/administradores/editar/")){
-      return <EditarAdmin/>
+    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
+      return <AgregarSeguros />;
     }
-
-
-    if (location.pathname.includes("/informacion")){
-      return <InformacionAdmin />;
-  }
-
-  if (location.pathname.includes("/aseguradoras/seguros/agregar")){
-    return <AgregarSeguros />;
-}
-
 
     // Para rutas estáticas
     switch (location.pathname) {
@@ -65,21 +55,24 @@ const MainContent = () => {
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
-        case "/aseguradoras/seguros":
-          return <VerMasAseguradora />;
+      case "/aseguradoras/seguros":
+        return <VerMasAseguradora />;
       case "/aseguradoras/seguros/editar":
         return <EditarSeguro />;
       case "/aseguradoras/seguros/informacion":
         return <InformacionSeguros />;
-    
       case "/agentes":
         return <InicioAgentes />;
-        case "/agentes/editar":
-          return <EditarAgente />;
+      case "/agentes/editar":
+        return <EditarAgente />;
       case "/agentes/perfil":
         return <AgentesInfo />;
       case "/administradores":
         return <InicioAdmin />;
+      case "/administradores/informacion":
+        return <InformacionAdmin />;
+      case "/administradores/editar":
+        return <EditarAdmin />;
       case "/administradores/informacion":
         return <InformacionAdmin />;
       case "/administradores/agregar":
