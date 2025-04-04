@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-//import emitter from "../../../utils/eventEmitter"; // Asegúrate de que esta ruta sea correcta
+ import emitter from "../../../utils/eventEmitter"; // Asegúrate de que esta ruta sea correcta
 
 const ProfileSection = () => {
   const [month, setMonth] = useState("");
