@@ -4,10 +4,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const SolicitudSection = () => {
-   
- 
+
   const navigate = useNavigate();
   const location = useLocation();
+  const id = location.state?.id;
   const { profile } = location.state || {};
   console.log("Prueba", id);
 
@@ -18,81 +18,91 @@ const SolicitudSection = () => {
   const showAlert = async () => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+        confirmButton:
+          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton:
+          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     });
 
-    swalWithTailwindButtons.fire({
-      title: "¿Estás seguro?",
-      text: "No podrás revertir esto!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Si, aceptarlo!",
-      cancelButtonText: "No, cancelarlo!",
-      reverseButtons: true
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await axios.put(`http://localhost:3000/nar/usuarios/postulanteAceptado/${profile._id}`);
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro?",
+        text: "No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Si, aceptarlo!",
+        cancelButtonText: "No, cancelarlo!",
+        reverseButtons: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.put(
+              `http://localhost:3000/nar/usuarios/postulanteAceptado/${profile._id}`
+            );
+            swalWithTailwindButtons.fire({
+              title: "¡Aceptado!",
+              text: "El postulante fue aceptado.",
+              icon: "success",
+            });
+            handleBack();
+          } catch (error) {
+            console.error("Error updating postulante:", error);
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "Hubo un problema al aceptar al postulante.",
+              icon: "error",
+            });
+          }
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
           swalWithTailwindButtons.fire({
-            title: "¡Aceptado!",
-            text: "El postulante fue aceptado.",
-            icon: "success",
-          });
-          handleBack();
-        } catch (error) {
-          console.error("Error updating postulante:", error);
-          swalWithTailwindButtons.fire({
-            title: "Error",
-            text: "Hubo un problema al aceptar al postulante.",
+            title: "Cancelado",
+            text: "El postulante no fue aceptado",
             icon: "error",
           });
         }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        swalWithTailwindButtons.fire({
-          title: "Cancelado",
-          text: "El postulante no fue aceptado",
-          icon: "error"
-        });
-      }
-    });
+      });
   };
 
   const showAlertDenegar = () => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+        confirmButton:
+          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton:
+          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     });
 
-    swalWithTailwindButtons.fire({
-      title: "¿Estás seguro?",
-      text: "No podrás revertir esto!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Si, eliminalo!",
-      cancelButtonText: "No, cancelalo!",
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swalWithTailwindButtons.fire({
-          title: "Denegado!",
-          text: "El postulante fue denegado.",
-          icon: "success",
-        });
-        handleBack();
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        swalWithTailwindButtons.fire({
-          title: "Cancelado",
-          text: "El postulante fue denegado correctamente",
-          icon: "error"
-        });
-      }
-    });
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro?",
+        text: "No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Si, eliminalo!",
+        cancelButtonText: "No, cancelalo!",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Denegado!",
+            text: "El postulante fue denegado.",
+            icon: "success",
+          });
+          handleBack();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          swalWithTailwindButtons.fire({
+            title: "Cancelado",
+            text: "El postulante fue denegado correctamente",
+            icon: "error",
+          });
+        }
+      });
   };
 
   const nombrePostulante = `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`;
@@ -143,7 +153,7 @@ const SolicitudSection = () => {
               htmlFor="domicilio"
               className="text-sm font-medium text-black w-48"
             >
-             CURP
+              CURP
             </label>
             <input
               type="text"

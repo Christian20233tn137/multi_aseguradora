@@ -6,9 +6,16 @@ import axios from 'axios';
 const API_URL = "http://localhost:3000/nar/usuarios";
 
 const EditarAgente = () => {
-  const { id } = useParams();
+  
+  
   const navigate = useNavigate();
   const location = useLocation();
+  const idAgente = location.state?.idAgente;
+  const id = location.state?.id;
+  console.log("Id del agente:", idAgente);
+  console.log("Id del admin:", id);
+  
+  
   const [agente, setAgente] = useState({
     nombre: "",
     apellidoPaterno: "",
@@ -33,7 +40,7 @@ const EditarAgente = () => {
         if (location.state && location.state.agente) {
           setAgente(location.state.agente);
         } else if (id) {
-          const response = await axios.get(`${API_URL}/id/${id}`);
+          const response = await axios.get(`${API_URL}/id/${idAgente}`);
           setAgente(response.data);
         } else {
           throw new Error("ID del agente no definido");
@@ -51,7 +58,7 @@ const EditarAgente = () => {
     };
 
     obtenerAgente();
-  }, [id, location.state]);
+  }, [idAgente, location.state]);
 
   const handleChange = (e) => {
     setAgente({
@@ -73,7 +80,7 @@ const EditarAgente = () => {
       if (result.isConfirmed) {
         try {
           const nuevaContrasena = agente.correo;
-          await axios.put(`${API_URL}/resetearContra/${id}`, { correo: nuevaContrasena });
+          await axios.put(`${API_URL}/resetearContra/${idAgente}`, { correo: nuevaContrasena });
 
           swalWithTailwindButtons.fire({
             icon: 'success',
@@ -131,7 +138,7 @@ const EditarAgente = () => {
 
         console.log("Datos a enviar:", formData); // Verifica el contenido de formData
 
-        const response = await axios.put(`${API_URL}/byAdmin/${id}`, formData);
+        const response = await axios.put(`${API_URL}/byAdmin/${idAgente}`, formData);
 
         if (response.status === 200) {
           swalWithTailwindButtons.fire({
@@ -139,7 +146,7 @@ const EditarAgente = () => {
             text: "Datos guardados correctamente.",
             icon: "success",
           });
-          navigate("/agentes"); // Redirigir a la lista de agentes
+          navigate("/agentes", {state : {id:id}}); // Redirigir a la lista de agentes
         } else {
           swalWithTailwindButtons.fire({
             title: "Error",

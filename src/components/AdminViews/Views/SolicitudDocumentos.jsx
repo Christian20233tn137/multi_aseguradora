@@ -6,8 +6,9 @@ import Swal from "sweetalert2";
 const SolicitudDocumentos = () => {
   const navigate = useNavigate();
   const location = useLocation();
-    console.log("Prueba", id);
-    
+  const id = location.state?.id;
+  console.log("Prueba", id);
+
   const { profile } = location.state || {};
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,9 @@ const SolicitudDocumentos = () => {
       if (profile && profile._id && /^[0-9a-fA-F]{24}$/.test(profile._id)) {
         try {
           console.log("Fetching documents for profile ID:", profile._id);
-          const response = await axios.get(`http://localhost:3000/nar/documentosPersona/files/persona/${profile._id}`);
+          const response = await axios.get(
+            `http://localhost:3000/nar/documentosPersona/files/persona/${profile._id}`
+          );
           console.log("Fetched documents:", response.data);
           const transformedDocuments = transformDocuments(response.data);
           setDocuments(transformedDocuments);
@@ -39,11 +42,11 @@ const SolicitudDocumentos = () => {
   }, [profile]);
 
   const transformDocuments = (data) => {
-    return data.map(doc => ({
-      id: doc.idDocumento,  // Ahora usa el ID correcto de GridFS
+    return data.map((doc) => ({
+      id: doc.idDocumento, // Ahora usa el ID correcto de GridFS
       name: doc.nombreDocumento,
-      file: doc.idDocumento,  // Esto debe ser el mismo ID que en GridFS
-      type: 'unknown' // Si no guardaste la extensión, lo manejas aparte
+      file: doc.idDocumento, // Esto debe ser el mismo ID que en GridFS
+      type: "unknown", // Si no guardaste la extensión, lo manejas aparte
     }));
   };
 
@@ -54,41 +57,47 @@ const SolicitudDocumentos = () => {
   const showAlert = async (action) => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+        confirmButton:
+          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton:
+          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     });
 
-    swalWithTailwindButtons.fire({
-      title: `¿Estás seguro de ${action} al postulante?`,
-      text: "No podrás revertir esto!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: `Si, ${action}!`,
-      cancelButtonText: "No, cancelar!",
-      reverseButtons: true
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await axios.put(`http://localhost:3000/nar/usuarios/postulanteAgente/${profile._id}`);
-          swalWithTailwindButtons.fire({
-            title: `${action.charAt(0).toUpperCase() + action.slice(1)}!`,
-            text: `El postulante fue ${action}.`,
-            icon: "success",
-          });
-          handleBack();
-        } catch (error) {
-          setError("Error updating postulante. Please try again later.");
-          console.error("Error updating postulante:", error);
-          swalWithTailwindButtons.fire({
-            title: "Error",
-            text: "Hubo un problema al aceptar al postulante.",
-            icon: "error",
-          });
+    swalWithTailwindButtons
+      .fire({
+        title: `¿Estás seguro de ${action} al postulante?`,
+        text: "No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: `Si, ${action}!`,
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.put(
+              `http://localhost:3000/nar/usuarios/postulanteAgente/${profile._id}`
+            );
+            swalWithTailwindButtons.fire({
+              title: `${action.charAt(0).toUpperCase() + action.slice(1)}!`,
+              text: `El postulante fue ${action}.`,
+              icon: "success",
+            });
+            handleBack();
+          } catch (error) {
+            setError("Error updating postulante. Please try again later.");
+            console.error("Error updating postulante:", error);
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "Hubo un problema al aceptar al postulante.",
+              icon: "error",
+            });
+          }
         }
-      }
-    });
+      });
   };
 
   const nombrePostulante = `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`;

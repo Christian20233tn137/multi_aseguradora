@@ -63,11 +63,11 @@ const CotizacionesPendientes = () => {
         />
       </div>
 
-      <div className="border-0 space-y-6">
+      <div className="border-0 shadow-md rounded-lg space-y-6">
         {filteredCotizaciones.map((cotizacion) => (
           <div
             key={cotizacion.idCotizacion}
-            className="bg-white shadow-md rounded-lg p-6 border border-gray-200 flex items-center"
+            className="bg-white p-6 border-0 shadow-md rounded-lg flex items-center"
           >
             <div className="flex flex-col space-y-2 flex-grow">
               <p className="text-lg font-semibold text-gray-900">
@@ -84,7 +84,7 @@ const CotizacionesPendientes = () => {
             </div>
 
             <button
-              className="px-6 py-2 botones font-medium ml-auto"
+              className="px-6 py-2 botones rounded-lg font-medium ml-auto"
               onClick={() => handleEmision(cotizacion.idCotizacion)}
             >
               Información

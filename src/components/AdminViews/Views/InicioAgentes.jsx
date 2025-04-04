@@ -92,7 +92,7 @@ const InicioAgentes = () => {
 
   const handleEditar = (agenteId) => {
     if (view === "agentes") {
-      navigate(`/agentes/editar/${agenteId}`);
+      navigate(`/agentes/editar`, {state : {id : id, idAgente : agenteId }});
     } else {
       swalWithTailwindButtons.fire({
         title: "¿Estás seguro de continuar?",
@@ -117,8 +117,8 @@ const InicioAgentes = () => {
     }
   };
 
-  const handlePerfil = () => {
-    navigate("/agentes/perfil");
+  const handlePerfil = (agenteId) => {
+    navigate("/agentes/perfil", {state : { id: id, idAgente: agenteId }});
   };
 
   const currentProfiles = view === "agentes" ? agentesActivos : agentesInactivos;
@@ -192,7 +192,7 @@ const InicioAgentes = () => {
               {view === "agentes" && (
                 <button
                   className="px-8 py-3 text-white rounded botones ml-4"
-                  onClick={handlePerfil}
+                  onClick={() => handlePerfil(profile._id)}
                 >
                   Perfil
                 </button>

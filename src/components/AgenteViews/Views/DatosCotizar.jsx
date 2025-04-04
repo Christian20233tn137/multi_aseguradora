@@ -153,14 +153,14 @@ const DatosCotizar = () => {
         Datos del titular
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 ">
         <input
           type="text"
           name="nombre"
           placeholder="Nombre"
           value={titular.nombre}
           onChange={handleChange}
-          className="border rounded py-2 px-3"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
         />
         <input
           type="text"
@@ -168,7 +168,7 @@ const DatosCotizar = () => {
           placeholder="Apellido Paterno"
           value={titular.apellidoPaterno}
           onChange={handleChange}
-          className="border rounded py-2 px-3"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
         />
         <input
           type="text"
@@ -176,7 +176,7 @@ const DatosCotizar = () => {
           placeholder="Apellido Materno"
           value={titular.apellidoMaterno}
           onChange={handleChange}
-          className="border rounded py-2 px-3"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
         />
         <input
           type="text"
@@ -184,7 +184,7 @@ const DatosCotizar = () => {
           placeholder="Fecha de Nacimiento yyyy-mm-dd"
           value={titular.fechaNacimiento}
           onChange={handleChange}
-          className="border rounded py-2 px-3"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
         />
         <input
           type="text"
@@ -192,7 +192,7 @@ const DatosCotizar = () => {
           placeholder="Teléfono"
           value={titular.telefono}
           onChange={handleChange}
-          className="border rounded py-2 px-3"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
         />
         <input
           type="email"
@@ -200,7 +200,7 @@ const DatosCotizar = () => {
           placeholder="Correo Electrónico"
           value={titular.correo}
           onChange={handleChange}
-          className="border rounded py-2 px-3"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
         />
         <input
           type="text"
@@ -208,7 +208,7 @@ const DatosCotizar = () => {
           placeholder="RFC"
           value={titular.rfc}
           onChange={handleChange}
-          className="border rounded py-2 px-3"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
         />
       </div>
 
@@ -247,7 +247,7 @@ const DatosCotizar = () => {
             placeholder="Nombre"
             value={asegurado.nombre}
             onChange={handleAseguradoChange}
-            className="border rounded py-2 px-3"
+            className="border-0 shadow-md rounded-lg py-2 px-3"
           />
           <input
             type="text"
@@ -255,7 +255,7 @@ const DatosCotizar = () => {
             placeholder="Apellido Paterno"
             value={asegurado.apellidoPaterno}
             onChange={handleAseguradoChange}
-            className="border rounded py-2 px-3"
+            className="border-0 shadow-md rounded-lg py-2 px-3"
           />
           <input
             type="text"
@@ -263,7 +263,7 @@ const DatosCotizar = () => {
             placeholder="Apellido Materno"
             value={asegurado.apellidoMaterno}
             onChange={handleAseguradoChange}
-            className="border rounded py-2 px-3"
+            className="border-0 shadow-md rounded-lg py-2 px-3"
           />
           <input
             type="text"
@@ -271,7 +271,7 @@ const DatosCotizar = () => {
             placeholder="Fecha de Nacimiento yyyy-mm-dd"
             value={asegurado.fechaNacimiento}
             onChange={handleAseguradoChange}
-            className="border rounded py-2 px-3"
+            className="border-0 shadow-md rounded-lg py-2 px-3"
           />
           <input
             type="text"
@@ -279,7 +279,7 @@ const DatosCotizar = () => {
             placeholder="Teléfono"
             value={asegurado.telefono}
             onChange={handleAseguradoChange}
-            className="border rounded py-2 px-3"
+            className="border-0 shadow-md rounded-lg py-2 px-3"
           />
           <input
             type="email"
@@ -287,7 +287,7 @@ const DatosCotizar = () => {
             placeholder="Correo Electrónico"
             value={asegurado.correo}
             onChange={handleAseguradoChange}
-            className="border rounded py-2 px-3"
+            className="border-0 shadow-md rounded-lg py-2 px-3"
           />
           <input
             type="text"
@@ -295,7 +295,7 @@ const DatosCotizar = () => {
             placeholder="RFC"
             value={asegurado.rfc}
             onChange={handleAseguradoChange}
-            className="border rounded py-2 px-3"
+            className="border-0 shadow-md rounded-lg py-2 px-3"
           />
         </div>
       )}

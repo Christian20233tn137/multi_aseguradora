@@ -40,7 +40,7 @@ const Cotizar = () => {
         <input
           type="text"
           placeholder="Buscar..."
-          className="px-4 py-2 w-full sm:w-auto border rounded mb-2 sm:mb-0 sm:ml-auto"
+          className="px-4 py-2 w-full sm:w-auto border-0 shadow-md rounded-lg mb-2 sm:mb-0 sm:ml-auto"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -49,7 +49,7 @@ const Cotizar = () => {
         {filteredAseguradoras.map((aseguradora, index) => (
           <div
             key={index}
-            className="flex flex-col sm:flex-row items-center border rounded p-4 mb-4"
+            className="flex flex-col sm:flex-row items-center border-0 shadow-md rounded-lg p-4 mb-4"
           >
             <img
               src={imagenesSeguros[aseguradora.nombre]}
