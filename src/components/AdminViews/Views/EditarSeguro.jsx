@@ -121,29 +121,29 @@ const EditarSeguro = () => {
         />
       </div>
 
-      {/* Campo de Tipo */}
-      <div className="mb-4 mb-4 flex space-x-4">
-        <label className="block font-semibold">Tipo*</label>
-        <input
-          type="text"
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value)}
-          className="w-full border rounded p-2"
-          placeholder="Tipo de seguro"
-        />
-      </div>
-
-      {/* Campo de Precio Base */}
-      <div className="mb-4">
-        <label className="block font-semibold">Precio Base*</label>
-        <input
-          type="number"
-          min="0"
-          value={precioBase}
-          onChange={(e) => setPrecioBase(e.target.value)}
-          className="w-full border rounded p-2"
-          placeholder="Precio base del seguro"
-        />
+      {/* Campos de Tipo y Precio Base en una fila */}
+      <div className="mb-4 flex space-x-4">
+        <div className="w-1/2">
+          <label className="block font-semibold">Tipo*</label>
+          <input
+            type="text"
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="w-full border rounded p-2"
+            placeholder="Tipo de seguro"
+          />
+        </div>
+        <div className="w-1/2">
+          <label className="block font-semibold">Precio Base*</label>
+          <input
+            type="number"
+            min="0"
+            value={precioBase}
+            onChange={(e) => setPrecioBase(e.target.value)}
+            className="w-full border rounded p-2"
+            placeholder="Precio base del seguro"
+          />
+        </div>
       </div>
 
       {/* Campo de Cobertura con Editor de Texto */}
