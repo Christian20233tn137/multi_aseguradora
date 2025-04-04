@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const Seguros = () => {
   const API_URL = "http://localhost:3000/nar/cotizaciones/id";
+  const navigate = useNavigate();
 
   const [emision, setEmisiones] = useState(null);
   const location = useLocation();
@@ -123,7 +124,7 @@ const Seguros = () => {
         <div className="flex justify-between mt-6">
           <button
             className="botones text-white px-4 py-2 rounded-lg"
-            onClick={() => navigate("/seguros")}
+            onClick={() => navigate("/inicioAgentes",{ state: { id: id }})}
           >
             Regresar
           </button>
