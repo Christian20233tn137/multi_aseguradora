@@ -51,6 +51,10 @@ const MainContent = () => {
     return <AgregarSeguros />;
 }
 
+if (location.pathname.includes("/aseguradoras/seguros/editar/")){
+  return <EditarSeguro />;
+}
+
 
     // Para rutas estáticas
     switch (location.pathname) {

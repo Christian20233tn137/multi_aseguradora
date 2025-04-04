@@ -104,7 +104,7 @@ const VerMasAseguradora = () => {
   };
 
   const handlerAdd = () => {
-    navigate(`/aseguradoras/seguros/agregar/${id}`);
+    navigate(`/aseguradoras/seguros/agregar`, { state: { idAseguradora } });
     // Navegar a la ruta de agregar seguro
   };
 
