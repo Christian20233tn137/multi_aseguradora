@@ -16,6 +16,7 @@ const RecruimentStructure = () => {
     curp: ""
   });
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Estado para el loader
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -32,11 +33,17 @@ const RecruimentStructure = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "telefono" && !/^\d*$/.test(value)) {
+      // Prevent non-numeric input for telefono
+      return;
+    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Mostrar el loader
     try {
       console.log("Datos a enviar:", formData);
 
@@ -83,6 +90,8 @@ const RecruimentStructure = () => {
         icon: "error",
         confirmButtonText: "Aceptar"
       });
+    } finally {
+      setIsLoading(false); // Ocultar el loader
     }
   };
 
@@ -102,7 +111,7 @@ const RecruimentStructure = () => {
       </button>
       {isModalOpen && (
         <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center px-4">
-          <div className="bg-white rounded-lg shadow-lg w-full sm:max-w-lg md:max-w-xl lg:max-w-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-lg w-full sm:max-w-lg md:max-w-xl lg:max-w-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto relative">
             <div className="flex justify-between items-center p-2 border-b">
               <h2 className="text-left font-bold text-lg">Postularme</h2>
               <img className="object-cover w-13vis h-13 cursor-pointer p-2" src={Close} alt="Cerrar" onClick={closeModal} />
@@ -127,11 +136,16 @@ const RecruimentStructure = () => {
               </div>
               {errorMessage && <p className="text-red-500">{errorMessage}</p>}
               <div className="mt-4 flex justify-center">
-                <button type="submit" className="w-30 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 botones">
-                  Enviar
+                <button type="submit" className="w-30 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 botones" disabled={isLoading}>
+                  {isLoading ? "Enviando..." : "Enviar"}
                 </button>
               </div>
             </form>
+            {isLoading && (
+              <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+                <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+              </div>
+            )}
           </div>
         </div>
       )}

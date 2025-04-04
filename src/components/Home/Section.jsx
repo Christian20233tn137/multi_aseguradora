@@ -15,6 +15,7 @@ const Section = () => {
     curp: ""
   });
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -31,20 +32,23 @@ const Section = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "telefono" && !/^\d*$/.test(value)) {
+      return;
+    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       console.log("Datos a enviar:", formData);
 
-      // Validar que todos los campos estén llenos
       if (!formData.nombre || !formData.apellidoPaterno || !formData.apellidoMaterno || !formData.correo || !formData.telefono || !formData.rfc || !formData.curp) {
         throw new Error('Todos los campos son requeridos');
       }
 
-      // Validar formato de correo, RFC y CURP
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(formData.correo)) {
         throw new Error('El correo electrónico no tiene un formato válido');
@@ -62,7 +66,6 @@ const Section = () => {
 
       await axios.post("http://localhost:3000/nar/usuarios/postulante", formData);
 
-      // Show success alert with SweetAlert2
       swalWithTailwindButtons.fire({
         title: "Éxito",
         text: "Postulación enviada con éxito",
@@ -75,13 +78,14 @@ const Section = () => {
       console.error("Error al enviar la postulación", error);
       setErrorMessage(error.response?.data || error.message);
 
-      // Show error alert with SweetAlert2
       swalWithTailwindButtons.fire({
         title: "Error",
         text: "Hubo un error al enviar la postulación: " + error.message,
         icon: "error",
         confirmButtonText: "Aceptar"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,7 +110,7 @@ const Section = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center px-4 z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full sm:max-w-lg md:max-w-xl lg:max-w-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-lg w-full sm:max-w-lg md:max-w-xl lg:max-w-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto relative">
             <div className="flex justify-between items-center p-2 border-b">
               <h2 className="text-left font-bold text-lg">Postularme</h2>
               <img
@@ -147,11 +151,17 @@ const Section = () => {
                 <button
                   type="submit"
                   className="w-30 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 botones"
+                  disabled={isLoading}
                 >
-                  Enviar
+                  {isLoading ? "Enviando..." : "Enviar"}
                 </button>
               </div>
             </form>
+            {isLoading && (
+              <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+                <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+              </div>
+            )}
           </div>
         </div>
       )}
