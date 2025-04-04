@@ -3,32 +3,42 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-// Define the SweetAlert configuration with Tailwind CSS classes and reverse buttons
 const swalWithTailwindButtons = Swal.mixin({
   customClass: {
     confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
     cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
   },
   buttonsStyling: false,
-  reverseButtons: true, // Reverse the order of buttons
-  confirmButtonText: "Confirmar", // Default confirm button text
-  cancelButtonText: "Cancelar" // Default cancel button text
+  reverseButtons: true,
+  confirmButtonText: "Confirmar",
+  cancelButtonText: "Cancelar"
 });
 
 const InicioAseguradoras = () => {
   const navigate = useNavigate();
   const [aseguradoras, setAseguradoras] = useState([]);
+  const [seguros, setSeguros] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 3;
   const [checkedItems, setCheckedItems] = useState({});
 
   useEffect(() => {
     const fetchAseguradoras = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/nar/aseguradoras"
-        );
+        const response = await axios.get("http://localhost:3000/nar/aseguradoras");
         setAseguradoras(response.data);
+
+        // Cargar estado desde localStorage
+        const storedState = JSON.parse(localStorage.getItem("checkedItemsAseguradoras")) || {};
+
+        // Inicializar el estado de los switches
+        const initialCheckedItems = {};
+        response.data.forEach((aseguradora) => {
+          initialCheckedItems[aseguradora._id] = storedState[aseguradora._id] ?? aseguradora.active;
+        });
+
+        setCheckedItems(initialCheckedItems);
       } catch (error) {
         console.error("Error al obtener aseguradoras:", error);
       }
@@ -36,6 +46,27 @@ const InicioAseguradoras = () => {
 
     fetchAseguradoras();
   }, []);
+
+  useEffect(() => {
+    const fetchSeguros = async () => {
+      const segurosData = {};
+      for (const aseguradora of aseguradoras) {
+        try {
+          const response = await axios.get(`http://localhost:3000/nar/aseguradoras/id/${aseguradora._id}`);
+          segurosData[aseguradora._id] = response.data;
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            console.error(`Recurso no encontrado para ${aseguradora.nombre}:`, error);
+          } else {
+            console.error(`Error al obtener seguros para ${aseguradora.nombre}:`, error);
+          }
+        }
+      }
+      setSeguros(segurosData);
+    };
+
+    fetchSeguros();
+  }, [aseguradoras]);
 
   const handlerNavigation = () => navigate("/aseguradoras/nuevaAseguradora");
   const handlerInfo = () => navigate("/aseguradoras/seguros");
@@ -45,13 +76,12 @@ const InicioAseguradoras = () => {
       navigate(`editar/${id}`, { state: { aseguradora } });
     } else {
       console.error("ID de aseguradora no definido");
-      console.log(id);
     }
   };
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) =>
-      Math.min(prevPage + 1, Math.ceil(aseguradoras.length / itemsPerPage) - 1)
+      Math.min(prevPage + 1, Math.ceil(filteredAseguradoras.length / itemsPerPage) - 1)
     );
   };
 
@@ -59,36 +89,70 @@ const InicioAseguradoras = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
   };
 
-  const currentItems = aseguradoras.slice(
+  const filteredAseguradoras = aseguradoras.filter((aseguradora) =>
+    aseguradora.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentItems = filteredAseguradoras.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
 
-  const handleToggleSwitch = (index) => {
-    const isCurrentlyChecked = checkedItems[index] || false;
+  const handleToggleSwitch = async (aseguradoraId, isActive) => {
+    const action = isActive ? "inactive" : "active";
 
     swalWithTailwindButtons.fire({
-      title: isCurrentlyChecked
+      title: isActive
         ? "¿Desea desactivar esta aseguradora?"
         : "¿Desea activar esta aseguradora?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: isCurrentlyChecked
+      confirmButtonText: isActive
         ? "Sí, desactivarlo"
         : "¡Sí, quiero activarlo!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        swalWithTailwindButtons.fire({
-          title: isCurrentlyChecked
-            ? "¡Aseguradora desactivada!"
-            : "¡Aseguradora activada!",
-          icon: "success",
-        });
+        try {
+          const endpoint = `http://localhost:3000/nar/aseguradoras/${action}/${aseguradoraId}`;
+          const response = await axios.put(endpoint);
 
-        setCheckedItems((prevState) => ({
-          ...prevState,
-          [index]: !prevState[index],
-        }));
+          if (response.status === 200) {
+            swalWithTailwindButtons.fire({
+              title: isActive
+                ? "¡Aseguradora desactivada!"
+                : "¡Aseguradora activada!",
+              icon: "success",
+            });
+
+            setCheckedItems((prevState) => {
+              const newState = {
+                ...prevState,
+                [aseguradoraId]: !isActive,
+              };
+              localStorage.setItem("checkedItemsAseguradoras", JSON.stringify(newState)); // Guardar en localStorage
+              return newState;
+            });
+
+            setAseguradoras((prevAseguradoras) =>
+              prevAseguradoras.map((aseguradora) =>
+                aseguradora._id === aseguradoraId ? { ...aseguradora, active: !isActive } : aseguradora
+              )
+            );
+          } else {
+            swalWithTailwindButtons.fire(
+              "Error",
+              "Hubo un problema al actualizar el estado de la aseguradora.",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error al actualizar el estado de la aseguradora:", error);
+          swalWithTailwindButtons.fire(
+            "Error",
+            error.response?.data?.message || "Ocurrió un error inesperado.",
+            "error"
+          );
+        }
       }
     });
   };
@@ -96,17 +160,22 @@ const InicioAseguradoras = () => {
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row items-center mb-4 space-y-4 md:space-y-0 md:space-x-4">
-        <input
-          type="text"
-          placeholder="Buscar..."
-          className="px-4 py-3 w-full md:w-auto border rounded order-first md:order-none"
-        />
         <button
-          className="px-6 py-3 text-white botones w-full md:w-auto"
+          className="px-6 py-3 text-white botones w-full md:w-auto order-last md:order-none"
           onClick={handlerNavigation}
         >
           + Agregar
         </button>
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(0);
+          }}
+          className="px-4 py-3 w-full md:w-auto border rounded order-first md:order-none"
+        />
       </div>
       <div className="border-0 p-6 space-y-6">
         {currentItems.length > 0 ? (
@@ -120,8 +189,18 @@ const InicioAseguradoras = () => {
                 <div>
                   <p className="text-xl font-semibold">{aseguradora.nombre}</p>
                   <p className="text-gray-600 text-lg">
-                    {aseguradora.informacion}
+
                   </p>
+                  <div>
+                    <h3 className="text-lg font-semibold mt-4">Seguros: <p>{aseguradora.informacion}</p></h3>
+                    <ul>
+                      {Array.isArray(seguros[aseguradora._id])
+                        ? seguros[aseguradora._id].map((seguro, index) => (
+                            <li key={index}>{seguro.name}</li>
+                          ))
+                        : null}
+                    </ul>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-6">
@@ -130,7 +209,7 @@ const InicioAseguradoras = () => {
                     type="checkbox"
                     className="hidden"
                     checked={checkedItems[aseguradora._id] || false}
-                    onChange={() => handleToggleSwitch(aseguradora._id)}
+                    onChange={() => handleToggleSwitch(aseguradora._id, checkedItems[aseguradora._id])}
                   />
                   <span className="slider round"></span>
                 </label>
@@ -144,7 +223,11 @@ const InicioAseguradoras = () => {
                 </button>
                 <button
                   className="px-6 py-3 text-white botones"
-                  onClick={handlerInfo}
+                  onClick={() =>
+                    navigate(`/aseguradoras/seguros/${aseguradora._id}`, {
+                      state: { aseguradora },
+                    })
+                  }
                 >
                   Ver más
                 </button>
@@ -163,10 +246,9 @@ const InicioAseguradoras = () => {
         >
           Anterior
         </button>
-        
         <button
           onClick={handleNextPage}
-          disabled={(currentPage + 1) * itemsPerPage >= aseguradoras.length}
+          disabled={(currentPage + 1) * itemsPerPage >= filteredAseguradoras.length}
           className="px-6 py-3 text-white botones"
         >
           Siguiente

@@ -61,7 +61,7 @@ const App = () => {
         return "Aseguradoras";
       case "/aseguradoras/editar/:id/informacion/:id":
         return "Aseguradoras";
-      case "/aseguradoras/seguros":
+      case "/aseguradoras/seguros/:id":
         return "Aseguradoras";
       case "/aseguradoras/seguros/editar":
         return "Editar Seguro";
@@ -177,10 +177,10 @@ const App = () => {
         {/* Rutas hijas fuaaa*/}
         <Route path="nuevaAseguradora" element={<NuevaAseguradora />} />
         <Route path="editar/:id" element={<EditarAseguradora />} />
-        <Route path="seguros" element={<VerMasAseguradora />} />
+        <Route path="seguros/:id" element={<VerMasAseguradora />} />
         <Route path="seguros/editar" element={<EditarSeguro />} />
         <Route path="seguros/informacion" element={<InformacionSeguros />} />
-        <Route path="seguros/agregar" element={<AgregarSeguros />} />
+        <Route path="seguros/agregar/:id" element={<AgregarSeguros />} />
       </Route>
       <Route
         path="/agentes/*"
