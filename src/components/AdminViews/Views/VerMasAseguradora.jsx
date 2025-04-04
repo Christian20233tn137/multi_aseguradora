@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const VerMasAseguradora = () => {
+ 
+  const location = useLocation();
+    console.log("Prueba", id);
+
   const navigate = useNavigate();
   const { id } = useParams(); // Obtener el ID de la aseguradora desde la URL
 

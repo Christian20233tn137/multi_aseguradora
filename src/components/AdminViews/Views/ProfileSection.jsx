@@ -4,8 +4,8 @@ import { useLocation } from "react-router-dom";
 const ProfileSection = () => {
 
   const location = useLocation();
-  const id = location.state.id;
-  console.log(id);
+  const id = location.state?.id;
+  console.log("Prueba", id);
   
 
   return (

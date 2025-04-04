@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useLocation } from "react-router-dom";
 
 const AgregarAdmin = () => {
+    const location = useLocation();
+    const id = location.state?.id;
+    console.log("Prueba", id);
   // Estados editables
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");

@@ -1,10 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const InformacionSeguros = () => {
   const navigate = useNavigate();
 
   const handleRegresar = () => {
+
+    const location = useLocation();
+    const id = location.state?.id;
+    console.log("Prueba", id);
+
     navigate("/aseguradoras/seguros"); // 
   };
 

@@ -1,8 +1,12 @@
 import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const AgregarSeguro = () => {
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log("Prueba", id);
+
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const [nombre, setNombre] = useState("");

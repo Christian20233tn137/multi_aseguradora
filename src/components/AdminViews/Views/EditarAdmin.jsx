@@ -6,6 +6,7 @@ import axios from "axios";
 const API_URL = "http://localhost:3000/nar/usuarios";
 
 const EditarAdmin = () => {
+  
   const location = useLocation();
   const { id } = useParams();
   const navigate = useNavigate();

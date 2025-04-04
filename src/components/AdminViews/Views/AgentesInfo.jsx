@@ -1,7 +1,12 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const AgentesInfo = () => {
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log("Prueba", id);
+
   const nombrePostulante = "Juan Perez";
   const correoElectronico = "juan.perez@example.com";
   const telefono = "555-1234";

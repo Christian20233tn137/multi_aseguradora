@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import Swal from "sweetalert2";
+import { useLocation } from "react-router-dom";
 
 const ConfigurarCuotas = () => {
+
+    const location = useLocation();
+    const id = location.state?.id;
+    console.log("Prueba", id);
+
   const [emisiones, setEmisiones] = useState(0);
   const [nuevaCantidad, setNuevaCantidad] = useState("");
   const [loading, setLoading] = useState(false);

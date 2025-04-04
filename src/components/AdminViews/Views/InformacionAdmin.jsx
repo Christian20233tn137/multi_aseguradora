@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const API_URL = "http://localhost:3000/nar/usuarios/id";
 
 const InformacionAdmin = () => {
+  const location = useLocation();
+
   const navigate = useNavigate();
   const { id } = useParams(); // Obtener el ID del administrador desde la URL
   const [adminData, setAdminData] = useState({

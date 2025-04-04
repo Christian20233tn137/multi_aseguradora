@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 
 const NuevaAseguradora = () => {
+
+    const location = useLocation();
+    const id = location.state?.id;
+    console.log("Prueba", id);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: "",

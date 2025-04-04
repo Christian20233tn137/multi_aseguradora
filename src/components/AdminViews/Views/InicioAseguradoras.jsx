@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const swalWithTailwindButtons = Swal.mixin({
   customClass: {
@@ -15,6 +15,11 @@ const swalWithTailwindButtons = Swal.mixin({
 });
 
 const InicioAseguradoras = () => {
+
+    const location = useLocation();
+    const id = location.state?.id;
+    console.log("Prueba", id); 
+
   const navigate = useNavigate();
   const [aseguradoras, setAseguradoras] = useState([]);
   const [seguros, setSeguros] = useState({});

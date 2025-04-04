@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 
 const InicioSolicitudes = () => {
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log("Prueba", id);
+
   const navigate = useNavigate();
   const [view, setView] = useState("datos");
   const [searchTerm, setSearchTerm] = useState("");

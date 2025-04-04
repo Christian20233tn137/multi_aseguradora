@@ -4,9 +4,12 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const SolicitudSection = () => {
+   
+ 
   const navigate = useNavigate();
   const location = useLocation();
   const { profile } = location.state || {};
+  console.log("Prueba", id);
 
   const handleBack = () => {
     navigate("/solicitudes");

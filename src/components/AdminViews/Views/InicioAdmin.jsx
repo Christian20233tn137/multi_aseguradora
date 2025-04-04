@@ -4,6 +4,9 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const InicioAdmin = () => {
+  
+
+
   const navigate = useNavigate();
   const [administradores, setAdministradores] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);

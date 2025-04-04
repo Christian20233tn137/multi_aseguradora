@@ -6,6 +6,8 @@ import Swal from "sweetalert2";
 const SolicitudDocumentos = () => {
   const navigate = useNavigate();
   const location = useLocation();
+    console.log("Prueba", id);
+    
   const { profile } = location.state || {};
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);

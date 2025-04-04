@@ -1,7 +1,12 @@
 import React, { useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const EditarSeguro = () => {
+    const location = useLocation();
+    const id = location.state?.id;
+    console.log("Prueba", id);
+
   const editorRef = useRef(null);
   const [nombre, setNombre] = useState("Seguro de vida");
   const [descripcion, setDescripcion] = useState(
