@@ -233,7 +233,6 @@ const VerMasAseguradora = () => {
           currentItems.map((seguro) => {
             const seguroId = seguro?.id || seguro?._id;
             const nombreSeguro = seguro?.name || seguro?.nombre || "Sin nombre";
-            const fechaSeguro = seguro?.date || seguro?.fecha || "Sin fecha";
 
             return (
               <div
@@ -244,7 +243,6 @@ const VerMasAseguradora = () => {
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-400 rounded-full"></div>
                   <div>
                     <p className="text-lg font-semibold">{nombreSeguro}</p>
-                    <p className="text-gray-600">{fechaSeguro}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
