@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FileUploadIcon from "../assets/FileUpload.png";
 import { MdCancel } from 'react-icons/md';
 import Swal from 'sweetalert2';
@@ -16,6 +16,51 @@ const ArchivosSection = () => {
 
   const [progress, setProgress] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState({
+    domicilio: false,
+    fiscal: false,
+    identificacion: false,
+    banco: false,
+    afiliacion: false,
+  });
+
+  useEffect(() => {
+    const fetchUploadedFiles = async () => {
+      try {
+        const userString = localStorage.getItem("user");
+        if (!userString) {
+          return;
+        }
+
+        const user = JSON.parse(userString);
+        if (!user || !user._id) {
+          return;
+        }
+
+        const response = await axios.get(
+          `http://localhost:3000/nar/documentosPersona/documentosPostulante/${user._id}`
+        );
+
+        // Asumiendo que el backend devuelve un objeto con el estado de cada documento
+        const uploadedFilesData = response.data;
+
+        // Mapea el estado de los documentos a los campos específicos
+        const uploadedFilesState = {
+          domicilio: uploadedFilesData.domicilio === 'aceptado',
+          fiscal: uploadedFilesData.fiscal === 'aceptado',
+          identificacion: uploadedFilesData.identificacion === 'aceptado',
+          banco: uploadedFilesData.banco === 'aceptado',
+          afiliacion: uploadedFilesData.afiliacion === 'aceptado',
+        };
+
+        setUploadedFiles(uploadedFilesState);
+      } catch (error) {
+        console.error("Error al obtener el estado de los archivos:", error);
+      }
+    };
+
+    fetchUploadedFiles();
+  }, []);
 
   const handleFileChange = (event, key) => {
     const file = event.target.files[0];
@@ -31,6 +76,16 @@ const ArchivosSection = () => {
     if (file.size > 5 * 1024 * 1024) {
       Swal.fire("Error", "El archivo no debe exceder los 5MB", "error");
       return;
+    }
+
+    // Validar que los archivos se suban en orden
+    const keys = Object.keys(files);
+    const currentIndex = keys.indexOf(key);
+    for (let i = 0; i < currentIndex; i++) {
+      if (!uploadedFiles[keys[i]]) {
+        Swal.fire("Error", `Debes subir primero el archivo de ${keys[i]}`, "error");
+        return;
+      }
     }
 
     setFiles((prevFiles) => ({
@@ -63,6 +118,10 @@ const ArchivosSection = () => {
     setProgress((prevProgress) => ({
       ...prevProgress,
       [key]: null,
+    }));
+    setUploadedFiles((prevUploadedFiles) => ({
+      ...prevUploadedFiles,
+      [key]: false,
     }));
   };
 
@@ -162,6 +221,16 @@ const ArchivosSection = () => {
         "success"
       );
 
+      // Marcar los archivos como subidos
+      Object.keys(files).forEach((key) => {
+        if (files[key]) {
+          setUploadedFiles((prevUploadedFiles) => ({
+            ...prevUploadedFiles,
+            [key]: true,
+          }));
+        }
+      });
+
       // Limpiar el formulario después del envío exitoso
       setFiles({
         domicilio: null,
@@ -210,7 +279,7 @@ const ArchivosSection = () => {
                   className="hidden"
                   onChange={(e) => handleFileChange(e, key)}
                   accept="image/*,application/pdf"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadedFiles[key]}
                 />
               </label>
 
@@ -224,11 +293,19 @@ const ArchivosSection = () => {
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-xs text-gray-600 truncate max-w-xs">{file.name}</span>
-                    <MdCancel
-                      className="w-5 h-5 text-red-500 cursor-pointer ml-2"
-                      onClick={() => !isSubmitting && handleRemoveFile(key)}
-                    />
+                    {!uploadedFiles[key] && (
+                      <MdCancel
+                        className="w-5 h-5 text-red-500 cursor-pointer ml-2"
+                        onClick={() => !isSubmitting && handleRemoveFile(key)}
+                      />
+                    )}
                   </div>
+                </div>
+              )}
+
+              {uploadedFiles[key] && (
+                <div className="mt-2 text-green-500">
+                  Archivo subido
                 </div>
               )}
             </div>
