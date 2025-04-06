@@ -35,6 +35,8 @@ import Clientes from "./components/AgenteViews/Views/Clientes";
 import Estadisticas from "./components/AgenteViews/Views/Estadisticas";
 import CotizacionesPendientes from "./components/AgenteViews/Views/CotizacionesPendientes";
 import SegurosCotizar from "./components/AgenteViews/Views/SegurosCotizar";
+import DocumentRow from "./components/AdminViews/Views/DocumentRow";
+import DocumentViewer from "./components/AdminViews/Views/DocumentViewer";
 
 const App = () => {
   const location = useLocation();
@@ -51,6 +53,8 @@ const App = () => {
         return "Solicitud";
       case "/solicitudes/solicitud-documentos":
         return "Documentos de solicitud";
+        case "/solicitudes/verDocumento/:id":
+        return "Fila documentos";
       case "/aseguradoras":
         return "Aseguradoras";
       case "/aseguradoras/nuevaAseguradora":
@@ -165,6 +169,7 @@ const App = () => {
         {/* Ruta hija dentro de solicitudes */}
         <Route path="solicitud-section" element={<SolicitudSection />} />
         <Route path="solicitud-documentos" element={<SolicitudSection />} />
+        <Route path="verDocumento/:id" element={<DocumentViewer />} />
       </Route>
       <Route
         path="/aseguradoras/*"

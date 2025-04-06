@@ -87,7 +87,7 @@ const VerMasAseguradora = () => {
   };
 
   const handlerInfo = (seguroId) => {
-    navigate(`/seguros/informacion/${seguroId || ""}`, { state: { id: seguroId } });
+    navigate(`/aseguradoras/seguros/informacion/${seguroId || ""}`, { state: { id: seguroId } });
   };
 
   const handlerAdd = () => {

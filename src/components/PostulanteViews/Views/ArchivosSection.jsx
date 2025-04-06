@@ -130,7 +130,7 @@ const ArchivosSection = () => {
       formData.append("idUsuario", user._id);
 
       const response = await axios.post(
-        "http://localhost:3000/nar/documentosPersona/upload",
+        "http://localhost:3000/nar/documentosPersona/subirDocumento",
         formData,
         {
           headers: {

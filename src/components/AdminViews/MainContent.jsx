@@ -4,6 +4,7 @@ import ProfileSection from "./Views/ProfileSection";
 import InicioSolicitudes from "./Views/InicioSolicitudes";
 import SolicitudSection from "./Views/SolicitudSection";
 import SolicitudDocumentos from "./Views/SolicitudDocumentos";
+import DocumentViewer from "./Views/DocumentViewer"; // ✅ Se mantiene
 import InicioAseguradoras from "./Views/InicioAseguradoras";
 import NuevaAseguradora from "./Views/NuevaAseguradora";
 import EditarAseguradora from "./Views/EditarAseguradora";
@@ -27,11 +28,22 @@ const MainContent = () => {
   const params = useParams();
 
   const renderContent = () => {
-    // Extraer la ruta base sin parámetros
     const basePath = location.pathname.split("/").slice(0, -1).join("/");
 
-    // Para rutas con parámetros dinámicos
-    if (location.pathname.includes("/aseguradoras/editar/")) {
+    // Rutas dinámicas
+    if (location.pathname.includes("/aseguradoras/seguros/informacion")) {
+      return <InformacionSeguros />;
+    }
+
+    if (location.pathname.includes("/aseguradoras/seguros/editar")) {
+      return <EditarSeguro />;
+    }
+
+    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
+      return <AgregarSeguros />;
+    }
+
+    if (location.pathname.includes("/aseguradoras/editar")) {
       return <EditarAseguradora />;
     }
 
@@ -39,22 +51,11 @@ const MainContent = () => {
       return <InformacionAdmin />;
     }
 
-    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
-      return <AgregarSeguros />;
+    if (location.pathname.startsWith("/solicitudes/verDocumento/")) {
+      return <DocumentViewer />;
     }
 
-    if (location.pathname.includes("/aseguradoras/seguros/editar/")) {
-      return <EditarSeguro />;
-    }
-
-    if (location.pathname.includes("/aseguradoras/seguros/agregar")) {
-      return <AgregarSeguros />;
-    }
-    if (location.pathname.includes("/aseguradoras/seguros/informacion")) {
-      return <InformacionSeguros />;
-    }
-
-    // Para rutas estáticas
+    // Rutas estáticas
     switch (location.pathname) {
       case "/inicio":
         return <ProfileSection />;
@@ -66,15 +67,14 @@ const MainContent = () => {
         return <SolicitudSection />;
       case "/solicitudes/solicitud-documentos":
         return <SolicitudDocumentos />;
+      case "/solicitudes/verDocumento":
+        return <DocumentViewer />;
       case "/aseguradoras":
         return <InicioAseguradoras />;
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
       case "/aseguradoras/seguros":
         return <VerMasAseguradora />;
-      case "/aseguradoras/seguros/editar":
-        return <EditarSeguro />;
-
       case "/agentes":
         return <InicioAgentes />;
       case "/agentes/editar":
@@ -87,7 +87,6 @@ const MainContent = () => {
         return <EditarAdmin />;
       case "/administradores/informacion":
         return <InformacionAdmin />;
-
       case "/administradores/agregar":
         return <AgregarAgente />;
       case "/configurar-cuotas":

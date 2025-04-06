@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import DocumentRow from "../Views/DocumentRow"; // Asegúrate de que la ruta sea correcta
 
 const SolicitudDocumentos = () => {
   const navigate = useNavigate();
@@ -18,15 +19,15 @@ const SolicitudDocumentos = () => {
     const fetchDocuments = async () => {
       if (profile && profile._id && /^[0-9a-fA-F]{24}$/.test(profile._id)) {
         try {
-          console.log("Fetching documents for profile ID:", profile._id);
+          console.log("encontrando documentos por ID:", profile._id);
           const response = await axios.get(
-            `http://localhost:3000/nar/documentosPersona/files/persona/${profile._id}`
+            `http://localhost:3000/nar/documentosPersona/documentosPostulante/${profile._id}`
           );
           console.log("Fetched documents:", response.data);
           const transformedDocuments = transformDocuments(response.data);
           setDocuments(transformedDocuments);
         } catch (error) {
-          setError("Error fetching documents. Please try again later.");
+          setError("Error al obtener los documentos.");
           console.error("Error fetching documents:", error);
         } finally {
           setLoading(false);
@@ -43,11 +44,16 @@ const SolicitudDocumentos = () => {
 
   const transformDocuments = (data) => {
     return data.map((doc) => ({
-      id: doc.idDocumento, // Ahora usa el ID correcto de GridFS
+      id: doc.idDocumento,
       name: doc.nombreDocumento,
-      file: doc.idDocumento, // Esto debe ser el mismo ID que en GridFS
-      type: "unknown", // Si no guardaste la extensión, lo manejas aparte
+      status: doc.estado || "Pending", // Asumiendo que hay un campo 'estado'
+      file: doc.idDocumento,
+      type: "unknown",
     }));
+  };
+
+  const handleViewDocument = (documentId) => {
+    navigate(`/solicitudes/verDocumento/${documentId}`);
   };
 
   const handleBack = () => {
@@ -107,40 +113,42 @@ const SolicitudDocumentos = () => {
 
   return (
     <div className="p-6 w-auto h-auto overflow-hidden">
-      <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black bg-blue-200 rounded-2xl">
+      <h1 className="text-3xl p-3 text-center font-normal text-black bg-blue-200 rounded-2xl">
         {nombrePostulante}
       </h1>
-      {documents.map((doc) => (
-        <div key={doc.id} className="mb-6">
-          <label className="mt-10 block text-gray-700 text-lg font-bold mb-2">
-            {doc.name}
-          </label>
-          <iframe
-            src={`http://localhost:3000/nar/documentosPersona/files/${doc.id}`}
-            width="100%"
-            height="500px"
-            title={doc.name}
-          ></iframe>
-        </div>
-      ))}
+      <br />
+      <table className="min-w-full">
+        <thead>
+          <tr >
+            <th className="py-2 px-4 border-b border-gray-200 text-center" >Nombre del Archivo</th>
+            <th className="py-2 px-4 border-b border-gray-200 text-center">Estado</th>
+            <th className="py-2 px-4 border-b border-gray-200 text-center">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {documents.map((doc) => (
+            <DocumentRow key={doc.id} document={doc} onView={handleViewDocument} />
+          ))}
+        </tbody>
+      </table>
       <div className="flex space-x-5 justify-center mt-10">
         <button
           type="button"
-          className="w-32 text-white py-2 rounded-md botones"
+          className="w-32 text-white py-2 rounded-md bg-red-500 hover:bg-red-600"
           onClick={() => showAlert("denegar")}
         >
           Denegar
         </button>
         <button
           type="button"
-          className="w-30 text-white py-2 px-4 rounded-md botones"
+          className="w-30 text-white py-2 px-4 rounded-md bg-gray-500 hover:bg-gray-600"
           onClick={() => navigate(-1)}
         >
           Regresar
         </button>
         <button
           type="button"
-          className="w-32 text-white py-2 rounded-md botones"
+          className="w-32 text-white py-2 rounded-md bg-green-500 hover:bg-green-600"
           onClick={() => showAlert("aceptar")}
         >
           Aceptar
