@@ -53,11 +53,16 @@ const Estadisticas = () => {
     const fetchEmisionesActuales = async () => {
       try {
         const response = await axios.get("http://localhost:3000/nar/cuotas/");
-        const data = response.data;
-        setCuotas(data.cuotaMensual);
-        setTittle("Cuotas a cumplir: ");
-        console.log("Cuotas a cumplir: ", data.cuotaMensual);
-        
+        const data = response.data; // Accede a la propiedad data de la respuesta
+  
+        if (data.length > 0) {
+          setCuotas(data[0].cuotaMensual); // Accede al primer elemento del arreglo
+          setTittle("Cuotas a cumplir: ");
+          console.log("Cuotas a cumplir: ", data[0].cuotaMensual);
+        } else {
+          console.log("No se encontraron cuotas.");
+        }
+  
       } catch (error) {
         console.error("Error al obtener las emisiones:", error);
         swalWithTailwindButtons.fire({
@@ -67,9 +72,10 @@ const Estadisticas = () => {
         });
       }
     };
-
+  
     fetchEmisionesActuales();
   }, []);
+  
 
   useEffect(() => {
     const fetchData = async () => {

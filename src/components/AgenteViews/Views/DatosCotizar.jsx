@@ -7,7 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 
-// Registrar el locale en español
 registerLocale("es", es);
 
 const DatosCotizar = () => {
@@ -17,7 +16,6 @@ const DatosCotizar = () => {
   const seguro = location.state?.tipoSeguro;
 
   const navigate = useNavigate();
-
   const [idCliente, setIdCliente] = useState(null);
   const [idAsegurado, setIdAsegurado] = useState(null);
   const [esTitularAsegurado, setEsTitularAsegurado] = useState(true);
@@ -39,6 +37,7 @@ const DatosCotizar = () => {
     correo: "",
     rfc: "",
   });
+
 
   const handleChange = (e) => {
     setTitular({ ...titular, [e.target.name]: e.target.value });
@@ -66,7 +65,7 @@ const DatosCotizar = () => {
       },
       buttonsStyling: false,
     });
-
+  
     try {
       const result = await swalWithTailwindButtons.fire({
         title: "¿Estás seguro?",
@@ -77,11 +76,20 @@ const DatosCotizar = () => {
         cancelButtonText: "Cancelar",
         reverseButtons: true,
       });
-
+  
       if (!result.isConfirmed) return;
-
+  
+      // Mostrar el indicador de carga
+      swalWithTailwindButtons.fire({
+        title: "Enviando cotización...",
+        text: "Por favor, espere.",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+      });
+  
       const datosCliente = { ...titular, idUsuario };
-
+  
       // **Paso 1:** Crear cliente y obtener `idCliente`
       const responseCliente = await axios.post(
         "http://localhost:3000/nar/clientes",
@@ -89,11 +97,11 @@ const DatosCotizar = () => {
       );
       const newIdCliente = responseCliente.data._id; // Suponiendo que el backend devuelve `idCliente`
       setIdCliente(newIdCliente);
-
+  
       if (!newIdCliente) {
         throw new Error("No se recibió un idCliente válido");
       }
-
+  
       // **Paso 2:** Crear asegurado
       const datosAsegurado = esTitularAsegurado
         ? { ...titular, idCliente: newIdCliente }
@@ -104,14 +112,17 @@ const DatosCotizar = () => {
       );
       const newIdAsegurado = responseAsegurado.data._id; // Suponiendo que el backend devuelve `idAsegurado`
       setIdAsegurado(newIdAsegurado);
-
+  
+      // Cerrar el indicador de carga
+      swalWithTailwindButtons.close();
+  
       // Mensaje de éxito
       swalWithTailwindButtons.fire(
         "Cotización Enviada",
         "La cotización se envió correctamente.",
         "success"
       );
-
+  
       // Limpiar formularios
       setTitular({
         nombre: "",
@@ -131,7 +142,7 @@ const DatosCotizar = () => {
         correo: "",
         rfc: "",
       });
-
+  
       // Navegar a la ruta de seguros con los IDs recién obtenidos
       navigate("/inicioAgentes/seguros", {
         state: {
@@ -143,6 +154,10 @@ const DatosCotizar = () => {
       });
     } catch (error) {
       console.error("Error al cotizar:", error);
+  
+      // Cerrar el indicador de carga en caso de error
+      swalWithTailwindButtons.close();
+  
       swalWithTailwindButtons.fire(
         "Error",
         "Ocurrió un error inesperado.",
@@ -150,43 +165,13 @@ const DatosCotizar = () => {
       );
     }
   };
-
-  const handleSeguros = () => {
-    navigate("/inicioAgentes/seguros", {
-      state: {
-        id: id,
-        seguro: seguro,
-        idCliente: idCliente,
-        idAsegurado: idAsegurado,
-      },
-    });
-  };
+  
 
   const currentYear = new Date().getFullYear();
 
   return (
     <div className="p-6 w-full h-auto overflow-hidden">
-      <style>
-        {`
-          .bg-navy-blue {
-            background-color: #0B1956; /* Azul marino */
-          }
-
-          .react-datepicker__input-container input {
-            width: 100%;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-          }
-
-          .react-datepicker {
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 1rem;
-          }
-        `}
-      </style>
-      <h1 className="text-3xl w-full p-3 text-center font-normal text-white bg-navy-blue rounded-2xl">
+      <h1 className="text-3xl w-full p-3 text-center font-normal text-white colorFondo rounded-2xl">
         Datos del titular
       </h1>
 
@@ -215,21 +200,19 @@ const DatosCotizar = () => {
           onChange={handleChange}
           className="border-0 shadow-md rounded-lg py-2 px-3"
         />
-        <div className="relative">
-          <DatePicker
-            selected={titular.fechaNacimiento}
-            onChange={handleFechaNacimientoChange}
-            placeholderText="Fecha de Nacimiento"
-            className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
-            dateFormat="yyyy-MM-dd"
-            locale="es"
-            showYearDropdown
-            scrollableYearDropdown
-            yearDropdownItemNumber={125}
-            minDate={new Date(1900, 0, 1)}
-            maxDate={new Date(currentYear, 11, 31)}
-          />
-        </div>
+        <DatePicker
+          selected={titular.fechaNacimiento}
+          onChange={handleFechaNacimientoChange}
+          placeholderText="Fecha de Nacimiento"
+          className="border-0 shadow-md rounded-lg py-2 px-3"
+          dateFormat="yyyy-MM-dd"
+          locale="es"
+          showYearDropdown
+          scrollableYearDropdown
+          yearDropdownItemNumber={125}
+          minDate={new Date(1900, 0, 1)}
+          maxDate={new Date(currentYear, 11, 31)}
+        />
         <input
           type="text"
           name="telefono"

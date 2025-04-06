@@ -21,7 +21,10 @@ const Seguros = () => {
         if (response.data.success) {
           setEmisiones(response.data.data);
         } else {
-          console.error("La respuesta de la API no contiene datos válidos:", response.data);
+          console.error(
+            "La respuesta de la API no contiene datos válidos:",
+            response.data
+          );
         }
       } catch (error) {
         console.error("Error al obtener las cotizaciones", error);
@@ -36,37 +39,65 @@ const Seguros = () => {
   const handleEmitir = () => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+        confirmButton:
+          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton:
+          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     });
 
-    swalWithTailwindButtons.fire({
-      title: '¿Estás seguro de emitir la acción?',
-      text: 'Una vez emitido, no podrás revertir esta acción.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, emitir',
-      cancelButtonText: 'Cancelar',
-      reverseButtons: true
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          // Hacer la solicitud POST a la nueva ruta
-          const response = await axios.put(`http://localhost:3000/nar/cotizaciones/emitida/${idCotizacion}`);
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro de emitir la acción?",
+        text: "Una vez emitido, no podrás revertir esta acción.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, emitir",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed)
+          swalWithTailwindButtons.fire({
+            title: "Enviando...",
+            text: "Estamos emitiendo la poliza.",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
+        {
+          try {
+            // Hacer la solicitud POST a la nueva ruta
+            const response = await axios.put(
+              `http://localhost:3000/nar/cotizaciones/emitida/${idCotizacion}`
+            );
 
-          if (response.status === 200) {
-            swalWithTailwindButtons.fire('¡Emitido!', 'La póliza ha sido emitida al correo del cliente.', 'success');
-          } else {
-            swalWithTailwindButtons.fire('Error', 'Hubo un problema al emitir la póliza.', 'error');
+            if (response.status === 200) {
+              swalWithTailwindButtons.close();
+              swalWithTailwindButtons.fire(
+                "¡Emitido!",
+                "La póliza ha sido emitida al correo del cliente.",
+                "success"
+              );
+              navigate("/inicioAgentes", { state: { id: id } });
+            } else {
+              swalWithTailwindButtons.fire(
+                "Error",
+                "Hubo un problema al emitir la póliza.",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.error("Error al emitir la póliza:", error);
+            swalWithTailwindButtons.fire(
+              "Error",
+              "Ocurrió un error inesperado.",
+              "error"
+            );
           }
-        } catch (error) {
-          console.error("Error al emitir la póliza:", error);
-          swalWithTailwindButtons.fire('Error', 'Ocurrió un error inesperado.', 'error');
         }
-      }
-    });
+      });
   };
 
   if (!emision) {
@@ -124,7 +155,7 @@ const Seguros = () => {
         <div className="flex justify-between mt-6">
           <button
             className="botones text-white px-4 py-2 rounded-lg"
-            onClick={() => navigate("/inicioAgentes",{ state: { id: id }})}
+            onClick={() => navigate("/inicioAgentes", { state: { id: id } })}
           >
             Regresar
           </button>

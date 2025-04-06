@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import UsuarioProfile from "../AdminViews/assets/UsuarioProfile.png";
 import MenuIcon from "../AdminViews/assets/Menu.png";
 import EditIcon from "../AdminViews/assets/BotonEdit.png";
+import Swal from "sweetalert2";
 
 const SideBarAgente = () => {
   const location = useLocation();
-  const id = location.state?.id || null; 
+  const id = location.state?.id || null;
   console.log(id);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -17,15 +18,29 @@ const SideBarAgente = () => {
   };
 
   const handleLogout = () => {
-    // Eliminar datos de autenticación
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    Swal.fire({
+      title: "¿Estás seguro de que quieres cerrar sesión?",
+      text: "No podrás volver a acceder a tu cuenta sin iniciar sesión nuevamente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Eliminar datos de autenticación
+        localStorage.removeItem("id");
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
 
-    // Redirigir al login
-    navigate("/login");
+        // Redirigir al login
+        navigate("/login");
+      }
+    });
   };
 
-  const handelEditProfile = () => {
+  const handleEditProfile = () => {
     if (id) {
       navigate("/inicioAgentes/editarPerfil", {
         state: { id },
@@ -38,7 +53,7 @@ const SideBarAgente = () => {
   const menuItems = [
     { nombre: "Inicio", ruta: "/inicioAgentes" },
     { nombre: "Cotizar", ruta: "/inicioAgentes/cotizar" },
-    { nombre: "Cotizaciones", ruta: `/inicioAgentes/cotizaciones`},
+    { nombre: "Cotizaciones", ruta: `/inicioAgentes/cotizaciones` },
     { nombre: "Estadisticas", ruta: "/inicioAgentes/estadisticas" },
     { nombre: "Clientes", ruta: `/inicioAgentes/clientes` }
   ];
@@ -68,7 +83,7 @@ const SideBarAgente = () => {
           />
           <h2
             className="mt-4 text-base font-bold text-center flex items-center justify-center gap-2 cursor-pointer hover:text-blue-400 transition-colors"
-            onClick={handelEditProfile}
+            onClick={handleEditProfile}
           >
             Editar perfil
             <img
@@ -107,7 +122,7 @@ const SideBarAgente = () => {
       {/* Fondo oscuro al abrir el menú (para cerrar al hacer click fuera) */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-trasnparent bg-opacity-50 z-40"
+          className="fixed inset-0 bg-transparent bg-opacity-50 z-40"
           onClick={() => setIsOpen(false)}
         ></div>
       )}

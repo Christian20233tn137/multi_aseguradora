@@ -121,15 +121,17 @@ const EditarPerfil = () => {
         }
       }
 
-      swalWithTailwindButtons.fire({
-        title: "¡Actualizado!",
-        text: modificarContrasena
-          ? "La contraseña se actualizó con éxito."
-          : "El perfil se actualizó con éxito.",
-        icon: "success",
-      }).then(() => {
-        window.location.reload(); // Recargar la página
-      });
+      swalWithTailwindButtons
+        .fire({
+          title: "¡Actualizado!",
+          text: modificarContrasena
+            ? "La contraseña se actualizó con éxito."
+            : "El perfil se actualizó con éxito.",
+          icon: "success",
+        })
+        .then(() => {
+          window.location.reload(); // Recargar la página
+        });
     } catch (error) {
       console.error("Error al actualizar el perfil", error);
       swalWithTailwindButtons.fire({
@@ -177,6 +179,13 @@ const EditarPerfil = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Actualizando...",
+            text: "Por favor espera.",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
           handleSubmit(new Event("submit"));
         }
       });
