@@ -16,7 +16,7 @@ const ArchivosSection = () => {
 
   const [progress, setProgress] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState({
+  const [loadedFiles, setLoadedFiles] = useState({
     domicilio: false,
     fiscal: false,
     identificacion: false,
@@ -53,7 +53,7 @@ const ArchivosSection = () => {
           afiliacion: uploadedFilesData.afiliacion === 'aceptado',
         };
 
-        setUploadedFiles(uploadedFilesState);
+        setLoadedFiles(uploadedFilesState);
       } catch (error) {
         console.error("Error al obtener el estado de los archivos:", error);
       }
@@ -78,12 +78,12 @@ const ArchivosSection = () => {
       return;
     }
 
-    // Validar que los archivos se suban en orden
+    // Validar que los archivos se carguen en orden
     const keys = Object.keys(files);
     const currentIndex = keys.indexOf(key);
     for (let i = 0; i < currentIndex; i++) {
-      if (!uploadedFiles[keys[i]]) {
-        Swal.fire("Error", `Debes subir primero el archivo de ${keys[i]}`, "error");
+      if (!loadedFiles[keys[i]]) {
+        Swal.fire("Error", `Debes cargar primero el archivo de ${keys[i]}`, "error");
         return;
       }
     }
@@ -106,7 +106,14 @@ const ArchivosSection = () => {
         ...prevProgress,
         [key]: fakeProgress,
       }));
-      if (fakeProgress >= 100) clearInterval(interval);
+      if (fakeProgress >= 100) {
+        clearInterval(interval);
+        // Marcar el archivo como cargado
+        setLoadedFiles((prevLoadedFiles) => ({
+          ...prevLoadedFiles,
+          [key]: true,
+        }));
+      }
     }, 300);
   };
 
@@ -119,8 +126,8 @@ const ArchivosSection = () => {
       ...prevProgress,
       [key]: null,
     }));
-    setUploadedFiles((prevUploadedFiles) => ({
-      ...prevUploadedFiles,
+    setLoadedFiles((prevLoadedFiles) => ({
+      ...prevLoadedFiles,
       [key]: false,
     }));
   };
@@ -142,10 +149,10 @@ const ArchivosSection = () => {
         return;
       }
 
-      // Verificar que al menos un archivo haya sido seleccionado
-      const hasFiles = Object.values(files).some(file => file !== null);
-      if (!hasFiles) {
-        Swal.fire("Error", "Debes seleccionar al menos un archivo", "error");
+      // Verificar que todos los archivos estén cargados
+      const allFilesLoaded = Object.values(loadedFiles).every(isLoaded => isLoaded);
+      if (!allFilesLoaded) {
+        Swal.fire("Error", "Debes cargar todos los archivos en orden antes de enviar", "error");
         return;
       }
 
@@ -221,16 +228,6 @@ const ArchivosSection = () => {
         "success"
       );
 
-      // Marcar los archivos como subidos
-      Object.keys(files).forEach((key) => {
-        if (files[key]) {
-          setUploadedFiles((prevUploadedFiles) => ({
-            ...prevUploadedFiles,
-            [key]: true,
-          }));
-        }
-      });
-
       // Limpiar el formulario después del envío exitoso
       setFiles({
         domicilio: null,
@@ -240,6 +237,13 @@ const ArchivosSection = () => {
         afiliacion: null,
       });
       setProgress({});
+      setLoadedFiles({
+        domicilio: false,
+        fiscal: false,
+        identificacion: false,
+        banco: false,
+        afiliacion: false,
+      });
 
     } catch (error) {
       console.error("Error al enviar los archivos:", error);
@@ -279,7 +283,7 @@ const ArchivosSection = () => {
                   className="hidden"
                   onChange={(e) => handleFileChange(e, key)}
                   accept="image/*,application/pdf"
-                  disabled={isSubmitting || uploadedFiles[key]}
+                  disabled={isSubmitting}
                 />
               </label>
 
@@ -293,19 +297,17 @@ const ArchivosSection = () => {
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-xs text-gray-600 truncate max-w-xs">{file.name}</span>
-                    {!uploadedFiles[key] && (
-                      <MdCancel
-                        className="w-5 h-5 text-red-500 cursor-pointer ml-2"
-                        onClick={() => !isSubmitting && handleRemoveFile(key)}
-                      />
-                    )}
+                    <MdCancel
+                      className="w-5 h-5 text-red-500 cursor-pointer ml-2"
+                      onClick={() => !isSubmitting && handleRemoveFile(key)}
+                    />
                   </div>
                 </div>
               )}
 
-              {uploadedFiles[key] && (
+              {loadedFiles[key] && (
                 <div className="mt-2 text-green-500">
-                  Archivo subido
+                  Archivo cargado
                 </div>
               )}
             </div>
