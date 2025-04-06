@@ -45,8 +45,8 @@ const SolicitudDocumentos = () => {
   const transformDocuments = (data) => {
     return data.map((doc) => ({
       id: doc.idDocumento,
-      name: doc.nombreDocumento,
-      status: doc.estado || "Pending", // Asumiendo que hay un campo 'estado'
+      name: doc.nombreOriginal || doc.nombreDocumento || "Sin nombre", // Usa el nombre original si está disponible
+      status: doc.estado || "Pending",
       file: doc.idDocumento,
       type: "unknown",
     }));
@@ -119,8 +119,8 @@ const SolicitudDocumentos = () => {
       <br />
       <table className="min-w-full">
         <thead>
-          <tr >
-            <th className="py-2 px-4 border-b border-gray-200 text-center" >Nombre del Archivo</th>
+          <tr>
+            <th className="py-2 px-4 border-b border-gray-200 text-center">Nombre del Archivo</th>
             <th className="py-2 px-4 border-b border-gray-200 text-center">Estado</th>
             <th className="py-2 px-4 border-b border-gray-200 text-center">Acción</th>
           </tr>
