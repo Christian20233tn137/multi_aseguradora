@@ -1,7 +1,14 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
+
+// Registrar el locale en español
+registerLocale("es", es);
 
 const DatosCotizar = () => {
   const location = useLocation();
@@ -18,7 +25,7 @@ const DatosCotizar = () => {
     nombre: "",
     apellidoPaterno: "",
     apellidoMaterno: "",
-    fechaNacimiento: "",
+    fechaNacimiento: null,
     telefono: "",
     correo: "",
     rfc: "",
@@ -27,7 +34,7 @@ const DatosCotizar = () => {
     nombre: "",
     apellidoPaterno: "",
     apellidoMaterno: "",
-    fechaNacimiento: "",
+    fechaNacimiento: null,
     telefono: "",
     correo: "",
     rfc: "",
@@ -39,6 +46,14 @@ const DatosCotizar = () => {
 
   const handleAseguradoChange = (e) => {
     setAsegurado({ ...asegurado, [e.target.name]: e.target.value });
+  };
+
+  const handleFechaNacimientoChange = (date) => {
+    setTitular({ ...titular, fechaNacimiento: date });
+  };
+
+  const handleFechaNacimientoAseguradoChange = (date) => {
+    setAsegurado({ ...asegurado, fechaNacimiento: date });
   };
 
   const agregarCotizacion = async () => {
@@ -102,7 +117,7 @@ const DatosCotizar = () => {
         nombre: "",
         apellidoPaterno: "",
         apellidoMaterno: "",
-        fechaNacimiento: "",
+        fechaNacimiento: null,
         telefono: "",
         correo: "",
         rfc: "",
@@ -111,7 +126,7 @@ const DatosCotizar = () => {
         nombre: "",
         apellidoPaterno: "",
         apellidoMaterno: "",
-        fechaNacimiento: "",
+        fechaNacimiento: null,
         telefono: "",
         correo: "",
         rfc: "",
@@ -147,9 +162,31 @@ const DatosCotizar = () => {
     });
   };
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="p-6 w-full h-auto overflow-hidden">
-      <h1 className="text-3xl w-full p-3 text-center font-normal text-black miColor rounded-2xl">
+      <style>
+        {`
+          .bg-navy-blue {
+            background-color: #0B1956; /* Azul marino */
+          }
+
+          .react-datepicker__input-container input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+          }
+
+          .react-datepicker {
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+          }
+        `}
+      </style>
+      <h1 className="text-3xl w-full p-3 text-center font-normal text-white bg-navy-blue rounded-2xl">
         Datos del titular
       </h1>
 
@@ -178,14 +215,21 @@ const DatosCotizar = () => {
           onChange={handleChange}
           className="border-0 shadow-md rounded-lg py-2 px-3"
         />
-        <input
-          type="text"
-          name="fechaNacimiento"
-          placeholder="Fecha de Nacimiento yyyy-mm-dd"
-          value={titular.fechaNacimiento}
-          onChange={handleChange}
-          className="border-0 shadow-md rounded-lg py-2 px-3"
-        />
+        <div className="relative">
+          <DatePicker
+            selected={titular.fechaNacimiento}
+            onChange={handleFechaNacimientoChange}
+            placeholderText="Fecha de Nacimiento"
+            className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+            dateFormat="yyyy-MM-dd"
+            locale="es"
+            showYearDropdown
+            scrollableYearDropdown
+            yearDropdownItemNumber={125}
+            minDate={new Date(1900, 0, 1)}
+            maxDate={new Date(currentYear, 11, 31)}
+          />
+        </div>
         <input
           type="text"
           name="telefono"
@@ -265,14 +309,21 @@ const DatosCotizar = () => {
             onChange={handleAseguradoChange}
             className="border-0 shadow-md rounded-lg py-2 px-3"
           />
-          <input
-            type="text"
-            name="fechaNacimiento"
-            placeholder="Fecha de Nacimiento yyyy-mm-dd"
-            value={asegurado.fechaNacimiento}
-            onChange={handleAseguradoChange}
-            className="border-0 shadow-md rounded-lg py-2 px-3"
-          />
+          <div className="relative">
+            <DatePicker
+              selected={asegurado.fechaNacimiento}
+              onChange={handleFechaNacimientoAseguradoChange}
+              placeholderText="Fecha de Nacimiento"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              dateFormat="yyyy-MM-dd"
+              locale="es"
+              showYearDropdown
+              scrollableYearDropdown
+              yearDropdownItemNumber={125}
+              minDate={new Date(1900, 0, 1)}
+              maxDate={new Date(currentYear, 11, 31)}
+            />
+          </div>
           <input
             type="text"
             name="telefono"
