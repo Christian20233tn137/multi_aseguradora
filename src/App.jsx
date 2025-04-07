@@ -58,24 +58,22 @@ const App = () => {
       case "/aseguradoras":
         return "Aseguradoras";
       case "/aseguradoras/nuevaAseguradora":
+        return "Agregar Aseguradora";
+      case "/aseguradoras/editar":
         return "Aseguradoras";
       case "/aseguradoras/editar":
         return "Aseguradoras";
-      case "/aseguradoras/editar/:id":
+      case "/aseguradoras/seguros":
         return "Aseguradoras";
-      case "/aseguradoras/editar/:id/informacion/:id":
-        return "Aseguradoras";
-      case "/aseguradoras/seguros/:id":
-        return "Aseguradoras";
-      case "/aseguradoras/seguros/editar/:id":
-        return "Editar Seguro";
-      case "/aseguradoras/seguros/informacion/:id":
-        return "Información de Seguro";
+      case "/aseguradoras/seguros/editar":
+        return "Editar";
+      case "/aseguradoras/seguros/informacion":
+        return "Información";
       case "/aseguradoras/seguros/agregar":
         return "Agregar Seguro";
       case "/agentes":
         return "Agentes";
-      case "/agentes/editar/:id":
+      case "/agentes/editar":
         return "Agentes";
       case "/agentes/perfil":
         return "Perfil";
@@ -120,7 +118,6 @@ const App = () => {
       case "/clientes/polizas/:id":
         return "Seguros";
       default:
-        console.log("Default case triggered"); // Debug log
         return "Administradores";
     }
   };

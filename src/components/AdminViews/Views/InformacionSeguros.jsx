@@ -6,8 +6,10 @@ import Swal from "sweetalert2";
 const InformacionSeguros = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const id = location.state?.id; // Obtener el ID del seguro desde el estado de navegación
-  console.log("ID del seguro:", id);
+  const id = location.state?.id; 
+  const idSeguro = location.state?.idSeguro;
+  console.log("ID del admin:", id);
+  console.log("ID del seguro:", idSeguro);
 
   const [seguroData, setSeguroData] = useState({
     nombre: "",
@@ -20,7 +22,7 @@ const InformacionSeguros = () => {
   useEffect(() => {
     const fetchSeguroData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/nar/seguros/id/${id}`);
+        const response = await axios.get(`http://localhost:3000/nar/seguros/id/${idSeguro}`);
         const data = response.data;
         console.log("Datos del seguro obtenidos:", data);
 
@@ -37,15 +39,15 @@ const InformacionSeguros = () => {
       }
     };
 
-    if (id) {
+    if (idSeguro) {
       fetchSeguroData();
     } else {
       console.error("ID del seguro no proporcionado");
     }
-  }, [id]);
+  }, [idSeguro]);
 
   const handleRegresar = () => {
-    navigate("/aseguradoras/seguros",  { state: { idAseguradora } });
+    navigate(-1,  { state: { id : id } });
   };
 
   return (
@@ -58,7 +60,7 @@ const InformacionSeguros = () => {
       </div>
 
       {/* Contenedor de la información */}
-      <div className="mt-8 p-8 border rounded-lg shadow-md w-full max-w-3xl text-left">
+      <div className="mt-8 p-8 border-0 rounded-lg shadow-lg w-full max-w-3xl text-left">
         {/* Círculo */}
         {seguroData.icono && (
           <div className="w-16 h-16 bg-[#3f4a66] rounded-full mb-4" style={{ backgroundImage: `url(${seguroData.icono})`, backgroundSize: 'cover' }}></div>
@@ -78,14 +80,14 @@ const InformacionSeguros = () => {
         {/* Cobertura */}
         <div className="mt-4">
           <strong>Cobertura:</strong>
-          <div className="border p-2 mt-2" dangerouslySetInnerHTML={{ __html: seguroData.cobertura }} />
+          <div className="border-0 shadow rounded-2xl p-2 mt-2" dangerouslySetInnerHTML={{ __html: seguroData.cobertura }} />
         </div>
       </div>
 
       {/* Botón Regresar */}
       <button
         onClick={handleRegresar}
-        className="mt-8 bg-[#0f2344] text-white px-8 py-3 rounded border-4"
+        className="mt-8 botones text-white px-8 py-3 rounded border-4"
       >
         Regresar
       </button>

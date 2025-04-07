@@ -132,12 +132,12 @@ const InicioSolicitudes = () => {
               key={index}
               className="flex flex-col sm:flex-row items-center sm:items-start border-0 shadow-md rounded-lg p-4 mb-4"
             >
-              <div className="px-4 py-2 rounded text-center sm:text-left">
-                <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
+              <div className="px-4 py-2 rounded text-center sm:text-left w-full sm:w-auto">
+                <span className="text-lg font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
               </div>
-              <div className="ml-auto self-stretch sm:self-auto">
+              <div className="ml-auto self-stretch sm:self-auto mt-2 sm:mt-0">
                 <button
-                  className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                  className="px-4 py-2 text-white rounded botones w-full sm:w-auto"
                   onClick={() => handleVerMas(profile)}
                 >
                   Ver más
@@ -151,12 +151,12 @@ const InicioSolicitudes = () => {
               key={index}
               className="flex flex-col sm:flex-row items-center sm:items-start border-0 shadow-md rounded-lg p-4 mb-4"
             >
-              <div className="px-4 py-2 rounded text-center sm:text-left">
-                <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
+              <div className="px-4 py-2 rounded text-center sm:text-left w-full sm:w-auto">
+                <span className="text-lg font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
               </div>
-              <div className="ml-auto self-stretch sm:self-auto">
+              <div className="ml-auto self-stretch sm:self-auto mt-2 sm:mt-0">
                 <button
-                  className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                  className="px-4 py-2 text-white rounded botones w-full sm:w-auto"
                   onClick={() => handleVerMas(profile)}
                 >
                   Ver más
@@ -217,6 +217,8 @@ const InicioSolicitudes = () => {
         )}
     </div>
   );
+  
+  
 }
 
 export default InicioSolicitudes;

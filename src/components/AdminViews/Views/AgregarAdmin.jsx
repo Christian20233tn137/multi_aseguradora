@@ -74,6 +74,13 @@ const AgregarAdmin = () => {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
+        swalWithTailwindButtons.fire({
+          title: "Agregando aseguradora..",
+          text: "Por favor espera.",
+          icon: "info",
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
         agregarCotizacion();
       }
     });
@@ -98,7 +105,7 @@ const AgregarAdmin = () => {
           <div key={index} className="flex flex-col">
             <label className="text-gray-700 text-sm font-bold mb-2">{field.label}</label>
             <input
-              className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               type={field.type}
               value={field.value}
               onChange={(e) => field.setValue(e.target.value)}

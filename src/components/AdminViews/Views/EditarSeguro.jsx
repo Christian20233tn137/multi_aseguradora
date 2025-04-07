@@ -7,9 +7,11 @@ const EditarSeguro = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const id = location.state?.id;
-  const idAseguradora = location.state?.idAseguradora; // Asegúrate de obtener el ID de la aseguradora
-  console.log("ID del seguro a editar:", id);
-  console.log("ID de la aseguradora:", idAseguradora);
+  const idSeguro = location.state?.idSeguro; 
+  const idAseguradora = location.state?.idAseguradora; // ID de la aseguradora
+  console.log("ID de aseguradora:", idAseguradora); // Verifica que el ID de la aseguradora esté disponible
+  console.log("ID del administrador:", id);
+  console.log("ID del seguro:", idSeguro);
 
   const editorRef = useRef(null);
   const [nombre, setNombre] = useState("");
@@ -29,7 +31,7 @@ const EditarSeguro = () => {
   useEffect(() => {
     const fetchSeguroData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/nar/seguros/id/${id}`);
+        const response = await axios.get(`http://localhost:3000/nar/seguros/id/${idSeguro}`);
         const seguroData = response.data;
         console.log("Datos del seguro obtenidos:", seguroData);
 
@@ -44,63 +46,69 @@ const EditarSeguro = () => {
       }
     };
 
-    if (id) {
+    if (idSeguro) {
       fetchSeguroData();
     } else {
       console.error("ID del seguro no proporcionado");
     }
-  }, [id]);
+  }, [idSeguro]);
 
   const formatText = (command, value = null) => {
     document.execCommand(command, false, value);
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setIcono(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
+  
   const editarSeguro = async () => {
     // Validación de campos requeridos
     if (!nombre || !cobertura || !tipo || !precioBase || !idAseguradora) {
-      swalWithTailwindButtons.fire("Error", "Por favor, complete todos los campos requeridos.", "error");
-      return;
+        swalWithTailwindButtons.fire("Error", "Por favor, complete todos los campos requeridos.", "error");
+        return;
     }
 
     const dataToSend = {
-      nombre,
-      cobertura: cobertura.replace(/<\/?[^>]+(>|$)/g, ""), // Elimina etiquetas HTML
-      icono,
-      tipo,
-      precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
-      idAseguradora // Incluir el ID de la aseguradora
+        nombre,
+        cobertura: cobertura.replace(/<\/?[^>]+(>|$)/g, ""), // Elimina etiquetas HTML
+        icono,
+        tipo,
+        precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
+        idAseguradora // Incluir el ID de la aseguradora
     };
 
     console.log("Datos a enviar en la edición:", dataToSend);
 
-    try {
-      const response = await axios.put(`http://localhost:3000/nar/seguros/id/${id}`, dataToSend);
+    // Mostrar alerta de cargando
+    swalWithTailwindButtons.fire({
+        title: 'Cargando',
+        text: 'Por favor, espere...',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            swalWithTailwindButtons.showLoading();
+        }
+    });
 
-      if (response.status === 200) {
-        swalWithTailwindButtons.fire("Editado", "El seguro ha sido editado correctamente.", "success");
-        navigate("/aseguradoras/seguros", { state: { idAseguradora } }); // Pasar el estado con idAseguradora
-      } else {
-        swalWithTailwindButtons.fire("Error", "Hubo un problema al editar el seguro.", "error");
-      }
+    try {
+        const response = await axios.put(`http://localhost:3000/nar/seguros/id/${idSeguro}`, dataToSend);
+
+        if (response.status === 200) {
+            swalWithTailwindButtons.fire("Editado", "El seguro ha sido editado correctamente.", "success");
+            navigate("/aseguradoras/seguros", { state: { idAseguradora, id:id } }); // Pasar el estado con idAseguradora
+        } else {
+            swalWithTailwindButtons.fire("Error", "Hubo un problema al editar el seguro.", "error");
+        }
     } catch (error) {
-      console.error("Error al editar el seguro:", error);
-      if (error.response) {
-        console.error("Respuesta del servidor:", error.response.data);
-      }
-      swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
+        console.error("Error al editar el seguro:", error);
+        if (error.response) {
+            console.error("Respuesta del servidor:", error.response.data);
+        }
+        swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
+    } finally {
+        // Cerrar la alerta de cargando
+        swalWithTailwindButtons.close();
     }
-  };
+};
+
 
   const confirmarEditar = () => {
     swalWithTailwindButtons.fire({

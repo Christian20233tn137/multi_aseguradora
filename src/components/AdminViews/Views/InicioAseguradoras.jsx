@@ -208,7 +208,6 @@ const InicioAseguradoras = () => {
               className="flex flex-col sm:flex-row items-center border-0 shadow-md rounded-lg p-4 mb-4"
             >
               <div className="flex  items-center mb-6 md:mb-0">
-                <div className="w-16 h-16 bg-gray-400 rounded-full mr-6"></div>
                 <div>
                   <p className="text-xl font-semibold">{aseguradora.nombre}</p>
                   <p className="text-gray-600 text-lg"></p>

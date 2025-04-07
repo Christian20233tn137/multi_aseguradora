@@ -7,12 +7,11 @@ const API_URL = "http://localhost:3000/nar/usuarios/id";
 const API_URL_EDIT = "http://localhost:3000/nar/usuarios";
 
 const EditarAdmin = () => {
-  
   const location = useLocation();
   const id = location.state?.id;
   const idAdmin = location.state?.idAdmin;
   console.log("Id del admin:", id);
-  
+
   console.log("Id del admin a editar:", idAdmin);
   const navigate = useNavigate();
   const [admin, setAdmin] = useState({
@@ -26,8 +25,10 @@ const EditarAdmin = () => {
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
-      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+      confirmButton:
+        "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton:
+        "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
     },
     buttonsStyling: false,
   });
@@ -80,7 +81,9 @@ const EditarAdmin = () => {
         if (result.isConfirmed) {
           try {
             const nuevaContrasena = admin.correo;
-            await axios.put(`${API_URL_EDIT}/resetearContra/${id}`, { correo: nuevaContrasena });
+            await axios.put(`${API_URL_EDIT}/resetearContra/${id}`, {
+              correo: nuevaContrasena,
+            });
 
             swalWithTailwindButtons.fire({
               icon: "success",
@@ -100,9 +103,16 @@ const EditarAdmin = () => {
   };
 
   const validarCampos = () => {
-    const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono } = admin;
+    const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono } =
+      admin;
 
-    if (!nombre || !apellidoPaterno || !apellidoMaterno || !correo || !telefono) {
+    if (
+      !nombre ||
+      !apellidoPaterno ||
+      !apellidoMaterno ||
+      !correo ||
+      !telefono
+    ) {
       swalWithTailwindButtons.fire({
         icon: "warning",
         title: "Campos obligatorios",
@@ -135,7 +145,7 @@ const EditarAdmin = () => {
             text: "Datos del administrador guardados correctamente.",
             icon: "success",
           });
-          navigate("/administradores", {state : {id:id}}); // Redirigir a la lista de administradores
+          navigate("/administradores", { state: { id: id } }); // Redirigir a la lista de administradores
         } else {
           swalWithTailwindButtons.fire({
             title: "Error",
@@ -155,19 +165,28 @@ const EditarAdmin = () => {
   };
 
   const showEditAlert = () => {
-    swalWithTailwindButtons.fire({
-      title: "¿Deseas guardar los cambios?",
-      text: "Se actualizará la información del administrador.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, guardar cambios",
-      cancelButtonText: "Cancelar",
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleEditSubmit();
-      }
-    });
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Deseas guardar los cambios?",
+        text: "Se actualizará la información del administrador.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, guardar cambios",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Realizando los cambios..",
+            text: "Por favor espera.",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
+          handleEditSubmit();
+        }
+      });   
   };
 
   if (loading) {
@@ -175,90 +194,91 @@ const EditarAdmin = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 bg-white rounded-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Editar Administrador</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-4">
-          <div>
-            <label className="block font-semibold">Nombre*</label>
+    <div className="flex items-center justify-center w-auto h-auto p-6">
+      <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">Editar Administrador</h1>
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Nombre*
+            </label>
             <input
               type="text"
               name="nombre"
               value={admin.nombre}
               onChange={handleChange}
-              className="w-full border rounded p-2 mt-1"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
             />
+
+            <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+                Apellido paterno*</label>
+              <input
+                type="text"
+                name="apellidoPaterno"
+                value={admin.apellidoPaterno}
+                onChange={handleChange}
+                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              />
+            </div>
+
+            <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+                Correo electrónico*</label>
+              <input
+                type="email"
+                name="correo"
+                value={admin.correo}
+                onChange={handleChange}
+                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block font-semibold">Apellido paterno*</label>
-            <input
-              type="text"
-              name="apellidoPaterno"
-              value={admin.apellidoPaterno}
-              onChange={handleChange}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
+          <div className="space-y-4">
+            <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+                Apellido Materno*</label>
+              <input
+                type="text"
+                name="apellidoMaterno"
+                value={admin.apellidoMaterno}
+                onChange={handleChange}
+                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              />
+            </div>
 
-          <div>
-            <label className="block font-semibold">Correo electrónico*</label>
-            <input
-              type="email"
-              name="correo"
-              value={admin.correo}
-              onChange={handleChange}
-              className="w-full border rounded p-2 mt-1"
-            />
+            <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+                Teléfono*</label>
+              <input
+                type="tel"
+                name="telefono"
+                value={admin.telefono}
+                onChange={handleChange}
+                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              />
+            </div>
           </div>
+        </form>
+
+        <div className="col-span-2 flex justify-center mt-8">
+          <button
+            type="button"
+            className="text-white items-start font-bold mr-2 py-2 px-2 botones focus:outline-none focus:shadow-outline"
+            onClick={restablecerContrasena}
+          >
+            Restablecer contraseña
+          </button>
+
+          <button
+            type="button"
+            className="text-white items-start font-bold mr-2 py-2 px-2 botones focus:outline-none focus:shadow-outline"
+            onClick={showEditAlert}
+          >
+            Guardar
+          </button>
         </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block font-semibold">Apellido Materno*</label>
-            <input
-              type="text"
-              name="apellidoMaterno"
-              value={admin.apellidoMaterno}
-              onChange={handleChange}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold">Teléfono*</label>
-            <input
-              type="tel"
-              name="telefono"
-              value={admin.telefono}
-              onChange={handleChange}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="col-span-2 flex items-center justify-start mt-8">
-        <button
-          type="button"
-          className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          style={{ backgroundColor: "#0B1956" }}
-          onClick={restablecerContrasena}
-        >
-          Restablecer contraseña
-        </button>
-      </div>
-
-      <div className="flex items-center justify-center mt-6">
-        <button
-          type="button"
-          className="text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-          style={{ backgroundColor: "#0B1956" }}
-          onClick={showEditAlert}
-        >
-          Guardar
-        </button>
       </div>
     </div>
   );

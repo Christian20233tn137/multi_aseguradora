@@ -5,7 +5,7 @@ import axios from "axios";
 
 const AgregarSeguro = () => {
   const location = useLocation();
-  const idAseguradora = location.state?.idAseguradora; // Obtener el ID de la aseguradora desde el estado de navegación
+  const idAseguradora = location.state?.idAseguradora; 
   console.log("ID de aseguradora:", idAseguradora);
 
   const navigate = useNavigate();
@@ -18,17 +18,6 @@ const AgregarSeguro = () => {
 
   const formatText = (command, value = null) => {
     document.execCommand(command, false, value);
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setIcono(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const swalWithTailwindButtons = Swal.mixin({
