@@ -60,7 +60,8 @@ const NuevaAseguradora = () => {
     if (name === "correoContacto" && value) {
       if (value.length > 25) {
         error = "No debe exceder 25 caracteres";
-      } else {
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        error = "Formato de correo electrónico inválido";
       }
     }
 
@@ -214,6 +215,48 @@ const NuevaAseguradora = () => {
       <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center">Registro</h2>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+        <div className="mb-4 md:col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Nombre de la seguradora*
+            </label>
+            <input
+              type="text"
+              name="nombre"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.nombre ? "border-red-500" : ""
+              }`}
+              placeholder="Nombre aseguradora"
+              value={formData.nombre}
+              onChange={handleChange}
+            />
+            {errors.nombre && (
+              <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
+            )}
+          </div>
+     
+
+
+          <div className="mb-4 md:col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Información de la aseguradora*
+            </label>
+            <input
+              type="text"
+              name="informacion"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.informacion ? "border-red-500" : ""
+              }`}
+              placeholder="Información aseguradora"
+              value={formData.informacion}
+              onChange={handleChange}
+            />
+            {errors.informacion && (
+              <p className="text-red-500 text-xs mt-1">{errors.informacion}</p>
+            )}
+          </div>
+
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Nombre del contacto*
@@ -235,43 +278,8 @@ const NuevaAseguradora = () => {
             )}
           </div>
 
-          <div className="mb-4 md:col-span-1">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Nombre*
-            </label>
-            <input
-              type="text"
-              name="nombre"
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.nombre ? "border-red-500" : ""
-              }`}
-              placeholder="Nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-            />
-            {errors.nombre && (
-              <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
-            )}
-          </div>
-
-          <div className="mb-4 md:col-span-1">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Información
-            </label>
-            <input
-              type="text"
-              name="informacion"
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.informacion ? "border-red-500" : ""
-              }`}
-              placeholder="Información"
-              value={formData.informacion}
-              onChange={handleChange}
-            />
-            {errors.informacion && (
-              <p className="text-red-500 text-xs mt-1">{errors.informacion}</p>
-            )}
-          </div>
+          
+      
 
           <div className="mb-4 md:col-span-1">
             <label className="block text-gray-700 text-sm font-bold mb-2">

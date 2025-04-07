@@ -19,7 +19,7 @@ const swalWithTailwindButtons = Swal.mixin({
 const InicioAseguradoras = () => {
   const location = useLocation();
   const id = location.state?.id;
-  console.log("Id del admim: ", id);
+  console.log("Id del admin: ", id);
 
   const navigate = useNavigate();
   const [aseguradoras, setAseguradoras] = useState([]);
@@ -45,7 +45,9 @@ const InicioAseguradoras = () => {
         const initialCheckedItems = {};
         response.data.forEach((aseguradora) => {
           initialCheckedItems[aseguradora._id] =
-            storedState[aseguradora._id] ?? aseguradora.active;
+            storedState[aseguradora._id] !== undefined
+              ? storedState[aseguradora._id]
+              : aseguradora.active === true; // fuerza a booleano
         });
 
         setCheckedItems(initialCheckedItems);
@@ -86,8 +88,9 @@ const InicioAseguradoras = () => {
     fetchSeguros();
   }, [aseguradoras]);
 
-  const handlerNavigation = () =>
+  const handlerNavigation = () => {
     navigate("/aseguradoras/nuevaAseguradora", { state: { id: id } });
+  };
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) =>
