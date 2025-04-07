@@ -130,6 +130,13 @@ const InicioAseguradoras = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Realizando cambios..",
+            icon: "info",
+            text: "Por favor, espere.",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+          });
           try {
             const endpoint = `http://localhost:3000/nar/aseguradoras/${action}/${aseguradoraId}`;
             const response = await axios.put(endpoint);
