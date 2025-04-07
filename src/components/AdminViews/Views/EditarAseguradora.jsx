@@ -21,6 +21,13 @@ const EditarAseguradora = () => {
     informacion: "",
     seguros: "",
   });
+  const [errors, setErrors] = useState({
+    nombre: "",
+    nombreContacto: "",
+    telefonoContacto: "",
+    correoContacto: "",
+    informacion: "",
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,8 +56,45 @@ const EditarAseguradora = () => {
     fetchAseguradoraDetails();
   }, [idaseguradora, location.state]);
 
-  const handleBack = () => {
-    navigate("/aseguradoras");
+  const validateInput = (name, value) => {
+    let error = "";
+
+    // Validación de longitud máxima para campos específicos
+    if (["nombre", "nombreContacto", "telefonoContacto"].includes(name)) {
+      if (value.length > 15) {
+        error = "No debe exceder 15 caracteres";
+      }
+    }
+
+    // Validación para campos que no deben contener números
+    if (["nombre", "nombreContacto"].includes(name)) {
+      if (/\d/.test(value)) {
+        error = "No se permiten números en este campo";
+      }
+    }
+
+    // Validación específica para información
+    if (name === "informacion") {
+      if (value.length > 50) {
+        error = "No debe exceder 50 caracteres";
+      }
+    }
+
+    // Validación específica para teléfono
+    if (name === "telefonoContacto") {
+      if (!/^\d{0,10}$/.test(value)) {
+        error = "Solo se permiten números y máximo 10 dígitos";
+      }
+    }
+
+    // Validación de correo electrónico
+    if (name === "correoContacto" && value) {
+      if (value.length > 25) {
+        error = "No debe exceder 25 caracteres";
+      }
+    }
+
+    return error;
   };
 
   const swalWithTailwindButtons = Swal.mixin({
@@ -64,6 +108,31 @@ const EditarAseguradora = () => {
   });
 
   const handleEditSubmit = async () => {
+    // Validar todos los campos antes de enviar
+    const newErrors = {};
+    let hasErrors = false;
+
+    Object.keys(aseguradora).forEach((key) => {
+      if (key !== "seguros") {
+        // Excluir el campo seguros de la validación
+        const error = validateInput(key, aseguradora[key]);
+        if (error) {
+          newErrors[key] = error;
+          hasErrors = true;
+        }
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("nombre", aseguradora.nombre);
@@ -100,6 +169,31 @@ const EditarAseguradora = () => {
   };
 
   const showEditAlert = () => {
+    // Validar todos los campos antes de mostrar la alerta
+    const newErrors = {};
+    let hasErrors = false;
+
+    Object.keys(aseguradora).forEach((key) => {
+      if (key !== "seguros") {
+        // Excluir el campo seguros de la validación
+        const error = validateInput(key, aseguradora[key]);
+        if (error) {
+          newErrors[key] = error;
+          hasErrors = true;
+        }
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
     swalWithTailwindButtons
       .fire({
         title: "¿Deseas guardar los cambios?",
@@ -126,6 +220,13 @@ const EditarAseguradora = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const error = validateInput(name, value);
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+
     setAseguradora({ ...aseguradora, [name]: value });
   };
 
@@ -148,9 +249,14 @@ const EditarAseguradora = () => {
               type="text"
               name="nombre"
               value={aseguradora.nombre}
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.nombre ? "border-red-500" : ""
+              }`}
               onChange={handleInputChange}
             />
+            {errors.nombre && (
+              <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -160,9 +266,16 @@ const EditarAseguradora = () => {
               type="text"
               name="nombreContacto"
               value={aseguradora.nombreContacto}
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.nombreContacto ? "border-red-500" : ""
+              }`}
               onChange={handleInputChange}
             />
+            {errors.nombreContacto && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.nombreContacto}
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -172,9 +285,16 @@ const EditarAseguradora = () => {
               type="text"
               name="telefonoContacto"
               value={aseguradora.telefonoContacto}
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.telefonoContacto ? "border-red-500" : ""
+              }`}
               onChange={handleInputChange}
             />
+            {errors.telefonoContacto && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.telefonoContacto}
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -184,9 +304,16 @@ const EditarAseguradora = () => {
               type="email"
               name="correoContacto"
               value={aseguradora.correoContacto}
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.correoContacto ? "border-red-500" : ""
+              }`}
               onChange={handleInputChange}
             />
+            {errors.correoContacto && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.correoContacto}
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -196,9 +323,14 @@ const EditarAseguradora = () => {
               type="text"
               name="informacion"
               value={aseguradora.informacion}
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.informacion ? "border-red-500" : ""
+              }`}
               onChange={handleInputChange}
-            ></input>
+            />
+            {errors.informacion && (
+              <p className="text-red-500 text-xs mt-1">{errors.informacion}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">

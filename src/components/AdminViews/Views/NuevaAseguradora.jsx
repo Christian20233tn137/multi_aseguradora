@@ -17,12 +17,69 @@ const NuevaAseguradora = () => {
     telefonoContacto: "",
   });
 
+  const [errors, setErrors] = useState({
+    nombre: "",
+    informacion: "",
+    nombreContacto: "",
+    correoContacto: "",
+    telefonoContacto: "",
+  });
+
+  const validateInput = (name, value) => {
+    let error = "";
+
+    // Validación de longitud máxima para campos específicos
+    if (["nombre", "nombreContacto", "telefonoContacto"].includes(name)) {
+      if (value.length > 15) {
+        error = "No debe exceder 15 caracteres";
+      }
+    }
+
+    // Validación para campos que no deben contener números
+    if (["nombre", "nombreContacto"].includes(name)) {
+      if (/\d/.test(value)) {
+        error = "No se permiten números en este campo";
+      }
+    }
+
+    // Validación específica para información
+    if (name === "informacion") {
+      if (value.length > 50) {
+        error = "No debe exceder 50 caracteres";
+      }
+    }
+
+    // Validación específica para teléfono
+    if (name === "telefonoContacto") {
+      if (!/^\d{0,10}$/.test(value)) {
+        error = "Solo se permiten números y máximo 10 dígitos";
+      }
+    }
+
+    // Validación de correo electrónico
+    if (name === "correoContacto" && value) {
+      if (value.length > 25) {
+        error = "No debe exceder 25 caracteres";
+      } else {
+      }
+    }
+
+    return error;
+  };
+
   const handleRegresar = () => {
     navigate("/aseguradoras", { state: { id: id } });
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const error = validateInput(name, value);
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+
     setFormData({
       ...formData,
       [name]: value,
@@ -40,6 +97,28 @@ const NuevaAseguradora = () => {
   });
 
   const handleSubmit = async () => {
+    // Validar todos los campos antes de enviar
+    const newErrors = {};
+    let hasErrors = false;
+
+    Object.keys(formData).forEach((key) => {
+      const error = validateInput(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
     // Deshabilitar botones y mostrar loader
     Swal.fire({
       title: "Enviando...",
@@ -84,6 +163,28 @@ const NuevaAseguradora = () => {
   };
 
   const showAlert = () => {
+    // Validar todos los campos antes de mostrar la alerta
+    const newErrors = {};
+    let hasErrors = false;
+
+    Object.keys(formData).forEach((key) => {
+      const error = validateInput(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
     swalWithTailwindButtons
       .fire({
         title: "¿Deseas agregar esta aseguradora?",
@@ -95,7 +196,7 @@ const NuevaAseguradora = () => {
         reverseButtons: true,
       })
       .then((result) => {
-        if (result.isConfirmed)
+        if (result.isConfirmed) {
           swalWithTailwindButtons.fire({
             title: "Agregando aseguradora...",
             text: "Por favor, espere.",
@@ -103,17 +204,11 @@ const NuevaAseguradora = () => {
             allowOutsideClick: false,
             showConfirmButton: false,
           });
-        handleSubmit();
+          handleSubmit(); // Mueve handleSubmit dentro del bloque if para que solo se ejecute si se confirma
+        }
       });
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  }
   return (
     <div className="flex items-center justify-center w-auto h-auto p-6">
       <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">
@@ -126,11 +221,18 @@ const NuevaAseguradora = () => {
             <input
               type="text"
               name="nombreContacto"
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.nombreContacto ? "border-red-500" : ""
+              }`}
               placeholder="Nombre del contacto"
               value={formData.nombreContacto}
               onChange={handleChange}
             />
+            {errors.nombreContacto && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.nombreContacto}
+              </p>
+            )}
           </div>
 
           <div className="mb-4 md:col-span-1">
@@ -140,11 +242,16 @@ const NuevaAseguradora = () => {
             <input
               type="text"
               name="nombre"
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.nombre ? "border-red-500" : ""
+              }`}
               placeholder="Nombre"
               value={formData.nombre}
               onChange={handleChange}
             />
+            {errors.nombre && (
+              <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
+            )}
           </div>
 
           <div className="mb-4 md:col-span-1">
@@ -154,11 +261,16 @@ const NuevaAseguradora = () => {
             <input
               type="text"
               name="informacion"
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.informacion ? "border-red-500" : ""
+              }`}
               placeholder="Información"
               value={formData.informacion}
               onChange={handleChange}
             />
+            {errors.informacion && (
+              <p className="text-red-500 text-xs mt-1">{errors.informacion}</p>
+            )}
           </div>
 
           <div className="mb-4 md:col-span-1">
@@ -168,11 +280,18 @@ const NuevaAseguradora = () => {
             <input
               type="text"
               name="telefonoContacto"
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.telefonoContacto ? "border-red-500" : ""
+              }`}
               placeholder="Teléfono del contacto"
               value={formData.telefonoContacto}
               onChange={handleChange}
             />
+            {errors.telefonoContacto && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.telefonoContacto}
+              </p>
+            )}
           </div>
 
           <div className="mb-4 md:col-span-1">
@@ -182,11 +301,18 @@ const NuevaAseguradora = () => {
             <input
               type="email"
               name="correoContacto"
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.correoContacto ? "border-red-500" : ""
+              }`}
               placeholder="Correo electrónico del contacto"
               value={formData.correoContacto}
               onChange={handleChange}
             />
+            {errors.correoContacto && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.correoContacto}
+              </p>
+            )}
           </div>
 
           <div className="col-span-2 flex items-center justify-center">
