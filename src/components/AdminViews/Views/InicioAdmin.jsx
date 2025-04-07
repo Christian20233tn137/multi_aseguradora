@@ -31,7 +31,9 @@ const InicioAdmin = () => {
         const initialCheckedItems = {};
         admins.forEach((admin) => {
           initialCheckedItems[admin._id] =
-            storedState[admin._id] ?? admin.active;
+            storedState[admin._id] !== undefined
+              ? storedState[admin._id]
+              : admin.estado === "activo";
         });
 
         setCheckedItems(initialCheckedItems);
@@ -53,7 +55,7 @@ const InicioAdmin = () => {
   };
 
   const handleAgregar = () => {
-    navigate("/administradores/agregar" , { state: { id: id } });
+    navigate("/administradores/agregar", { state: { id: id } });
   };
 
   const handleNextPage = () => {
@@ -109,11 +111,19 @@ const InicioAdmin = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Realizando cambios..",
+            icon: "info",
+            text: "Por favor, espere.",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+          });
           try {
             const endpoint = `http://localhost:3000/nar/usuarios/${action}/${adminId}`;
             const response = await axios.put(endpoint);
 
             if (response.status === 200) {
+              
               swalWithTailwindButtons.fire({
                 title: isActive
                   ? "¡Administrador desactivado!"
@@ -133,7 +143,7 @@ const InicioAdmin = () => {
               setAdministradores((prevAdmins) =>
                 prevAdmins.map((admin) =>
                   admin._id === adminId
-                    ? { ...admin, active: !isActive }
+                    ? { ...admin, estado: !isActive ? "activo" : "inactivo" }
                     : admin
                 )
               );
@@ -162,7 +172,7 @@ const InicioAdmin = () => {
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row items-center mb-4 space-y-4 md:space-y-0 md:space-x-4">
-      <button
+        <button
           className="px-6 py-2 text-white botones w-full md:w-auto order-last md:order-none"
           onClick={handleAgregar}
         >
@@ -184,14 +194,14 @@ const InicioAdmin = () => {
           <div
             key={administrador._id}
             className="flex flex-col sm:flex-row items-center border-0 shadow-md rounded-lg p-4 mb-4"
-            >
+          >
             <div className="flex items-center mb-6 md:mb-0">
               <div>
                 <p className="text-base font-semibold">{`${administrador.nombre} ${administrador.apellidoPaterno} ${administrador.apellidoMaterno}`}</p>
               </div>
             </div>
             <div className="ml-auto self-stretch sm:self-auto">
-            <label className="switch mr-2">
+              <label className="switch mr-2">
                 <input
                   type="checkbox"
                   className="hidden"
@@ -206,14 +216,14 @@ const InicioAdmin = () => {
                 <span className="slider round"></span>
               </label>
               <button
-                  className="px-6 py-2 mr-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
-                  onClick={() => handleEditar(administrador._id)}
+                className="px-6 py-2 mr-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                onClick={() => handleEditar(administrador._id)}
               >
                 Editar
               </button>
               <button
-                  className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
-                  onClick={() =>
+                className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                onClick={() =>
                   navigate(`/administradores/informacion`, {
                     state: { id: id, idAdmin: administrador._id },
                   })

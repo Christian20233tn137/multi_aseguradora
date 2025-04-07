@@ -7,7 +7,7 @@ const VerMasAseguradora = () => {
   const location = useLocation();
   const id = location.state?.id;
   const idAseguradora = location.state?.idAseguradora;
-  console.log("ID de aseguradora:", idAseguradora);
+  console.log("ID de aseguradoraaaa:", idAseguradora);
   console.log("ID del admin:", id);
 
   const navigate = useNavigate();
@@ -87,15 +87,21 @@ const VerMasAseguradora = () => {
   );
 
   const handlerNavigationEdit = (seguroId) => {
-    navigate(`/aseguradoras/seguros/editar`, { state: { id: id, idSeguro : seguroId, idAseguradora : idAseguradora } });
+    navigate(`/aseguradoras/seguros/editar`, {
+      state: { id: id, idSeguro: seguroId, idAseguradora: idAseguradora },
+    });
   };
 
   const handlerInfo = (seguroId) => {
-    navigate(`/aseguradoras/seguros/informacion`, { state: { id: id, idSeguro : seguroId } });
+    navigate(`/aseguradoras/seguros/informacion`, {
+      state: { id: id, idSeguro: seguroId },
+    });
   };
 
   const handlerAdd = () => {
-    navigate(`/aseguradoras/seguros/agregar`, { state: { idAseguradora } });
+    navigate(`/aseguradoras/seguros/agregar`, {
+      state: { idAseguradora, id: id },
+    });
   };
 
   const handleToggleSwitch = async (seguroId, isActive) => {
@@ -244,7 +250,6 @@ const VerMasAseguradora = () => {
                 className="flex flex-col md:flex-row items-center justify-between p-4 md:p-6 border-0 rounded-lg shadow-lg mt-3 bg-white"
               >
                 <div className="flex items-center space-x-4 mb-4 md:mb-0">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-400 rounded-full"></div>
                   <div>
                     <p className="text-lg font-semibold">{nombreSeguro}</p>
                   </div>

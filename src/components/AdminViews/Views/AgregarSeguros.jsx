@@ -5,7 +5,8 @@ import axios from "axios";
 
 const AgregarSeguro = () => {
   const location = useLocation();
-  const idAseguradora = location.state?.idAseguradora; 
+  const id = location.state?.id;
+  const idAseguradora = location.state?.idAseguradora;
   console.log("ID de aseguradora:", idAseguradora);
 
   const navigate = useNavigate();
@@ -22,10 +23,12 @@ const AgregarSeguro = () => {
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
-      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      confirmButton:
+        "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton:
+        "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
     },
-    buttonsStyling: false
+    buttonsStyling: false,
   });
 
   const agregarSeguro = async () => {
@@ -51,7 +54,10 @@ const AgregarSeguro = () => {
     console.log("Datos a enviar:", dataToSend); // Depuración: verifica los datos
 
     try {
-      const response = await axios.post("http://localhost:3000/nar/seguros/", dataToSend);
+      const response = await axios.post(
+        "http://localhost:3000/nar/seguros/",
+        dataToSend
+      );
 
       if (response.status !== 200) {
         throw new Error("Error al agregar el seguro");
@@ -64,7 +70,7 @@ const AgregarSeguro = () => {
       });
 
       // Navigate to "VerMasAseguradora" with the correct state
-      navigate("/aseguradoras/seguros", { state: { idAseguradora } });
+      navigate("/aseguradoras/seguros", { state: { idAseguradora, id: id } });
     } catch (error) {
       console.error("Error al agregar el seguro:", error);
       swalWithTailwindButtons.fire({
@@ -76,19 +82,28 @@ const AgregarSeguro = () => {
   };
 
   const confirmarAgregar = () => {
-    swalWithTailwindButtons.fire({
-      title: "¿Estás seguro?",
-      text: "¿Quieres agregar este seguro?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, agregar",
-      cancelButtonText: "Cancelar",
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        agregarSeguro();
-      }
-    });
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro?",
+        text: "¿Quieres agregar este seguro?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, agregar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Agregando...",
+            text: "Por favor, espera.",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+          });
+          agregarSeguro();
+        }
+      });
   };
 
   useEffect(() => {
@@ -124,7 +139,9 @@ const AgregarSeguro = () => {
           >
             <option value="">Selecciona un tipo</option>
             <option value="Seguro de vida">Seguro de vida</option>
-            <option value="Seguro de gastos medicos">Seguro de gastos médicos</option>
+            <option value="Seguro de gastos medicos">
+              Seguro de gastos médicos
+            </option>
             <option value="Seguro de viajes">Seguro de viajes</option>
           </select>
         </div>
@@ -147,13 +164,36 @@ const AgregarSeguro = () => {
         <div className="border rounded p-2">
           {/* Barra de herramientas */}
           <div className="flex space-x-2 mb-2 pb-2">
-            <button onClick={() => formatText("bold")} className="font-bold p-1">B</button>
-            <button onClick={() => formatText("italic")} className="italic p-1">I</button>
-            <button onClick={() => formatText("underline")} className="underline p-1">U</button>
-            <button onClick={() => formatText("justifyLeft")} className="p-1">⬅</button>
-            <button onClick={() => formatText("justifyCenter")} className="p-1">⬆</button>
-            <button onClick={() => formatText("justifyRight")} className="p-1">➡</button>
-            <button onClick={() => formatText("foreColor", "red")} className="p-1 text-red-500">A</button>
+            <button
+              onClick={() => formatText("bold")}
+              className="font-bold p-1"
+            >
+              B
+            </button>
+            <button onClick={() => formatText("italic")} className="italic p-1">
+              I
+            </button>
+            <button
+              onClick={() => formatText("underline")}
+              className="underline p-1"
+            >
+              U
+            </button>
+            <button onClick={() => formatText("justifyLeft")} className="p-1">
+              ⬅
+            </button>
+            <button onClick={() => formatText("justifyCenter")} className="p-1">
+              ⬆
+            </button>
+            <button onClick={() => formatText("justifyRight")} className="p-1">
+              ➡
+            </button>
+            <button
+              onClick={() => formatText("foreColor", "red")}
+              className="p-1 text-red-500"
+            >
+              A
+            </button>
           </div>
 
           {/* Área de edición */}
@@ -171,8 +211,7 @@ const AgregarSeguro = () => {
       <div className="col-span-2 flex items-center justify-center mt-4">
         <button
           type="button"
-          className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          style={{ backgroundColor: "#0B1956" }}
+          className="text-white font-bold py-2 px-4 botones focus:outline-none focus:shadow-outline"
           onClick={confirmarAgregar}
         >
           Agregar

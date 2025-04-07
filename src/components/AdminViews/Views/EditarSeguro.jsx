@@ -121,6 +121,13 @@ const EditarSeguro = () => {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
+        swalWithTailwindButtons.fire({
+          title: "Editando...",
+          text: "Por favor, espera.",
+          icon: "info",
+          allowOutsideClick: false,
+          showConfirmButton: false,
+        });
         editarSeguro();
       }
     });
@@ -151,13 +158,18 @@ const EditarSeguro = () => {
       <div className="mb-4 flex space-x-4">
         <div className="w-1/2">
           <label className="block font-semibold">Tipo*</label>
-          <input
-            type="text"
+          <select
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
             className="w-full border rounded p-2"
-            placeholder="Tipo de seguro"
-          />
+          >
+            <option value="">Selecciona un tipo</option>
+            <option value="Seguro de vida">Seguro de vida</option>
+            <option value="Seguro de gastos medicos">
+              Seguro de gastos médicos
+            </option>
+            <option value="Seguro de viajes">Seguro de viajes</option>
+          </select>
         </div>
         <div className="w-1/2">
           <label className="block font-semibold">Precio Base*</label>

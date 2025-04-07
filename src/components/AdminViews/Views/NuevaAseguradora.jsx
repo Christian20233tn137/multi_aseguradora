@@ -12,7 +12,6 @@ const NuevaAseguradora = () => {
   const [formData, setFormData] = useState({
     nombre: "",
     informacion: "",
-    seguros: "",
     nombreContacto: "",
     correoContacto: "",
     telefonoContacto: "",
@@ -108,6 +107,13 @@ const NuevaAseguradora = () => {
       });
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
   return (
     <div className="flex items-center justify-center w-auto h-auto p-6">
       <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">
@@ -151,20 +157,6 @@ const NuevaAseguradora = () => {
               className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               placeholder="Información"
               value={formData.informacion}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="mb-4 md:col-span-1">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Seguros
-            </label>
-            <input
-              type="text"
-              name="seguros"
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
-              placeholder="Seguros"
-              value={formData.seguros}
               onChange={handleChange}
             />
           </div>
