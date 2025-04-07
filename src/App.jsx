@@ -53,14 +53,12 @@ const App = () => {
         return "Solicitud";
       case "/solicitudes/solicitud-documentos":
         return "Documentos de solicitud";
-        case "/solicitudes/verDocumento/:id":
+      case "/solicitudes/verDocumento/:id":
         return "Fila documentos";
       case "/aseguradoras":
         return "Aseguradoras";
       case "/aseguradoras/nuevaAseguradora":
         return "Agregar Aseguradora";
-      case "/aseguradoras/editar":
-        return "Aseguradoras";
       case "/aseguradoras/editar":
         return "Aseguradoras";
       case "/aseguradoras/seguros":
@@ -181,7 +179,10 @@ const App = () => {
         <Route path="editar" element={<EditarAseguradora />} />
         <Route path="seguros" element={<VerMasAseguradora />} />
         <Route path="seguros/editar/:id" element={<EditarSeguro />} />
-        <Route path="seguros/informacion/:id" element={<InformacionSeguros />} />
+        <Route
+          path="seguros/informacion/:id"
+          element={<InformacionSeguros />}
+        />
         <Route path="seguros/agregar/:id" element={<AgregarSeguros />} />
       </Route>
       <Route
