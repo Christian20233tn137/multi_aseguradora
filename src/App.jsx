@@ -181,7 +181,7 @@ const App = () => {
       >
         {/* Rutas hijas fuaaa*/}
         <Route path="nuevaAseguradora" element={<NuevaAseguradora />} />
-        <Route path="editar/:id" element={<EditarAseguradora />} />
+        <Route path="editar" element={<EditarAseguradora />} />
         <Route path="seguros" element={<VerMasAseguradora />} />
         <Route path="seguros/editar/:id" element={<EditarSeguro />} />
         <Route path="seguros/informacion/:id" element={<InformacionSeguros />} />

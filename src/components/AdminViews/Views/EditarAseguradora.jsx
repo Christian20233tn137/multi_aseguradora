@@ -3,12 +3,16 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const API_URL = "http://localhost:3000/nar/aseguradoras";
+const API_URL = "http://localhost:3000/nar/aseguradoras/id";
+const API_URL_EDIT = "http://localhost:3000/nar/aseguradoras";
 
 const EditarAseguradora = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams();
+  const id = location.state?.id;
+  const idaseguradora = location.state?.aseguradoraId;
+  console.log("ID del admin:", id);
+  console.log("ID de la aseguradora:", idaseguradora);
   const [aseguradora, setAseguradora] = useState({
     nombre: "",
     nombreContacto: "",
@@ -24,8 +28,8 @@ const EditarAseguradora = () => {
       try {
         if (location.state && location.state.aseguradora) {
           setAseguradora(location.state.aseguradora);
-        } else if (id) {
-          const response = await axios.get(`${API_URL}/${id}`);
+        } else if (idaseguradora) {
+          const response = await axios.get(`${API_URL}/${idaseguradora}`);
           setAseguradora(response.data);
         } else {
           throw new Error("ID de aseguradora no definido");
@@ -43,7 +47,7 @@ const EditarAseguradora = () => {
     };
 
     fetchAseguradoraDetails();
-  }, [id, location.state]);
+  }, [idaseguradora, location.state]);
 
   const handleBack = () => {
     navigate("/aseguradoras");
@@ -69,7 +73,10 @@ const EditarAseguradora = () => {
       formData.append("informacion", aseguradora.informacion);
       formData.append("seguros", aseguradora.seguros);
 
-      const response = await axios.put(`${API_URL}/${id}`, formData);
+      const response = await axios.put(
+        `${API_URL_EDIT}/${idaseguradora}`,
+        formData
+      );
 
       swalWithTailwindButtons.fire({
         title: response.status === 200 ? "¡Editado!" : "Error",
@@ -80,7 +87,8 @@ const EditarAseguradora = () => {
         icon: response.status === 200 ? "success" : "error",
       });
 
-      if (response.status === 200) navigate("/aseguradoras");
+      if (response.status === 200)
+        navigate("/aseguradoras", { state: { id: id } });
     } catch (error) {
       console.error("Error al editar:", error);
       Swal.fire({
@@ -104,6 +112,13 @@ const EditarAseguradora = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Realizando los cambios..",
+            text: "Por favor espera.",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
           handleEditSubmit();
         }
       });
@@ -133,7 +148,7 @@ const EditarAseguradora = () => {
               type="text"
               name="nombre"
               value={aseguradora.nombre}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               onChange={handleInputChange}
             />
           </div>
@@ -145,7 +160,7 @@ const EditarAseguradora = () => {
               type="text"
               name="nombreContacto"
               value={aseguradora.nombreContacto}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               onChange={handleInputChange}
             />
           </div>
@@ -157,7 +172,7 @@ const EditarAseguradora = () => {
               type="text"
               name="telefonoContacto"
               value={aseguradora.telefonoContacto}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               onChange={handleInputChange}
             />
           </div>
@@ -169,7 +184,7 @@ const EditarAseguradora = () => {
               type="email"
               name="correoContacto"
               value={aseguradora.correoContacto}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               onChange={handleInputChange}
             />
           </div>
@@ -177,12 +192,13 @@ const EditarAseguradora = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Información*
             </label>
-            <textarea
+            <input
+              type="text"
               name="informacion"
               value={aseguradora.informacion}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               onChange={handleInputChange}
-            ></textarea>
+            ></input>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -191,12 +207,14 @@ const EditarAseguradora = () => {
             <select
               name="seguros"
               value={aseguradora.seguros}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
               onChange={handleInputChange}
             >
               <option value="">Selecciona un tipo de seguro</option>
               <option value="Seguro de vida">Seguro de vida</option>
-              <option value="Seguro de gastos medicos">Seguro de gastos médicos</option>
+              <option value="Seguro de gastos medicos">
+                Seguro de gastos médicos
+              </option>
               <option value="Seguro de viajes">Seguro de viajes</option>
             </select>
           </div>

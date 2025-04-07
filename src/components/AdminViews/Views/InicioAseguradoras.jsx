@@ -5,20 +5,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const swalWithTailwindButtons = Swal.mixin({
   customClass: {
-    confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-    cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    confirmButton:
+      "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+    cancelButton:
+      "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
   },
   buttonsStyling: false,
   reverseButtons: true,
   confirmButtonText: "Confirmar",
-  cancelButtonText: "Cancelar"
+  cancelButtonText: "Cancelar",
 });
 
 const InicioAseguradoras = () => {
-
-    const location = useLocation();
-    const id = location.state?.id;
-    console.log("Prueba", id); 
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log("Id del admim: ", id);
 
   const navigate = useNavigate();
   const [aseguradoras, setAseguradoras] = useState([]);
@@ -31,16 +32,20 @@ const InicioAseguradoras = () => {
   useEffect(() => {
     const fetchAseguradoras = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/nar/aseguradoras");
+        const response = await axios.get(
+          "http://localhost:3000/nar/aseguradoras"
+        );
         setAseguradoras(response.data);
 
         // Cargar estado desde localStorage
-        const storedState = JSON.parse(localStorage.getItem("checkedItemsAseguradoras")) || {};
+        const storedState =
+          JSON.parse(localStorage.getItem("checkedItemsAseguradoras")) || {};
 
         // Inicializar el estado de los switches
         const initialCheckedItems = {};
         response.data.forEach((aseguradora) => {
-          initialCheckedItems[aseguradora._id] = storedState[aseguradora._id] ?? aseguradora.active;
+          initialCheckedItems[aseguradora._id] =
+            storedState[aseguradora._id] ?? aseguradora.active;
         });
 
         setCheckedItems(initialCheckedItems);
@@ -57,13 +62,21 @@ const InicioAseguradoras = () => {
       const segurosData = {};
       for (const aseguradora of aseguradoras) {
         try {
-          const response = await axios.get(`http://localhost:3000/nar/aseguradoras/id/${aseguradora._id}`);
+          const response = await axios.get(
+            `http://localhost:3000/nar/aseguradoras/id/${aseguradora._id}`
+          );
           segurosData[aseguradora._id] = response.data;
         } catch (error) {
           if (error.response && error.response.status === 404) {
-            console.error(`Recurso no encontrado para ${aseguradora.nombre}:`, error);
+            console.error(
+              `Recurso no encontrado para ${aseguradora.nombre}:`,
+              error
+            );
           } else {
-            console.error(`Error al obtener seguros para ${aseguradora.nombre}:`, error);
+            console.error(
+              `Error al obtener seguros para ${aseguradora.nombre}:`,
+              error
+            );
           }
         }
       }
@@ -73,20 +86,15 @@ const InicioAseguradoras = () => {
     fetchSeguros();
   }, [aseguradoras]);
 
-  const handlerNavigation = () => navigate("/aseguradoras/nuevaAseguradora");
-  const handlerInfo = () => navigate("/aseguradoras/seguros");
-
-  const handlerNavigationEdit = (id, aseguradora) => {
-    if (id) {
-      navigate(`editar/${id}`, { state: { aseguradora } });
-    } else {
-      console.error("ID de aseguradora no definido");
-    }
-  };
+  const handlerNavigation = () =>
+    navigate("/aseguradoras/nuevaAseguradora", { state: { id: id } });
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) =>
-      Math.min(prevPage + 1, Math.ceil(filteredAseguradoras.length / itemsPerPage) - 1)
+      Math.min(
+        prevPage + 1,
+        Math.ceil(filteredAseguradoras.length / itemsPerPage) - 1
+      )
     );
   };
 
@@ -106,67 +114,77 @@ const InicioAseguradoras = () => {
   const handleToggleSwitch = async (aseguradoraId, isActive) => {
     const action = isActive ? "inactive" : "active";
 
-    swalWithTailwindButtons.fire({
-      title: isActive
-        ? "¿Desea desactivar esta aseguradora?"
-        : "¿Desea activar esta aseguradora?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: isActive
-        ? "Sí, desactivarlo"
-        : "¡Sí, quiero activarlo!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const endpoint = `http://localhost:3000/nar/aseguradoras/${action}/${aseguradoraId}`;
-          const response = await axios.put(endpoint);
+    swalWithTailwindButtons
+      .fire({
+        title: isActive
+          ? "¿Desea desactivar esta aseguradora?"
+          : "¿Desea activar esta aseguradora?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: isActive
+          ? "Sí, desactivarlo"
+          : "¡Sí, quiero activarlo!",
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const endpoint = `http://localhost:3000/nar/aseguradoras/${action}/${aseguradoraId}`;
+            const response = await axios.put(endpoint);
 
-          if (response.status === 200) {
-            swalWithTailwindButtons.fire({
-              title: isActive
-                ? "¡Aseguradora desactivada!"
-                : "¡Aseguradora activada!",
-              icon: "success",
-            });
+            if (response.status === 200) {
+              swalWithTailwindButtons.fire({
+                title: isActive
+                  ? "¡Aseguradora desactivada!"
+                  : "¡Aseguradora activada!",
+                icon: "success",
+              });
 
-            setCheckedItems((prevState) => {
-              const newState = {
-                ...prevState,
-                [aseguradoraId]: !isActive,
-              };
-              localStorage.setItem("checkedItemsAseguradoras", JSON.stringify(newState)); // Guardar en localStorage
-              return newState;
-            });
+              setCheckedItems((prevState) => {
+                const newState = {
+                  ...prevState,
+                  [aseguradoraId]: !isActive,
+                };
+                localStorage.setItem(
+                  "checkedItemsAseguradoras",
+                  JSON.stringify(newState)
+                ); // Guardar en localStorage
+                return newState;
+              });
 
-            setAseguradoras((prevAseguradoras) =>
-              prevAseguradoras.map((aseguradora) =>
-                aseguradora._id === aseguradoraId ? { ...aseguradora, active: !isActive } : aseguradora
-              )
+              setAseguradoras((prevAseguradoras) =>
+                prevAseguradoras.map((aseguradora) =>
+                  aseguradora._id === aseguradoraId
+                    ? { ...aseguradora, active: !isActive }
+                    : aseguradora
+                )
+              );
+            } else {
+              swalWithTailwindButtons.fire(
+                "Error",
+                "Hubo un problema al actualizar el estado de la aseguradora.",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.error(
+              "Error al actualizar el estado de la aseguradora:",
+              error
             );
-          } else {
             swalWithTailwindButtons.fire(
               "Error",
-              "Hubo un problema al actualizar el estado de la aseguradora.",
+              error.response?.data?.message || "Ocurrió un error inesperado.",
               "error"
             );
           }
-        } catch (error) {
-          console.error("Error al actualizar el estado de la aseguradora:", error);
-          swalWithTailwindButtons.fire(
-            "Error",
-            error.response?.data?.message || "Ocurrió un error inesperado.",
-            "error"
-          );
         }
-      }
-    });
+      });
   };
 
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row items-center mb-4 space-y-4 md:space-y-0 md:space-x-4">
         <button
-          className="px-6 py-3 text-white botones w-full md:w-auto order-last md:order-none"
+          className="px-6 py-2 text-white botones w-full md:w-auto order-last md:order-none"
           onClick={handlerNavigation}
         >
           + Agregar
@@ -179,7 +197,7 @@ const InicioAseguradoras = () => {
             setSearchTerm(e.target.value);
             setCurrentPage(0);
           }}
-          className="px-4 py-3 w-full md:w-auto border rounded order-first md:order-none"
+          className="px-4 py-2 w-full sm:w-auto border-0 shadow-md rounded-lg mb-2 sm:mb-0 sm:ml-auto"
         />
       </div>
       <div className="border-0 p-6 space-y-6">
@@ -187,17 +205,17 @@ const InicioAseguradoras = () => {
           currentItems.map((aseguradora) => (
             <div
               key={aseguradora._id}
-              className="flex flex-col md:flex-row items-center justify-between border rounded-lg p-6 shadow-md"
+              className="flex flex-col sm:flex-row items-center border-0 shadow-md rounded-lg p-4 mb-4"
             >
-              <div className="flex items-center mb-6 md:mb-0">
+              <div className="flex  items-center mb-6 md:mb-0">
                 <div className="w-16 h-16 bg-gray-400 rounded-full mr-6"></div>
                 <div>
                   <p className="text-xl font-semibold">{aseguradora.nombre}</p>
-                  <p className="text-gray-600 text-lg">
-
-                  </p>
+                  <p className="text-gray-600 text-lg"></p>
                   <div>
-                    <h3 className="text-lg font-semibold mt-4">Seguros: <p>{aseguradora.informacion}</p></h3>
+                    <h3 className="text-lg font-semibold mt-4">
+                      Seguros: <p>{aseguradora.informacion}</p>
+                    </h3>
                     <ul>
                       {Array.isArray(seguros[aseguradora._id])
                         ? seguros[aseguradora._id].map((seguro, index) => (
@@ -208,29 +226,40 @@ const InicioAseguradoras = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-6">
-                <label className="switch">
+              <div className="ml-auto self-stretch sm:self-auto">
+                <label className="switch mr-2">
                   <input
                     type="checkbox"
                     className="hidden"
                     checked={checkedItems[aseguradora._id] || false}
-                    onChange={() => handleToggleSwitch(aseguradora._id, checkedItems[aseguradora._id])}
+                    onChange={() =>
+                      handleToggleSwitch(
+                        aseguradora._id,
+                        checkedItems[aseguradora._id]
+                      )
+                    }
                   />
                   <span className="slider round"></span>
                 </label>
                 <button
-                  className="px-6 py-3 text-white botones"
+                  className="px-6 py-2 mr-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
                   onClick={() =>
-                    handlerNavigationEdit(aseguradora._id, aseguradora)
+                    navigate("/aseguradoras/editar", {
+                      state: { id: id, aseguradoraId: aseguradora._id },
+                    })
                   }
                 >
                   Editar
                 </button>
                 <button
-                  className="px-6 py-3 text-white botones"
+                  className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
                   onClick={() =>
                     navigate(`/aseguradoras/seguros`, {
-                      state: { aseguradora, idAseguradora: aseguradora._id, id : id },
+                      state: {
+                        aseguradora,
+                        idAseguradora: aseguradora._id,
+                        id: id,
+                      },
                     })
                   }
                 >
@@ -253,7 +282,9 @@ const InicioAseguradoras = () => {
         </button>
         <button
           onClick={handleNextPage}
-          disabled={(currentPage + 1) * itemsPerPage >= filteredAseguradoras.length}
+          disabled={
+            (currentPage + 1) * itemsPerPage >= filteredAseguradoras.length
+          }
           className="px-6 py-3 text-white botones"
         >
           Siguiente

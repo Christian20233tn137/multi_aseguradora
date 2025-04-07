@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "./assets/Menu.png";
 import UsuarioProfile from "./assets/usuarioProfile.png";
 import EditIcon from "./assets/BotonEdit.png";
+import Swal from "sweetalert2";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,26 +12,39 @@ const Sidebar = () => {
   const id = location.state?.id || null;
   const manejarNavegacion = (ruta) => {
     navigate(ruta, { state: { id } });
-    setIsOpen(false); 
+    setIsOpen(false);
   };
 
   const handleLogout = () => {
-    // Eliminar datos de autenticación
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    Swal.fire({
+      title: "¿Estás seguro de que quieres cerrar sesión?",
+      text: "No podrás volver a acceder a tu cuenta sin iniciar sesión nuevamente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Eliminar datos de autenticación
+        localStorage.removeItem("id");
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
 
-    // Redirigir al login
-    navigate("/login");
+        // Redirigir al login
+        navigate("/login");
+      }
+    });
   };
 
   const handelEditProfile = () => {
     if (id) {
       navigate("/inicio/EditarPerfilAdmin", {
-        state : {id},
+        state: { id },
       });
     }
     console.error("ID no viene");
-    
   };
 
   const menuItems = [

@@ -43,10 +43,6 @@ const MainContent = () => {
       return <AgregarSeguros />;
     }
 
-    if (location.pathname.includes("/aseguradoras/editar")) {
-      return <EditarAseguradora />;
-    }
-
     if (location.pathname.includes("/informacion")) {
       return <InformacionAdmin />;
     }
@@ -71,6 +67,8 @@ const MainContent = () => {
         return <DocumentViewer />;
       case "/aseguradoras":
         return <InicioAseguradoras />;
+        case "/aseguradoras/editar":
+          return <EditarAseguradora />;
       case "/aseguradoras/nuevaAseguradora":
         return <NuevaAseguradora />;
       case "/aseguradoras/seguros":

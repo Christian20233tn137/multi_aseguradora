@@ -20,23 +20,31 @@ const InicioSolicitudes = () => {
     const fetchData = async () => {
       try {
         const [datosResponse, documentosResponse] = await Promise.all([
-          axios.get('http://localhost:3000/nar/usuarios/postulantesInactivos'),
-          axios.get('http://localhost:3000/nar/usuarios/postulantesActivos')
+          axios.get("http://localhost:3000/nar/usuarios/postulantesInactivos"),
+          axios.get("http://localhost:3000/nar/usuarios/postulantesActivos"),
         ]);
 
-        if (!Array.isArray(datosResponse.data) || !Array.isArray(documentosResponse.data)) {
+        if (
+          !Array.isArray(datosResponse.data) ||
+          !Array.isArray(documentosResponse.data)
+        ) {
           throw new Error("Unexpected data format");
         }
 
         const combinedProfiles = [
-          ...datosResponse.data.map(item => ({ ...item, type: 'datos' })),
-          ...documentosResponse.data.map(item => ({ ...item, type: 'documentos' }))
+          ...datosResponse.data.map((item) => ({ ...item, type: "datos" })),
+          ...documentosResponse.data.map((item) => ({
+            ...item,
+            type: "documentos",
+          })),
         ];
 
         setProfiles(combinedProfiles);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Error al obtener los datos. Por favor, inténtalo de nuevo más tarde.");
+        setError(
+          "Error al obtener los datos. Por favor, inténtalo de nuevo más tarde."
+        );
       }
     };
 
@@ -48,50 +56,64 @@ const InicioSolicitudes = () => {
   }
 
   const filteredProfiles = profiles.filter((profile) => {
-    const fullName = `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`.toLowerCase();
+    const fullName =
+      `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`.toLowerCase();
     return fullName.includes(searchTerm.toLowerCase());
   });
 
-  const profilesPerPage = 3;
+  const profilesPerPage = 5;
   const startIndexDatos = currentPageDatos * profilesPerPage;
   const startIndexDocumentos = currentPageDocumentos * profilesPerPage;
 
   const visibleProfilesDatos = filteredProfiles
-    .filter(profile => profile.type === "datos")
+    .filter((profile) => profile.type === "datos")
     .slice(startIndexDatos, startIndexDatos + profilesPerPage);
 
   const visibleProfilesDocumentos = filteredProfiles
-    .filter(profile => profile.type === "documentos")
+    .filter((profile) => profile.type === "documentos")
     .slice(startIndexDocumentos, startIndexDocumentos + profilesPerPage);
 
   const handleVerMas = (profile) => {
     if (view === "datos") {
-      navigate(`/solicitudes/solicitud-section`, { state: { profile, id : id } });
+      navigate(`/solicitudes/solicitud-section`, {
+        state: { profile, id: id },
+      });
     } else if (view === "documentos") {
-      navigate(`/solicitudes/solicitud-documentos`, { state: { profile, id : id } });
+      navigate(`/solicitudes/solicitud-documentos`, {
+        state: { profile, id: id },
+      });
     }
   };
 
   return (
     <div className="p-4">
-      <div className="flex items-center mb-4">
-        <button
-          className={`px-4 py-2 mr-2 border rounded ${view === "datos" ? "bg-blue-200" : "hover:bg-blue-200"}`}
-          onClick={() => setView("datos")}
-        >
-          Datos
-        </button>
-        <button
-          className={`px-4 py-2 mr-2 border rounded ${view === "documentos" ? "bg-blue-200" : "hover:bg-blue-200"}`}
-          onClick={() => setView("documentos")}
-        >
-          Documentos
-        </button>
-        <div className="relative w-full max-w-xs ml-auto">
+      {/* Contenedor principal de los botones y búsqueda */}
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto space-y-2 sm:space-x-3 sm:space-y-0">
+          <button
+            className={`px-4 py-2 border-0 shadow-md rounded w-full sm:w-auto ${
+              view === "datos" ? "bg-blue-200" : "hover:bg-blue-200"
+            }`}
+            onClick={() => setView("datos")}
+          >
+            Datos
+          </button>
+          <button
+            className={`px-4 py-2 border-0 rounded w-full sm:w-auto ${
+              view === "documentos" ? "bg-blue-200" : "hover:bg-blue-200"
+            }`}
+            onClick={() => setView("documentos")}
+          >
+            Documentos
+          </button>
+        </div>
+  
+        {/* Input de búsqueda */}
+        <div className="relative w-full mt-2 sm:mt-0 max-w-xs sm:w-auto">
           <input
             type="text"
             placeholder="Buscar..."
-            className="pr-10 pl-2 py-2 border rounded w-full"
+            className="px-4 py-2 w-full border-0 shadow-md rounded-lg"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -99,79 +121,102 @@ const InicioSolicitudes = () => {
               setCurrentPageDocumentos(0);
             }}
           />
-          <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
       </div>
+  
+      {/* Contenedor de los perfiles */}
       <div className="border-0 p-4">
-        {view === "datos" && visibleProfilesDatos.map((profile, index) => (
-          <div key={index} className="flex justify-between items-center border rounded p-9 mb-8">
-            <div className="px-4 py-2 rounded">
-              <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
+        {view === "datos" &&
+          visibleProfilesDatos.map((profile, index) => (
+            <div
+              key={index}
+              className="flex flex-col sm:flex-row items-center sm:items-start border-0 shadow-md rounded-lg p-4 mb-4"
+            >
+              <div className="px-4 py-2 rounded text-center sm:text-left">
+                <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
+              </div>
+              <div className="ml-auto self-stretch sm:self-auto">
+                <button
+                  className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                  onClick={() => handleVerMas(profile)}
+                >
+                  Ver más
+                </button>
+              </div>
             </div>
-            <div className="flex items-center">
-              <button
-                className="px-4 py-2 text-white rounded botones"
-                onClick={() => handleVerMas(profile)}
-              >
-                Ver más
-              </button>
+          ))}
+        {view === "documentos" &&
+          visibleProfilesDocumentos.map((profile, index) => (
+            <div
+              key={index}
+              className="flex flex-col sm:flex-row items-center sm:items-start border-0 shadow-md rounded-lg p-4 mb-4"
+            >
+              <div className="px-4 py-2 rounded text-center sm:text-left">
+                <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
+              </div>
+              <div className="ml-auto self-stretch sm:self-auto">
+                <button
+                  className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                  onClick={() => handleVerMas(profile)}
+                >
+                  Ver más
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-        {view === "documentos" && visibleProfilesDocumentos.map((profile, index) => (
-          <div key={index} className="flex justify-between items-center border rounded p-9 mb-8">
-            <div className="px-4 py-2 rounded">
-              <span className="text-ls font-semibold">{`${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`}</span>
-            </div>
-            <div className="flex items-center">
-              <button
-                className="px-4 py-2 text-white rounded botones"
-                onClick={() => handleVerMas(profile)}
-              >
-                Ver más
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
-      {view === "datos" && filteredProfiles.filter(profile => profile.type === "datos").length > profilesPerPage && (
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={() => setCurrentPageDatos(currentPageDatos - 1)}
-            disabled={currentPageDatos === 0}
-            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => setCurrentPageDatos(currentPageDatos + 1)}
-            disabled={startIndexDatos + profilesPerPage >= filteredProfiles.filter(profile => profile.type === "datos").length}
-            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
-          >
-            Siguiente
-          </button>
-        </div>
-      )}
-      {view === "documentos" && filteredProfiles.filter(profile => profile.type === "documentos").length > profilesPerPage && (
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={() => setCurrentPageDocumentos(currentPageDocumentos - 1)}
-            disabled={currentPageDocumentos === 0}
-            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => setCurrentPageDocumentos(currentPageDocumentos + 1)}
-            disabled={startIndexDocumentos + profilesPerPage >= filteredProfiles.filter(profile => profile.type === "documentos").length}
-            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
-          >
-            Siguiente
-          </button>
-        </div>
-      )}
+  
+      {/* Botones de paginación */}
+      {view === "datos" &&
+        filteredProfiles.filter((profile) => profile.type === "datos").length >
+          profilesPerPage && (
+          <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0">
+            <button
+              onClick={() => setCurrentPageDatos(currentPageDatos - 1)}
+              disabled={currentPageDatos === 0}
+              className="px-4 py-2 botones text-white rounded disabled:bg-gray-400 w-full sm:w-auto"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPageDatos(currentPageDatos + 1)}
+              disabled={
+                startIndexDatos + profilesPerPage >=
+                filteredProfiles.filter((profile) => profile.type === "datos")
+                  .length
+              }
+              className="px-4 py-2 botones text-white rounded disabled:bg-gray-400 w-full sm:w-auto"
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
+      {view === "documentos" &&
+        filteredProfiles.filter((profile) => profile.type === "documentos")
+          .length > profilesPerPage && (
+          <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0">
+            <button
+              onClick={() => setCurrentPageDocumentos(currentPageDocumentos - 1)}
+              disabled={currentPageDocumentos === 0}
+              className="px-4 py-2 botones text-white rounded disabled:bg-gray-400 w-full sm:w-auto"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPageDocumentos(currentPageDocumentos + 1)}
+              disabled={
+                startIndexDocumentos + profilesPerPage >=
+                filteredProfiles.filter((profile) => profile.type === "documentos")
+                  .length
+              }
+              className="px-4 py-2 botones text-white rounded disabled:bg-gray-400 w-full sm:w-auto"
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
     </div>
   );
-};
+}
 
 export default InicioSolicitudes;
