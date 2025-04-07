@@ -213,7 +213,7 @@ const InicioAseguradoras = () => {
                   <p className="text-gray-600 text-lg"></p>
                   <div>
                     <h3 className="text-lg font-semibold mt-4">
-                      Seguros: <p>{aseguradora.informacion}</p>
+                      Informacion: <p>{aseguradora.informacion}</p>
                     </h3>
                     <ul>
                       {Array.isArray(seguros[aseguradora._id])

@@ -19,7 +19,6 @@ const EditarAseguradora = () => {
     telefonoContacto: "",
     correoContacto: "",
     informacion: "",
-    seguros: "",
   });
   const [errors, setErrors] = useState({
     nombre: "",
@@ -91,10 +90,11 @@ const EditarAseguradora = () => {
     if (name === "correoContacto" && value) {
       if (value.length > 25) {
         error = "No debe exceder 25 caracteres";
+      } else {
       }
     }
 
-    return error;
+    return error; 
   };
 
   const swalWithTailwindButtons = Swal.mixin({
@@ -140,7 +140,6 @@ const EditarAseguradora = () => {
       formData.append("telefonoContacto", aseguradora.telefonoContacto);
       formData.append("correoContacto", aseguradora.correoContacto);
       formData.append("informacion", aseguradora.informacion);
-      formData.append("seguros", aseguradora.seguros);
 
       const response = await axios.put(
         `${API_URL_EDIT}/${idaseguradora}`,
@@ -331,24 +330,6 @@ const EditarAseguradora = () => {
             {errors.informacion && (
               <p className="text-red-500 text-xs mt-1">{errors.informacion}</p>
             )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Seguros*
-            </label>
-            <select
-              name="seguros"
-              value={aseguradora.seguros}
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
-              onChange={handleInputChange}
-            >
-              <option value="">Selecciona un tipo de seguro</option>
-              <option value="Seguro de vida">Seguro de vida</option>
-              <option value="Seguro de gastos medicos">
-                Seguro de gastos médicos
-              </option>
-              <option value="Seguro de viajes">Seguro de viajes</option>
-            </select>
           </div>
           <div className="col-span-2 flex items-center justify-center">
             <button
