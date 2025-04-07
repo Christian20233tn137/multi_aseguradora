@@ -75,7 +75,7 @@ const AgregarAdmin = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         swalWithTailwindButtons.fire({
-          title: "Agregando aseguradora..",
+          title: "Agregando administrador..",
           text: "Por favor espera.",
           icon: "info",
           showConfirmButton: false,

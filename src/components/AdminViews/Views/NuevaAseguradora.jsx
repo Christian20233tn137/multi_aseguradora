@@ -29,9 +29,16 @@ const NuevaAseguradora = () => {
     let error = "";
 
     // Validación de longitud máxima para campos específicos
-    if (["nombre", "nombreContacto", "telefonoContacto"].includes(name)) {
-      if (value.length > 15) {
-        error = "No debe exceder 15 caracteres";
+    if (["nombre", "nombreContacto"].includes(name)) {
+      if (value.length > 20) {
+        error = "No debe exceder 20 caracteres";
+      }
+    }
+
+    //Validacion maximo de campos en telefono
+    if (["telefonoContacto"].includes(name)) {
+      if (value.length > 10) {
+        error = "No debe exceder 10 caracteres";
       }
     }
 

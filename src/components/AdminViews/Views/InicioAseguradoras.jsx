@@ -47,7 +47,7 @@ const InicioAseguradoras = () => {
           initialCheckedItems[aseguradora._id] =
             storedState[aseguradora._id] !== undefined
               ? storedState[aseguradora._id]
-              : aseguradora.active === true; // fuerza a booleano
+              : aseguradora.active === "activo";
         });
 
         setCheckedItems(initialCheckedItems);
@@ -157,7 +157,7 @@ const InicioAseguradoras = () => {
               setAseguradoras((prevAseguradoras) =>
                 prevAseguradoras.map((aseguradora) =>
                   aseguradora._id === aseguradoraId
-                    ? { ...aseguradora, active: !isActive }
+                    ? { ...aseguradora, active: !isActive ? "activo" : "inactivo" }
                     : aseguradora
                 )
               );
