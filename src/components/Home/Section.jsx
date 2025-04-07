@@ -15,7 +15,6 @@ const Section = () => {
     curp: ""
   });
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -41,7 +40,6 @@ const Section = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     try {
       console.log("Datos a enviar:", formData);
 
@@ -64,6 +62,14 @@ const Section = () => {
         throw new Error('La CURP no tiene un formato válido (ej. ABCD123456HMZXYZ)');
       }
 
+      swalWithTailwindButtons.fire({
+        title: "Enviando...",
+        text: "Por favor espera.",
+        icon: "info",
+        showConfirmButton: false,
+        allowOutsideClick: false,
+      });
+
       await axios.post("http://localhost:3000/nar/usuarios/postulante", formData);
 
       swalWithTailwindButtons.fire({
@@ -84,8 +90,6 @@ const Section = () => {
         icon: "error",
         confirmButtonText: "Aceptar"
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -151,17 +155,11 @@ const Section = () => {
                 <button
                   type="submit"
                   className="w-30 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 botones"
-                  disabled={isLoading}
                 >
-                  {isLoading ? "Enviando..." : "Enviar"}
+                  Enviar
                 </button>
               </div>
             </form>
-            {isLoading && (
-              <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-                <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
-              </div>
-            )}
           </div>
         </div>
       )}
