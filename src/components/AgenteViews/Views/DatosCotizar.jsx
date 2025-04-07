@@ -38,7 +38,6 @@ const DatosCotizar = () => {
     rfc: "",
   });
 
-
   const handleChange = (e) => {
     setTitular({ ...titular, [e.target.name]: e.target.value });
   };
@@ -65,7 +64,7 @@ const DatosCotizar = () => {
       },
       buttonsStyling: false,
     });
-  
+
     try {
       const result = await swalWithTailwindButtons.fire({
         title: "¿Estás seguro?",
@@ -76,9 +75,9 @@ const DatosCotizar = () => {
         cancelButtonText: "Cancelar",
         reverseButtons: true,
       });
-  
+
       if (!result.isConfirmed) return;
-  
+
       // Mostrar el indicador de carga
       swalWithTailwindButtons.fire({
         title: "Enviando cotización...",
@@ -87,9 +86,9 @@ const DatosCotizar = () => {
         allowOutsideClick: false,
         showConfirmButton: false,
       });
-  
+
       const datosCliente = { ...titular, idUsuario };
-  
+
       // **Paso 1:** Crear cliente y obtener `idCliente`
       const responseCliente = await axios.post(
         "http://localhost:3000/nar/clientes",
@@ -97,11 +96,11 @@ const DatosCotizar = () => {
       );
       const newIdCliente = responseCliente.data._id; // Suponiendo que el backend devuelve `idCliente`
       setIdCliente(newIdCliente);
-  
+
       if (!newIdCliente) {
         throw new Error("No se recibió un idCliente válido");
       }
-  
+
       // **Paso 2:** Crear asegurado
       const datosAsegurado = esTitularAsegurado
         ? { ...titular, idCliente: newIdCliente }
@@ -112,17 +111,17 @@ const DatosCotizar = () => {
       );
       const newIdAsegurado = responseAsegurado.data._id; // Suponiendo que el backend devuelve `idAsegurado`
       setIdAsegurado(newIdAsegurado);
-  
+
       // Cerrar el indicador de carga
       swalWithTailwindButtons.close();
-  
+
       // Mensaje de éxito
       swalWithTailwindButtons.fire(
         "Cotización Enviada",
         "La cotización se envió correctamente.",
         "success"
       );
-  
+
       // Limpiar formularios
       setTitular({
         nombre: "",
@@ -142,7 +141,7 @@ const DatosCotizar = () => {
         correo: "",
         rfc: "",
       });
-  
+
       // Navegar a la ruta de seguros con los IDs recién obtenidos
       navigate("/inicioAgentes/seguros", {
         state: {
@@ -154,10 +153,10 @@ const DatosCotizar = () => {
       });
     } catch (error) {
       console.error("Error al cotizar:", error);
-  
+
       // Cerrar el indicador de carga en caso de error
       swalWithTailwindButtons.close();
-  
+
       swalWithTailwindButtons.fire(
         "Error",
         "Ocurrió un error inesperado.",
@@ -165,9 +164,10 @@ const DatosCotizar = () => {
       );
     }
   };
-  
 
   const currentYear = new Date().getFullYear();
+  const minDate = new Date(currentYear - 85, 0, 1); // 85 años atrás
+  const maxDate = new Date(currentYear - 18, 11, 31); // 18 años atrás
 
   return (
     <div className="p-6 w-full h-auto overflow-hidden">
@@ -175,7 +175,7 @@ const DatosCotizar = () => {
         Datos del titular
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 ">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
         <input
           type="text"
           name="nombre"
@@ -210,8 +210,8 @@ const DatosCotizar = () => {
           showYearDropdown
           scrollableYearDropdown
           yearDropdownItemNumber={125}
-          minDate={new Date(1900, 0, 1)}
-          maxDate={new Date(currentYear, 11, 31)}
+          minDate={minDate}
+          maxDate={maxDate}
         />
         <input
           type="text"
@@ -266,71 +266,73 @@ const DatosCotizar = () => {
       </div>
 
       {!esTitularAsegurado && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+        <div className="mt-10">
           <h2 className="text-xl font-bold">Datos del asegurado</h2>
-          <input
-            type="text"
-            name="nombre"
-            placeholder="Nombre"
-            value={asegurado.nombre}
-            onChange={handleAseguradoChange}
-            className="border-0 shadow-md rounded-lg py-2 px-3"
-          />
-          <input
-            type="text"
-            name="apellidoPaterno"
-            placeholder="Apellido Paterno"
-            value={asegurado.apellidoPaterno}
-            onChange={handleAseguradoChange}
-            className="border-0 shadow-md rounded-lg py-2 px-3"
-          />
-          <input
-            type="text"
-            name="apellidoMaterno"
-            placeholder="Apellido Materno"
-            value={asegurado.apellidoMaterno}
-            onChange={handleAseguradoChange}
-            className="border-0 shadow-md rounded-lg py-2 px-3"
-          />
-          <div className="relative">
-            <DatePicker
-              selected={asegurado.fechaNacimiento}
-              onChange={handleFechaNacimientoAseguradoChange}
-              placeholderText="Fecha de Nacimiento"
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
-              dateFormat="yyyy-MM-dd"
-              locale="es"
-              showYearDropdown
-              scrollableYearDropdown
-              yearDropdownItemNumber={125}
-              minDate={new Date(1900, 0, 1)}
-              maxDate={new Date(currentYear, 11, 31)}
+          <div className="grid mt-5 grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="nombre"
+              placeholder="Nombre"
+              value={asegurado.nombre}
+              onChange={handleAseguradoChange}
+              className="border-0 shadow-md rounded-lg py-2 px-3"
+            />
+            <input
+              type="text"
+              name="apellidoPaterno"
+              placeholder="Apellido Paterno"
+              value={asegurado.apellidoPaterno}
+              onChange={handleAseguradoChange}
+              className="border-0 shadow-md rounded-lg py-2 px-3"
+            />
+            <input
+              type="text"
+              name="apellidoMaterno"
+              placeholder="Apellido Materno"
+              value={asegurado.apellidoMaterno}
+              onChange={handleAseguradoChange}
+              className="border-0 shadow-md rounded-lg py-2 px-3"
+            />
+            <div className="relative">
+              <DatePicker
+                selected={asegurado.fechaNacimiento}
+                onChange={handleFechaNacimientoAseguradoChange}
+                placeholderText="Fecha de Nacimiento"
+                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+                dateFormat="yyyy-MM-dd"
+                locale="es"
+                showYearDropdown
+                scrollableYearDropdown
+                yearDropdownItemNumber={125}
+                minDate={new Date(1950, 0, 1)}
+                maxDate={new Date(currentYear, 11, 31)}
+              />
+            </div>
+            <input
+              type="text"
+              name="telefono"
+              placeholder="Teléfono"
+              value={asegurado.telefono}
+              onChange={handleAseguradoChange}
+              className="border-0 shadow-md rounded-lg py-2 px-3"
+            />
+            <input
+              type="email"
+              name="correo"
+              placeholder="Correo Electrónico"
+              value={asegurado.correo}
+              onChange={handleAseguradoChange}
+              className="border-0 shadow-md rounded-lg py-2 px-3"
+            />
+            <input
+              type="text"
+              name="rfc"
+              placeholder="RFC"
+              value={asegurado.rfc}
+              onChange={handleAseguradoChange}
+              className="border-0 shadow-md rounded-lg py-2 px-3"
             />
           </div>
-          <input
-            type="text"
-            name="telefono"
-            placeholder="Teléfono"
-            value={asegurado.telefono}
-            onChange={handleAseguradoChange}
-            className="border-0 shadow-md rounded-lg py-2 px-3"
-          />
-          <input
-            type="email"
-            name="correo"
-            placeholder="Correo Electrónico"
-            value={asegurado.correo}
-            onChange={handleAseguradoChange}
-            className="border-0 shadow-md rounded-lg py-2 px-3"
-          />
-          <input
-            type="text"
-            name="rfc"
-            placeholder="RFC"
-            value={asegurado.rfc}
-            onChange={handleAseguradoChange}
-            className="border-0 shadow-md rounded-lg py-2 px-3"
-          />
         </div>
       )}
 
