@@ -212,71 +212,74 @@ const InicioAseguradoras = () => {
       </div>
       <div className="border-0 p-6 space-y-6">
         {currentItems.length > 0 ? (
-          currentItems.map((aseguradora) => (
-            <div
-              key={aseguradora._id}
-              className="flex flex-col sm:flex-row items-center border-0 shadow-md rounded-lg p-4 mb-4"
-            >
-              <div className="flex  items-center mb-6 md:mb-0">
-                <div>
-                  <p className="text-xl font-semibold">{aseguradora.nombre}</p>
-                  <p className="text-gray-600 text-lg"></p>
+          currentItems.map((aseguradora) => {
+            const fechaFormateada = new Date(aseguradora.createdAt).toISOString().slice(0, 10);
+            return (
+              <div
+                key={aseguradora._id}
+                className="flex flex-col sm:flex-row items-center border-0 shadow-md rounded-lg p-4 mb-4"
+              >
+                <div className="flex items-center mb-6 md:mb-0">
                   <div>
-                    <h3 className="text-lg font-semibold mt-4">
-                      Informacion: <p>{aseguradora.informacion}</p>
-                    </h3>
-                    <ul>
-                      {Array.isArray(seguros[aseguradora._id])
-                        ? seguros[aseguradora._id].map((seguro, index) => (
-                            <li key={index}>{seguro.name}</li>
-                          ))
-                        : null}
-                    </ul>
+                    <p className="text-xl font-semibold">{aseguradora.nombre}</p>
+                    <p className="text-gray-600 text-lg"></p>
+                    <div>
+                      <h3 className="text-lg mt-4">
+                          <p className="text-gray-600" >{fechaFormateada}</p>
+                      </h3>
+                      <ul>
+                        {Array.isArray(seguros[aseguradora._id])
+                          ? seguros[aseguradora._id].map((seguro, index) => (
+                              <li key={index}>{seguro.name}</li>
+                            ))
+                          : null}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="ml-auto self-stretch sm:self-auto">
-                <label className="switch mr-2">
-                  <input
-                    type="checkbox"
-                    className="hidden"
-                    checked={checkedItems[aseguradora._id] || false}
-                    onChange={() =>
-                      handleToggleSwitch(
-                        aseguradora._id,
-                        checkedItems[aseguradora._id]
-                      )
+                <div className="ml-auto self-stretch sm:self-auto">
+                  <label className="switch mr-2">
+                    <input
+                      type="checkbox"
+                      className="hidden"
+                      checked={checkedItems[aseguradora._id] || false}
+                      onChange={() =>
+                        handleToggleSwitch(
+                          aseguradora._id,
+                          checkedItems[aseguradora._id]
+                        )
+                      }
+                    />
+                    <span className="slider round"></span>
+                  </label>
+                  <button
+                    className="px-6 py-2 mr-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                    onClick={() =>
+                      navigate("/aseguradoras/editar", {
+                        state: { id: id, aseguradoraId: aseguradora._id },
+                      })
                     }
-                  />
-                  <span className="slider round"></span>
-                </label>
-                <button
-                  className="px-6 py-2 mr-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
-                  onClick={() =>
-                    navigate("/aseguradoras/editar", {
-                      state: { id: id, aseguradoraId: aseguradora._id },
-                    })
-                  }
-                >
-                  Editar
-                </button>
-                <button
-                  className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
-                  onClick={() =>
-                    navigate(`/aseguradoras/seguros`, {
-                      state: {
-                        aseguradora,
-                        idAseguradora: aseguradora._id,
-                        id: id,
-                      },
-                    })
-                  }
-                >
-                  Ver más
-                </button>
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className="px-6 py-2 text-white rounded botones mt-2 sm:mt-0 w-full sm:w-auto"
+                    onClick={() =>
+                      navigate(`/aseguradoras/seguros`, {
+                        state: {
+                          aseguradora,
+                          idAseguradora: aseguradora._id,
+                          id: id,
+                        },
+                      })
+                    }
+                  >
+                    Ver más
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p className="text-center text-gray-500">Cargando aseguradoras...</p>
         )}
