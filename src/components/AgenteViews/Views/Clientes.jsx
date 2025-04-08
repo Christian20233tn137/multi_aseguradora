@@ -6,6 +6,8 @@ const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredClientes, setFilteredClientes] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const clientsPerPage = 9;
   const navigate = useNavigate();
   const location = useLocation();
   const id = location.state?.id;
@@ -24,7 +26,6 @@ const Clientes = () => {
   }, []);
 
   useEffect(() => {
-    // Filtra los clientes cada vez que cambia el término de búsqueda
     const results = clientes.filter(
       (cliente) =>
         (cliente.nombre && cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -40,7 +41,14 @@ const Clientes = () => {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(1); // Reset to first page on new search
   };
+
+  const indexOfLastClient = currentPage * clientsPerPage;
+  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+  const currentClients = filteredClientes.slice(indexOfFirstClient, indexOfLastClient);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="relative p-4">
@@ -77,8 +85,8 @@ const Clientes = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredClientes.length > 0 ? (
-              filteredClientes.map((cliente) => (
+            {currentClients.length > 0 ? (
+              currentClients.map((cliente) => (
                 <tr key={cliente.id}>
                   <td className="py-2 px-4 border-b border-gray-200 text-center">
                     {cliente.nombre}
@@ -115,6 +123,22 @@ const Clientes = () => {
             )}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="botones text-white py-1 px-3 rounded"
+        >
+          Anterior
+        </button>
+        <button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={indexOfLastClient >= filteredClientes.length}
+          className="botones text-white py-1 px-3 rounded"
+        >
+          Siguiente
+        </button>
       </div>
     </div>
   );

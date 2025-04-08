@@ -21,6 +21,15 @@ const EditarAgente = () => {
     telefono: "",
     rfc: "",
   });
+
+  const [errors, setErrors] = useState({
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    correo: "",
+    telefono: "",
+  });
+
   const [loading, setLoading] = useState(true);
 
   const swalWithTailwindButtons = Swal.mixin({
@@ -59,10 +68,61 @@ const EditarAgente = () => {
     obtenerAgente();
   }, [idAgente, location.state]);
 
+  const validateInput = (name, value) => {
+    let error = "";
+
+    // Validación de longitud máxima para campos específicos
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (value.length > 20) {
+        error = "No debe exceder 20 caracteres";
+      }
+    }
+
+    //Validacion maximo de campos en telefono
+    if (["telefono"].includes(name)) {
+      if (value.length > 10) {
+        error = "No debe exceder 10 caracteres";
+      }
+    }
+
+    // Validación para campos que no deben contener números
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (/\d/.test(value)) {
+        error = "No se permiten números en este campo";
+      }
+    }
+
+    // Validación específica para teléfono
+    if (name === "telefono") {
+      if (!/^\d{0,10}$/.test(value)) {
+        error = "Solo se permiten números y máximo 10 dígitos";
+      }
+    }
+
+    // Validación de correo electrónico
+    if (name === "correo" && value) {
+      if (value.length > 25) {
+        error = "No debe exceder 25 caracteres";
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        error = "Formato de correo electrónico inválido";
+      }
+    }
+
+    return error;
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    const error = validateInput(name, value);
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+
     setAgente({
       ...agente,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
@@ -79,6 +139,13 @@ const EditarAgente = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Realizando los cambios..",
+            text: "Por favor espera.",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
           try {
             const nuevaContrasena = agente.correo;
             await axios.put(`${API_URL}/resetearContra/${idAgente}`, {
@@ -106,6 +173,37 @@ const EditarAgente = () => {
     const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono } =
       agente;
 
+    // Validar todos los campos
+    const newErrors = {};
+    let hasErrors = false;
+
+    // Validar cada campo
+    const fields = {
+      nombre,
+      apellidoPaterno,
+      apellidoMaterno,
+      correo,
+      telefono,
+    };
+
+    Object.keys(fields).forEach((key) => {
+      const error = validateInput(key, fields[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return false;
+    }
+
     if (
       !nombre ||
       !apellidoPaterno ||
@@ -117,16 +215,6 @@ const EditarAgente = () => {
         icon: "warning",
         title: "Campos obligatorios",
         text: "Por favor, llena todos los campos obligatorios.",
-      });
-      return false;
-    }
-
-    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regexCorreo.test(correo)) {
-      swalWithTailwindButtons.fire({
-        icon: "error",
-        title: "Correo inválido",
-        text: "Por favor, ingresa un correo electrónico válido.",
       });
       return false;
     }
@@ -179,6 +267,11 @@ const EditarAgente = () => {
   };
 
   const showEditAlert = () => {
+    // Validar todos los campos antes de mostrar la alerta
+    if (!validarCampos()) {
+      return;
+    }
+
     swalWithTailwindButtons
       .fire({
         title: "¿Deseas guardar los cambios?",
@@ -217,33 +310,52 @@ const EditarAgente = () => {
               Nombre*
             </label>
             <input
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.nombre ? "border-red-500" : ""
+              }`}
               name="nombre"
               value={agente.nombre}
               onChange={handleChange}
             />
+            {errors.nombre && (
+              <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
+            )}
           </div>
           <div className="flex flex-col">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Apellido paterno*
             </label>
             <input
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.apellidoPaterno ? "border-red-500" : ""
+              }`}
               name="apellidoPaterno"
               value={agente.apellidoPaterno}
               onChange={handleChange}
             />
+            {errors.apellidoPaterno && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.apellidoPaterno}
+              </p>
+            )}
           </div>
           <div className="flex flex-col">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Apellido materno*
             </label>
             <input
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.apellidoMaterno ? "border-red-500" : ""
+              }`}
               name="apellidoMaterno"
               value={agente.apellidoMaterno}
               onChange={handleChange}
             />
+            {errors.apellidoMaterno && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.apellidoMaterno}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col">
@@ -251,22 +363,32 @@ const EditarAgente = () => {
               Correo electrónico*
             </label>
             <input
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.correo ? "border-red-500" : ""
+              }`}
               name="correo"
               value={agente.correo}
               onChange={handleChange}
             />
+            {errors.correo && (
+              <p className="text-red-500 text-xs mt-1">{errors.correo}</p>
+            )}
           </div>
           <div className="flex flex-col">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Teléfono*
             </label>
             <input
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.telefono ? "border-red-500" : ""
+              }`}
               name="telefono"
               value={agente.telefono}
               onChange={handleChange}
             />
+            {errors.telefono && (
+              <p className="text-red-500 text-xs mt-1">{errors.telefono}</p>
+            )}
           </div>
 
           <div className="flex flex-col">
@@ -274,7 +396,7 @@ const EditarAgente = () => {
               RFC*
             </label>
             <input
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className="border-0 shadow-md rounded-lg py-2 px-3 w-full bg-gray-100"
               name="rfc"
               value={agente.rfc}
               onChange={handleChange}
