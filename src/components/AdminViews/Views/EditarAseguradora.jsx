@@ -28,15 +28,21 @@ const EditarAseguradora = () => {
     informacion: "",
   });
   const [loading, setLoading] = useState(true);
+  const [correoOriginal, setCorreoOriginal] = useState("");
+  const [telefonoOriginal, setTelefonoOriginal] = useState("");
 
   useEffect(() => {
     const fetchAseguradoraDetails = async () => {
       try {
         if (location.state && location.state.aseguradora) {
           setAseguradora(location.state.aseguradora);
+          setCorreoOriginal(location.state.aseguradora.correoContacto);
+          setTelefonoOriginal(location.state.aseguradora.telefonoContacto);
         } else if (idaseguradora) {
           const response = await axios.get(`${API_URL}/${idaseguradora}`);
           setAseguradora(response.data);
+          setCorreoOriginal(response.data.correoContacto);
+          setTelefonoOriginal(response.data.telefonoContacto);
         } else {
           throw new Error("ID de aseguradora no definido");
         }
@@ -65,10 +71,13 @@ const EditarAseguradora = () => {
       }
     }
 
-    // Validación para campos que no deben contener números
+    // Validación para campos que no deben contener números ni caracteres especiales
     if (["nombre", "nombreContacto"].includes(name)) {
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -76,6 +85,9 @@ const EditarAseguradora = () => {
     if (name === "informacion") {
       if (value.length > 50) {
         error = "No debe exceder 50 caracteres";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -90,11 +102,12 @@ const EditarAseguradora = () => {
     if (name === "correoContacto" && value) {
       if (value.length > 25) {
         error = "No debe exceder 25 caracteres";
-      } else {
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        error = "Formato de correo electrónico inválido";
       }
     }
 
-    return error; 
+    return error;
   };
 
   const swalWithTailwindButtons = Swal.mixin({
@@ -106,6 +119,40 @@ const EditarAseguradora = () => {
     },
     buttonsStyling: false,
   });
+
+  const checkIfEmailExists = async (email) => {
+    // Si el correo es el mismo que ya tiene la aseguradora, no es un error
+    if (email === correoOriginal) {
+      return false;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/aseguradoras/checkEmail/${email}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el correo", error);
+      return false;
+    }
+  };
+
+  const checkIfPhoneExists = async (phone) => {
+    // Si el teléfono es el mismo que ya tiene la aseguradora, no es un error
+    if (phone === telefonoOriginal) {
+      return false;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/aseguradoras/checkPhone/${phone}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el teléfono", error);
+      return false;
+    }
+  };
 
   const handleEditSubmit = async () => {
     // Validar todos los campos antes de enviar
@@ -128,6 +175,37 @@ const EditarAseguradora = () => {
       swalWithTailwindButtons.fire({
         title: "Error de validación",
         text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Verificar si el correo ya existe
+    const emailExists = await checkIfEmailExists(aseguradora.correoContacto);
+    if (emailExists) {
+      setErrors((prev) => ({
+        ...prev,
+        correoContacto:
+          "El correo electrónico ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El correo electrónico ya está registrado en el sistema",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Verificar si el teléfono ya existe
+    const phoneExists = await checkIfPhoneExists(aseguradora.telefonoContacto);
+    if (phoneExists) {
+      setErrors((prev) => ({
+        ...prev,
+        telefonoContacto: "El teléfono ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El teléfono ya está registrado en el sistema",
         icon: "error",
       });
       return;
@@ -159,6 +237,37 @@ const EditarAseguradora = () => {
         navigate("/aseguradoras", { state: { id: id } });
     } catch (error) {
       console.error("Error al editar:", error);
+
+      // Verificar si el error es por datos duplicados
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+
+        if (errorMessage && errorMessage.includes("correo")) {
+          setErrors((prev) => ({
+            ...prev,
+            correoContacto:
+              "El correo electrónico ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El correo electrónico ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        } else if (errorMessage && errorMessage.includes("teléfono")) {
+          setErrors((prev) => ({
+            ...prev,
+            telefonoContacto: "El teléfono ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El teléfono ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        }
+      }
+
       Swal.fire({
         title: "Error",
         text: "No se pudo editar la aseguradora.",

@@ -42,10 +42,13 @@ const NuevaAseguradora = () => {
       }
     }
 
-    // Validación para campos que no deben contener números
+    // Validación para campos que no deben contener números ni caracteres especiales
     if (["nombre", "nombreContacto"].includes(name)) {
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -53,6 +56,9 @@ const NuevaAseguradora = () => {
     if (name === "informacion") {
       if (value.length > 50) {
         error = "No debe exceder 50 caracteres";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -104,6 +110,30 @@ const NuevaAseguradora = () => {
     buttonsStyling: false,
   });
 
+  const checkIfEmailExists = async (email) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/aseguradoras/checkEmail/${email}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el correo", error);
+      return false;
+    }
+  };
+
+  const checkIfPhoneExists = async (phone) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/aseguradoras/checkPhone/${phone}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el teléfono", error);
+      return false;
+    }
+  };
+
   const handleSubmit = async () => {
     // Validar todos los campos antes de enviar
     const newErrors = {};
@@ -122,6 +152,37 @@ const NuevaAseguradora = () => {
       swalWithTailwindButtons.fire({
         title: "Error de validación",
         text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Verificar si el correo ya existe
+    const emailExists = await checkIfEmailExists(formData.correoContacto);
+    if (emailExists) {
+      setErrors((prev) => ({
+        ...prev,
+        correoContacto:
+          "El correo electrónico ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El correo electrónico ya está registrado en el sistema",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Verificar si el teléfono ya existe
+    const phoneExists = await checkIfPhoneExists(formData.telefonoContacto);
+    if (phoneExists) {
+      setErrors((prev) => ({
+        ...prev,
+        telefonoContacto: "El teléfono ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El teléfono ya está registrado en el sistema",
         icon: "error",
       });
       return;
@@ -162,6 +223,37 @@ const NuevaAseguradora = () => {
       // Cerrar loader en caso de error
       Swal.close();
       console.error("Error al enviar los datos:", error);
+
+      // Verificar si el error es por datos duplicados
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+
+        if (errorMessage && errorMessage.includes("correo")) {
+          setErrors((prev) => ({
+            ...prev,
+            correoContacto:
+              "El correo electrónico ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El correo electrónico ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        } else if (errorMessage && errorMessage.includes("teléfono")) {
+          setErrors((prev) => ({
+            ...prev,
+            telefonoContacto: "El teléfono ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El teléfono ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        }
+      }
+
       swalWithTailwindButtons.fire({
         title: "Error",
         text: "Hubo un problema al enviar los datos",
@@ -222,9 +314,7 @@ const NuevaAseguradora = () => {
       <div className="bg-white p-8 rounded w-full max-w-5xl mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center">Registro</h2>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-
-        <div className="mb-4 md:col-span-1">
+          <div className="mb-4 md:col-span-1">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Nombre de la seguradora*
             </label>
@@ -242,8 +332,6 @@ const NuevaAseguradora = () => {
               <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
             )}
           </div>
-     
-
 
           <div className="mb-4 md:col-span-1">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -284,9 +372,6 @@ const NuevaAseguradora = () => {
               </p>
             )}
           </div>
-
-          
-      
 
           <div className="mb-4 md:col-span-1">
             <label className="block text-gray-700 text-sm font-bold mb-2">

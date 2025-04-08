@@ -31,6 +31,8 @@ const EditarAdmin = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [correoOriginal, setCorreoOriginal] = useState("");
+  const [telefonoOriginal, setTelefonoOriginal] = useState("");
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -47,9 +49,13 @@ const EditarAdmin = () => {
       try {
         if (location.state && location.state.administrador) {
           setAdmin(location.state.administrador);
+          setCorreoOriginal(location.state.administrador.correo);
+          setTelefonoOriginal(location.state.administrador.telefono);
         } else if (idAdmin) {
           const response = await axios.get(`${API_URL}/${idAdmin}`);
           setAdmin(response.data);
+          setCorreoOriginal(response.data.correo);
+          setTelefonoOriginal(response.data.telefono);
         } else {
           throw new Error("ID del admin no definido");
         }
@@ -85,10 +91,13 @@ const EditarAdmin = () => {
       }
     }
 
-    // Validación para campos que no deben contener números
+    // Validación para campos que no deben contener números ni caracteres especiales
     if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -109,6 +118,40 @@ const EditarAdmin = () => {
     }
 
     return error;
+  };
+
+  const checkIfEmailExists = async (email) => {
+    // Si el correo es el mismo que ya tiene el admin, no es un error
+    if (email === correoOriginal) {
+      return false;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el correo", error);
+      return false;
+    }
+  };
+
+  const checkIfPhoneExists = async (phone) => {
+    // Si el teléfono es el mismo que ya tiene el admin, no es un error
+    if (phone === telefonoOriginal) {
+      return false;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el teléfono", error);
+      return false;
+    }
   };
 
   const handleChange = (e) => {
@@ -217,6 +260,36 @@ const EditarAdmin = () => {
 
   const handleEditSubmit = async () => {
     if (validarCampos()) {
+      // Verificar si el correo ya existe
+      const emailExists = await checkIfEmailExists(admin.correo);
+      if (emailExists) {
+        setErrors((prev) => ({
+          ...prev,
+          correo: "El correo electrónico ya está registrado en el sistema",
+        }));
+        swalWithTailwindButtons.fire({
+          title: "Error",
+          text: "El correo electrónico ya está registrado en el sistema",
+          icon: "error",
+        });
+        return;
+      }
+
+      // Verificar si el teléfono ya existe
+      const phoneExists = await checkIfPhoneExists(admin.telefono);
+      if (phoneExists) {
+        setErrors((prev) => ({
+          ...prev,
+          telefono: "El teléfono ya está registrado en el sistema",
+        }));
+        swalWithTailwindButtons.fire({
+          title: "Error",
+          text: "El teléfono ya está registrado en el sistema",
+          icon: "error",
+        });
+        return;
+      }
+
       try {
         const response = await axios.put(`${API_URL_EDIT}/${idAdmin}`, admin);
 
@@ -236,6 +309,36 @@ const EditarAdmin = () => {
         }
       } catch (error) {
         console.error("Error al guardar el administrador:", error);
+
+        // Verificar si el error es por datos duplicados
+        if (error.response && error.response.data) {
+          const errorMessage = error.response.data.message;
+
+          if (errorMessage && errorMessage.includes("correo")) {
+            setErrors((prev) => ({
+              ...prev,
+              correo: "El correo electrónico ya está registrado en el sistema",
+            }));
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "El correo electrónico ya está registrado en el sistema",
+              icon: "error",
+            });
+            return;
+          } else if (errorMessage && errorMessage.includes("teléfono")) {
+            setErrors((prev) => ({
+              ...prev,
+              telefono: "El teléfono ya está registrado en el sistema",
+            }));
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "El teléfono ya está registrado en el sistema",
+              icon: "error",
+            });
+            return;
+          }
+        }
+
         swalWithTailwindButtons.fire({
           title: "Error",
           text: error.response?.data?.message || "Ocurrió un error inesperado.",

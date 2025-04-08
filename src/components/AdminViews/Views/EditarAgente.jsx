@@ -31,6 +31,8 @@ const EditarAgente = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [correoOriginal, setCorreoOriginal] = useState("");
+  const [telefonoOriginal, setTelefonoOriginal] = useState("");
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -47,9 +49,13 @@ const EditarAgente = () => {
       try {
         if (location.state && location.state.agente) {
           setAgente(location.state.agente);
+          setCorreoOriginal(location.state.agente.correo);
+          setTelefonoOriginal(location.state.agente.telefono);
         } else if (id) {
           const response = await axios.get(`${API_URL}/id/${idAgente}`);
           setAgente(response.data);
+          setCorreoOriginal(response.data.correo);
+          setTelefonoOriginal(response.data.telefono);
         } else {
           throw new Error("ID del agente no definido");
         }
@@ -85,10 +91,13 @@ const EditarAgente = () => {
       }
     }
 
-    // Validación para campos que no deben contener números
+    // Validación para campos que no deben contener números ni caracteres especiales
     if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -109,6 +118,40 @@ const EditarAgente = () => {
     }
 
     return error;
+  };
+
+  const checkIfEmailExists = async (email) => {
+    // Si el correo es el mismo que ya tiene el agente, no es un error
+    if (email === correoOriginal) {
+      return false;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el correo", error);
+      return false;
+    }
+  };
+
+  const checkIfPhoneExists = async (phone) => {
+    // Si el teléfono es el mismo que ya tiene el agente, no es un error
+    if (phone === telefonoOriginal) {
+      return false;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el teléfono", error);
+      return false;
+    }
   };
 
   const handleChange = (e) => {
@@ -146,6 +189,7 @@ const EditarAgente = () => {
             showConfirmButton: false,
             allowOutsideClick: false,
           });
+
           try {
             const nuevaContrasena = agente.correo;
             await axios.put(`${API_URL}/resetearContra/${idAgente}`, {
@@ -224,6 +268,36 @@ const EditarAgente = () => {
 
   const handleEditSubmit = async () => {
     if (validarCampos()) {
+      // Verificar si el correo ya existe
+      const emailExists = await checkIfEmailExists(agente.correo);
+      if (emailExists) {
+        setErrors((prev) => ({
+          ...prev,
+          correo: "El correo electrónico ya está registrado en el sistema",
+        }));
+        swalWithTailwindButtons.fire({
+          title: "Error",
+          text: "El correo electrónico ya está registrado en el sistema",
+          icon: "error",
+        });
+        return;
+      }
+
+      // Verificar si el teléfono ya existe
+      const phoneExists = await checkIfPhoneExists(agente.telefono);
+      if (phoneExists) {
+        setErrors((prev) => ({
+          ...prev,
+          telefono: "El teléfono ya está registrado en el sistema",
+        }));
+        swalWithTailwindButtons.fire({
+          title: "Error",
+          text: "El teléfono ya está registrado en el sistema",
+          icon: "error",
+        });
+        return;
+      }
+
       try {
         // Crear un nuevo objeto excluyendo el campo 'rfc'
         const formData = {
@@ -257,6 +331,36 @@ const EditarAgente = () => {
         }
       } catch (error) {
         console.error("Error al guardar el agente:", error);
+
+        // Verificar si el error es por datos duplicados
+        if (error.response && error.response.data) {
+          const errorMessage = error.response.data.message;
+
+          if (errorMessage && errorMessage.includes("correo")) {
+            setErrors((prev) => ({
+              ...prev,
+              correo: "El correo electrónico ya está registrado en el sistema",
+            }));
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "El correo electrónico ya está registrado en el sistema",
+              icon: "error",
+            });
+            return;
+          } else if (errorMessage && errorMessage.includes("teléfono")) {
+            setErrors((prev) => ({
+              ...prev,
+              telefono: "El teléfono ya está registrado en el sistema",
+            }));
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "El teléfono ya está registrado en el sistema",
+              icon: "error",
+            });
+            return;
+          }
+        }
+
         swalWithTailwindButtons.fire({
           title: "Error",
           text: "Ocurrió un error inesperado.",

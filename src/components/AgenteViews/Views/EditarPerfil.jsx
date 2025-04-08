@@ -33,6 +33,8 @@ const EditarPerfil = () => {
 
   const [error, setError] = useState("");
   const [modificarContrasena, setModificarContrasena] = useState(false);
+  const [correoOriginal, setCorreoOriginal] = useState("");
+  const [telefonoOriginal, setTelefonoOriginal] = useState("");
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -52,6 +54,9 @@ const EditarPerfil = () => {
           `http://localhost:3000/nar/usuarios/id/${id}`
         );
         setFormData(response.data);
+        // Guardar el correo y teléfono originales para comparar después
+        setCorreoOriginal(response.data.correo);
+        setTelefonoOriginal(response.data.telefono);
       } catch (error) {
         console.error("Error al cargar los datos del perfil", error);
       }
@@ -81,6 +86,9 @@ const EditarPerfil = () => {
     if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -202,20 +210,6 @@ const EditarPerfil = () => {
       return;
     }
 
-    // Validar que el correo no exista ya en la base de datos
-    const emailExists = await checkIfEmailExists(formData.correo);
-    if (emailExists) {
-      setError("El correo ya está registrado");
-      return;
-    }
-
-    // Validar que el número de teléfono no exista ya en la base de datos
-    const phoneExists = await checkIfPhoneExists(formData.telefono);
-    if (phoneExists) {
-      setError("El número de teléfono ya está registrado");
-      return;
-    }
-
     setError(""); // Limpiar el mensaje de error si la validación pasa
 
     try {
@@ -265,35 +259,41 @@ const EditarPerfil = () => {
         });
     } catch (error) {
       console.error("Error al actualizar el perfil", error);
+
+      // Verificar si el error es por datos duplicados
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+
+        if (errorMessage && errorMessage.includes("correo")) {
+          setErrors((prev) => ({
+            ...prev,
+            correo: "El correo electrónico ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El correo electrónico ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        } else if (errorMessage && errorMessage.includes("teléfono")) {
+          setErrors((prev) => ({
+            ...prev,
+            telefono: "El teléfono ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El teléfono ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        }
+      }
+
       swalWithTailwindButtons.fire({
         title: "Error",
         text: "Hubo un error al actualizar el perfil.",
         icon: "error",
       });
-    }
-  };
-
-  const checkIfEmailExists = async (email) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
-      );
-      return response.data.exists;
-    } catch (error) {
-      console.error("Error al verificar el correo", error);
-      return false;
-    }
-  };
-
-  const checkIfPhoneExists = async (phone) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
-      );
-      return response.data.exists;
-    } catch (error) {
-      console.error("Error al verificar el número de teléfono", error);
-      return false;
     }
   };
 

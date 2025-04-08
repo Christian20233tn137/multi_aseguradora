@@ -33,6 +33,8 @@ const EditarPerfilAdmin = () => {
 
   const [error, setError] = useState("");
   const [modificarContrasena, setModificarContrasena] = useState(false);
+  const [correoOriginal, setCorreoOriginal] = useState("");
+  const [telefonoOriginal, setTelefonoOriginal] = useState("");
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -52,6 +54,9 @@ const EditarPerfilAdmin = () => {
           `http://localhost:3000/nar/usuarios/id/${id}`
         );
         setFormData(response.data);
+        // Guardar el correo y teléfono originales para comparar después
+        setCorreoOriginal(response.data.correo);
+        setTelefonoOriginal(response.data.telefono);
       } catch (error) {
         console.error("Error al cargar los datos del perfil", error);
       }
@@ -81,6 +86,9 @@ const EditarPerfilAdmin = () => {
     if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -139,9 +147,11 @@ const EditarPerfilAdmin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validar todos los campos
     const newErrors = {};
     let hasErrors = false;
 
+    // Validar cada campo
     const fields = {
       nombre: formData.nombre,
       apellidoPaterno: formData.apellidoPaterno,
@@ -150,8 +160,13 @@ const EditarPerfilAdmin = () => {
       telefono: formData.telefono,
     };
 
-    // Validar campos generales
-    hasErrors = validateFields(fields, newErrors) || hasErrors;
+    Object.keys(fields).forEach((key) => {
+      const error = validateInput(key, fields[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
 
     // Validar campos de contraseña si se está modificando
     if (modificarContrasena) {
@@ -161,15 +176,17 @@ const EditarPerfilAdmin = () => {
         contrasenaActual: formData.contrasenaActual,
       };
 
-      hasErrors = validateFields(passwordFields, newErrors) || hasErrors;
+      Object.keys(passwordFields).forEach((key) => {
+        const error = validateInput(key, passwordFields[key]);
+        if (error) {
+          newErrors[key] = error;
+          hasErrors = true;
+        }
+      });
 
+      // Validar que la contraseña actual no esté vacía
       if (!formData.contrasenaActual) {
         newErrors.contrasenaActual = "Debe ingresar su contraseña actual";
-        hasErrors = true;
-      }
-
-      if (formData.nuevaContrasena !== formData.confirmarContrasena) {
-        newErrors.confirmarContrasena = "Las contraseñas no coinciden";
         hasErrors = true;
       }
     }
@@ -184,16 +201,12 @@ const EditarPerfilAdmin = () => {
       return;
     }
 
-    // Validar que el correo y el teléfono no existan ya en la base de datos
-    const emailExists = await checkIfEmailExists(formData.correo);
-    if (emailExists) {
-      setError("El correo ya está registrado");
-      return;
-    }
-
-    const phoneExists = await checkIfPhoneExists(formData.telefono);
-    if (phoneExists) {
-      setError("El número de teléfono ya está registrado");
+    // Validar que las contraseñas coincidan si se desea modificar la contraseña
+    if (
+      modificarContrasena &&
+      formData.nuevaContrasena !== formData.confirmarContrasena
+    ) {
+      setError("Las contraseñas no coinciden");
       return;
     }
 
@@ -201,9 +214,36 @@ const EditarPerfilAdmin = () => {
 
     try {
       if (modificarContrasena) {
-        await updatePassword();
+        // Actualizar la contraseña
+        const passwordResponse = await axios.put(
+          `http://localhost:3000/nar/usuarios/updPostulante/${id}`,
+          {
+            contrasenaActual: formData.contrasenaActual,
+            nuevaContrasena: formData.nuevaContrasena,
+          }
+        );
+
+        if (passwordResponse.status !== 200) {
+          throw new Error("Error al actualizar la contraseña");
+        }
       } else {
-        await updateProfile();
+        // Actualizar los datos del perfil - enviar solo los campos requeridos
+        const dataToSend = {
+          nombre: formData.nombre,
+          apellidoPaterno: formData.apellidoPaterno,
+          apellidoMaterno: formData.apellidoMaterno,
+          correo: formData.correo,
+          telefono: formData.telefono,
+        };
+
+        const response = await axios.put(
+          `http://localhost:3000/nar/usuarios/byAdmin/${id}`,
+          dataToSend
+        );
+
+        if (response.status !== 200) {
+          throw new Error("Error al actualizar el perfil");
+        }
       }
 
       swalWithTailwindButtons
@@ -219,83 +259,41 @@ const EditarPerfilAdmin = () => {
         });
     } catch (error) {
       console.error("Error al actualizar el perfil", error);
+
+      // Verificar si el error es por datos duplicados
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+
+        if (errorMessage && errorMessage.includes("correo")) {
+          setErrors((prev) => ({
+            ...prev,
+            correo: "El correo electrónico ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El correo electrónico ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        } else if (errorMessage && errorMessage.includes("teléfono")) {
+          setErrors((prev) => ({
+            ...prev,
+            telefono: "El teléfono ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El teléfono ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        }
+      }
+
       swalWithTailwindButtons.fire({
         title: "Error",
-        text: `Hubo un error al actualizar el perfil:`,
+        text: "Hubo un error al actualizar el perfil.",
         icon: "error",
       });
-    }
-  };
-
-  // Función para validar campos
-  const validateFields = (fields, errors) => {
-    let hasErrors = false;
-    Object.keys(fields).forEach((key) => {
-      const error = validateInput(key, fields[key]);
-      if (error) {
-        errors[key] = error;
-        hasErrors = true;
-      }
-    });
-    return hasErrors;
-  };
-
-  // Función para actualizar la contraseña
-  const updatePassword = async () => {
-    const response = await axios.put(
-      `http://localhost:3000/nar/usuarios/updPostulante/${id}`,
-      {
-        contrasenaActual: formData.contrasenaActual,
-        nuevaContrasena: formData.nuevaContrasena,
-      }
-    );
-
-    if (response.status !== 200) {
-      throw new Error("Error al actualizar la contraseña");
-    }
-  };
-
-  // Función para actualizar el perfil
-  const updateProfile = async () => {
-    const dataToSend = {
-      nombre: formData.nombre,
-      apellidoPaterno: formData.apellidoPaterno,
-      apellidoMaterno: formData.apellidoMaterno,
-      correo: formData.correo,
-      telefono: formData.telefono,
-    };
-
-    const response = await axios.put(
-      `http://localhost:3000/nar/usuarios/byAdmin/${id}`,
-      dataToSend
-    );
-
-    if (response.status !== 200) {
-      throw new Error("Error al actualizar el perfil");
-    }
-  };
-
-  const checkIfEmailExists = async (email) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
-      );
-      return response.data.exists;
-    } catch (error) {
-      console.error("Error al verificar el correo", error);
-      return false;
-    }
-  };
-
-  const checkIfPhoneExists = async (phone) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
-      );
-      return response.data.exists;
-    } catch (error) {
-      console.error("Error al verificar el número de teléfono", error);
-      return false;
     }
   };
 

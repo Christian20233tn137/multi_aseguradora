@@ -45,10 +45,13 @@ const AgregarAdmin = () => {
       }
     }
 
-    // Validación para campos que no deben contener números
+    // Validación para campos que no deben contener números ni caracteres especiales
     if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
+      }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
       }
     }
 
@@ -93,6 +96,58 @@ const AgregarAdmin = () => {
       [name]: error,
     }));
     setValue(value);
+  };
+
+  // Función para verificar si el correo ya existe
+  const checkIfEmailExists = async (email) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el correo", error);
+      return false;
+    }
+  };
+
+  // Función para verificar si el teléfono ya existe
+  const checkIfPhoneExists = async (phone) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el teléfono", error);
+      return false;
+    }
+  };
+
+  // Función para verificar si el RFC ya existe
+  const checkIfRfcExists = async (rfc) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkRfc/${rfc}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el RFC", error);
+      return false;
+    }
+  };
+
+  // Función para verificar si el CURP ya existe
+  const checkIfCurpExists = async (curp) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/usuarios/checkCurp/${curp}`
+      );
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error al verificar el CURP", error);
+      return false;
+    }
   };
 
   // Función para enviar la cotización al backend
@@ -150,6 +205,66 @@ const AgregarAdmin = () => {
       return;
     }
 
+    // Verificar si el correo ya existe
+    const emailExists = await checkIfEmailExists(correo);
+    if (emailExists) {
+      setErrors((prev) => ({
+        ...prev,
+        correo: "El correo electrónico ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El correo electrónico ya está registrado en el sistema",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Verificar si el teléfono ya existe
+    const phoneExists = await checkIfPhoneExists(telefono);
+    if (phoneExists) {
+      setErrors((prev) => ({
+        ...prev,
+        telefono: "El teléfono ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El teléfono ya está registrado en el sistema",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Verificar si el RFC ya existe
+    const rfcExists = await checkIfRfcExists(rfc);
+    if (rfcExists) {
+      setErrors((prev) => ({
+        ...prev,
+        rfc: "El RFC ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El RFC ya está registrado en el sistema",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Verificar si el CURP ya existe
+    const curpExists = await checkIfCurpExists(curp);
+    if (curpExists) {
+      setErrors((prev) => ({
+        ...prev,
+        curp: "El CURP ya está registrado en el sistema",
+      }));
+      swalWithTailwindButtons.fire({
+        title: "Error",
+        text: "El CURP ya está registrado en el sistema",
+        icon: "error",
+      });
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:3000/nar/usuarios/admin",
@@ -187,6 +302,58 @@ const AgregarAdmin = () => {
       }
     } catch (error) {
       console.error("Error al registrar:", error);
+
+      // Verificar si el error es por datos duplicados
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+
+        if (errorMessage && errorMessage.includes("correo")) {
+          setErrors((prev) => ({
+            ...prev,
+            correo: "El correo electrónico ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El correo electrónico ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        } else if (errorMessage && errorMessage.includes("teléfono")) {
+          setErrors((prev) => ({
+            ...prev,
+            telefono: "El teléfono ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El teléfono ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        } else if (errorMessage && errorMessage.includes("rfc")) {
+          setErrors((prev) => ({
+            ...prev,
+            rfc: "El RFC ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El RFC ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        } else if (errorMessage && errorMessage.includes("curp")) {
+          setErrors((prev) => ({
+            ...prev,
+            curp: "El CURP ya está registrado en el sistema",
+          }));
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "El CURP ya está registrado en el sistema",
+            icon: "error",
+          });
+          return;
+        }
+      }
+
       swalWithTailwindButtons.fire(
         "Error",
         "Ocurrió un error inesperado.",

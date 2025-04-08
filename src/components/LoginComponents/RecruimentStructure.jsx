@@ -81,6 +81,9 @@ const RecruimentStructure = () => {
       if (value.length > 20) {
         error = "No debe exceder 20 caracteres";
       }
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        error = "No se permiten caracteres especiales en este campo";
+      }
       // No permitir números
       if (/\d/.test(value)) {
         error = "No se permiten números en este campo";
