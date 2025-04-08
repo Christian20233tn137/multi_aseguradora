@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import DocumentRow from "../Views/DocumentRow"; // Asegúrate de que la ruta sea correcta
+import DocumentRow from "../Views/DocumentRow";
 
 const SolicitudDocumentos = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const id = location.state?.id;
-  console.log("Prueba", id);
-
   const { profile } = location.state || {};
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,12 +17,27 @@ const SolicitudDocumentos = () => {
     const fetchDocuments = async () => {
       if (profile && profile._id && /^[0-9a-fA-F]{24}$/.test(profile._id)) {
         try {
-          console.log("encontrando documentos por ID:", profile._id);
-          const response = await axios.get(
-            `http://localhost:3000/nar/documentosPersona/documentosPostulante/${profile._id}`
-          );
-          console.log("Fetched documents:", response.data);
-          const transformedDocuments = transformDocuments(response.data);
+          const documentTypes = [
+            { name: "Comprobante de Domicilio", endpoint: "comprobanteDomicilio" },
+            { name: "Constancia de Situación Fiscal", endpoint: "constanciaFiscal" },
+            { name: "Identificación Oficial", endpoint: "identificacionOficial" },
+            { name: "Carátula de Banco", endpoint: "caratulaBanco" },
+            { name: "Documento de Afiliación", endpoint: "documentoAfiliacion" },
+          ];
+
+          const documentPromises = documentTypes.map(async (docType) => {
+            const response = await axios.get(
+              `http://localhost:3000/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
+            );
+            return {
+              id: response.data.idDocumento,
+              name: docType.name,
+              status: response.data.estado || "Pending",
+              type: docType.endpoint,
+            };
+          });
+
+          const transformedDocuments = await Promise.all(documentPromises);
           setDocuments(transformedDocuments);
         } catch (error) {
           setError("Error al obtener los documentos.");
@@ -42,18 +55,8 @@ const SolicitudDocumentos = () => {
     fetchDocuments();
   }, [profile]);
 
-  const transformDocuments = (data) => {
-    return data.map((doc) => ({
-      id: doc.idDocumento,
-      name: doc.nombreOriginal || doc.nombreDocumento || "Sin nombre", // Usa el nombre original si está disponible
-      status: doc.estado || "Pending",
-      file: doc.idDocumento,
-      type: "unknown",
-    }));
-  };
-
-  const handleViewDocument = (documentId) => {
-    navigate(`/solicitudes/verDocumento/${documentId}`);
+  const handleViewDocument = (documentId, documentType) => {
+    navigate(`/solicitudes/verDocumento/${documentId}/${documentType}`);
   };
 
   const handleBack = () => {
@@ -63,10 +66,8 @@ const SolicitudDocumentos = () => {
   const showAlert = async (action) => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton:
-          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton:
-          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
       buttonsStyling: false,
     });
@@ -84,7 +85,7 @@ const SolicitudDocumentos = () => {
       .then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const response = await axios.put(
+            await axios.put(
               `http://localhost:3000/nar/usuarios/postulanteAgente/${profile._id}`
             );
             swalWithTailwindButtons.fire({
@@ -126,8 +127,8 @@ const SolicitudDocumentos = () => {
           </tr>
         </thead>
         <tbody>
-          {documents.map((doc) => (
-            <DocumentRow key={doc.id} document={doc} onView={handleViewDocument} />
+          {documents.map((doc, index) => (
+            <DocumentRow key={index} document={doc} onView={handleViewDocument} />
           ))}
         </tbody>
       </table>

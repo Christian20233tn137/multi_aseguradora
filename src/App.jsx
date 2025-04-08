@@ -164,7 +164,7 @@ const App = () => {
         {/* Ruta hija dentro de solicitudes */}
         <Route path="solicitud-section" element={<SolicitudSection />} />
         <Route path="solicitud-documentos" element={<SolicitudSection />} />
-        <Route path="verDocumento/:id" element={<DocumentViewer />} />
+        <Route path="verDocumento/:id/:type" element={<DocumentViewer />} />
       </Route>
       <Route
         path="/aseguradoras/*"

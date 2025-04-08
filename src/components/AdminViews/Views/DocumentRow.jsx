@@ -11,7 +11,7 @@ const DocumentRow = ({ document, onView }) => {
       </td>
       <td className="py-2 text-center">
         <button
-          onClick={() => onView(document.id)}
+          onClick={() => onView(document.id, document.type)}
           className="botones text-white py-1 px-3 rounded"
           aria-label={`Ver más detalles de ${document.name}`}
         >

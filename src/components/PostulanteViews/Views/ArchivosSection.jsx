@@ -37,20 +37,19 @@ const ArchivosSection = () => {
           return;
         }
 
-        const response = await axios.get(
-          `http://localhost:3000/nar/documentosPersona/documentosPostulante/${user._id}`
-        );
+        const responseDomicilio = await axios.get(`http://localhost:3000/nar/comprobanteDomicilio/documentosPostulante/${user._id}`);
+        const responseFiscal = await axios.get(`http://localhost:3000/nar/constanciaFiscal/documentosPostulante/${user._id}`);
+        const responseIdentificacion = await axios.get(`http://localhost:3000/nar/identificacionOficial/documentosPostulante/${user._id}`);
+        const responseBanco = await axios.get(`http://localhost:3000/nar/caratulaBanco/documentosPostulante/${user._id}`);
+        const responseAfiliacion = await axios.get(`http://localhost:3000/nar/documentoAfiliacion/documentosPostulante/${user._id}`);
 
         // Asumiendo que el backend devuelve un objeto con el estado de cada documento
-        const uploadedFilesData = response.data;
-
-        // Mapea el estado de los documentos a los campos específicos
         const uploadedFilesState = {
-          domicilio: uploadedFilesData.domicilio === 'aceptado',
-          fiscal: uploadedFilesData.fiscal === 'aceptado',
-          identificacion: uploadedFilesData.identificacion === 'aceptado',
-          banco: uploadedFilesData.banco === 'aceptado',
-          afiliacion: uploadedFilesData.afiliacion === 'aceptado',
+          domicilio: responseDomicilio.data.estado === 'aceptado',
+          fiscal: responseFiscal.data.estado === 'aceptado',
+          identificacion: responseIdentificacion.data.estado === 'aceptado',
+          banco: responseBanco.data.estado === 'aceptado',
+          afiliacion: responseAfiliacion.data.estado === 'aceptado',
         };
 
         setLoadedFiles(uploadedFilesState);
@@ -196,7 +195,7 @@ const ArchivosSection = () => {
       formData.append("idUsuario", user._id);
 
       const response = await axios.post(
-        "http://localhost:3000/nar/documentosPersona/subirDocumento",
+        "http://localhost:3000/nar/comprobanteDomicilio/subirDocumento",
         formData,
         {
           headers: {

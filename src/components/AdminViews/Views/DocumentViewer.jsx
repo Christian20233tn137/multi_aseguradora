@@ -4,24 +4,38 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const DocumentViewer = () => {
-  const { id: documentId } = useParams();
+  const { id, type } = useParams();
   const navigate = useNavigate();
   const [documentContent, setDocumentContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false); // Estado para el loader de acciones
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const documentEndpoints = {
+    comprobanteDomicilio: "comprobanteDomicilio",
+    constanciaFiscal: "constanciaFiscal",
+    identificacionOficial: "identificacionOficial",
+    caratulaBanco: "caratulaBanco",
+    documentoAfiliacion: "documentoAfiliacion",
+  };
 
   useEffect(() => {
     const fetchDocument = async () => {
       try {
+        if (!type || !id) {
+          throw new Error("Faltan parámetros: tipo de documento o id.");
+        }
+
+        const endpoint = documentEndpoints[type];
+        if (!endpoint) {
+          throw new Error("Tipo de documento no válido.");
+        }
+
         const response = await axios.get(
-          `http://localhost:3000/nar/documentosPersona/descargarDocumento/${documentId}`,
-          {
-            responseType: 'blob', // Importante para manejar archivos binarios
-          }
+          `http://localhost:3000/nar/${endpoint}/descargarDocumento/${id}`,
+          { responseType: "blob" }
         );
 
-        // Crear una URL para el blob y mostrarlo
         const fileURL = URL.createObjectURL(response.data);
         setDocumentContent(fileURL);
       } catch (error) {
@@ -33,7 +47,7 @@ const DocumentViewer = () => {
     };
 
     fetchDocument();
-  }, [documentId]);
+  }, [id, type]);
 
   const showAlert = async (action) => {
     const swalWithTailwindButtons = Swal.mixin({
@@ -55,35 +69,35 @@ const DocumentViewer = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
-          setIsProcessing(true); // Mostrar el loader
+          setIsProcessing(true);
           try {
             if (action === "aceptar") {
               await axios.put(
-                `http://localhost:3000/nar/documentosPersona/aceptarDocumento/${documentId}`
+                `http://localhost:3000/nar/documentosPersona/aceptarDocumento/${id}`
               );
               Swal.fire("¡Aceptado!", "El documento ha sido aceptado.", "success");
             } else if (action === "rechazar") {
               await axios.delete(
-                `http://localhost:3000/nar/documentosPersona/rechazarDocumento/${documentId}`
+                `http://localhost:3000/nar/documentosPersona/rechazarDocumento/${id}`
               );
               Swal.fire("¡Rechazado!", "El documento ha sido rechazado.", "success");
             }
-            // Redirigir a la ruta deseada después de aceptar o rechazar
             navigate(-2);
           } catch (error) {
             Swal.fire("Error", "Hubo un problema al procesar el documento.", "error");
           } finally {
-            setIsProcessing(false); // Ocultar el loader
+            setIsProcessing(false);
           }
         }
       });
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+      </div>
+    );
 
   if (error) return <div>{error}</div>;
 
