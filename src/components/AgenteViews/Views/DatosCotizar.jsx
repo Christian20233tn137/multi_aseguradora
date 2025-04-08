@@ -19,6 +19,11 @@ const DatosCotizar = () => {
   const [idCliente, setIdCliente] = useState(null);
   const [idAsegurado, setIdAsegurado] = useState(null);
   const [esTitularAsegurado, setEsTitularAsegurado] = useState(true);
+  const [esTitularExistente, setEsTitularExistente] = useState(false);
+  const [rfcTitularExistente, setRfcTitularExistente] = useState("");
+  const [titularExistente, setTitularExistente] = useState(null);
+  const [mostrarFormularioTitular, setMostrarFormularioTitular] =
+    useState(true);
   const [titular, setTitular] = useState({
     nombre: "",
     apellidoPaterno: "",
@@ -57,6 +62,7 @@ const DatosCotizar = () => {
       correo: "",
       rfc: "",
     },
+    rfcTitularExistente: "",
   });
 
   const validateInput = (name, value, isTitular = true) => {
@@ -209,54 +215,145 @@ const DatosCotizar = () => {
     setAsegurado({ ...asegurado, fechaNacimiento: date });
   };
 
+  const handleRfcTitularExistenteChange = (e) => {
+    const { value } = e.target;
+    let error = "";
+
+    if (value) {
+      if (value.length !== 13) {
+        error = "El RFC debe tener exactamente 13 caracteres";
+      }
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      rfcTitularExistente: error,
+    }));
+
+    setRfcTitularExistente(value);
+  };
+
+  const buscarTitularExistente = async () => {
+    if (!rfcTitularExistente) {
+      setErrors((prev) => ({
+        ...prev,
+        rfcTitularExistente: "El RFC es obligatorio",
+      }));
+      return;
+    }
+
+    if (errors.rfcTitularExistente) {
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/nar/clientes/rfc/${rfcTitularExistente}`
+      );
+
+      if (response.data) {
+        setTitularExistente(response.data);
+        setMostrarFormularioTitular(false);
+
+        // Mostrar mensaje de éxito
+        Swal.fire({
+          title: "Titular encontrado",
+          text: "Se encontró el titular con el RFC proporcionado",
+          icon: "success",
+        });
+      } else {
+        setTitularExistente(null);
+        setMostrarFormularioTitular(true);
+
+        // Mostrar mensaje de error
+        Swal.fire({
+          title: "Titular no encontrado",
+          text: "No se encontró ningún titular con el RFC proporcionado",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error al buscar titular:", error);
+
+      // Mostrar mensaje de error
+      Swal.fire({
+        title: "Error",
+        text: "Ocurrió un error al buscar el titular",
+        icon: "error",
+      });
+    }
+  };
+
   const validarCampos = () => {
     const newErrors = {
       titular: { ...errors.titular },
       asegurado: { ...errors.asegurado },
+      rfcTitularExistente: errors.rfcTitularExistente,
     };
 
     let hasErrors = false;
 
-    // Validar campos del titular
-    const camposTitular = {
-      nombre: titular.nombre,
-      apellidoPaterno: titular.apellidoPaterno,
-      apellidoMaterno: titular.apellidoMaterno,
-      telefono: titular.telefono,
-      correo: titular.correo,
-      rfc: titular.rfc,
-    };
-
-    Object.keys(camposTitular).forEach((key) => {
-      const error = validateInput(key, camposTitular[key], true);
-      if (error) {
-        newErrors.titular[key] = error;
+    // Si es titular existente, validar el RFC
+    if (esTitularExistente) {
+      if (!rfcTitularExistente) {
+        newErrors.rfcTitularExistente = "El RFC es obligatorio";
+        hasErrors = true;
+      } else if (rfcTitularExistente.length !== 13) {
+        newErrors.rfcTitularExistente =
+          "El RFC debe tener exactamente 13 caracteres";
         hasErrors = true;
       }
-    });
 
-    // Validar fecha de nacimiento del titular
-    if (!titular.fechaNacimiento) {
-      newErrors.titular.fechaNacimiento =
-        "La fecha de nacimiento es obligatoria";
-      hasErrors = true;
+      if (!titularExistente) {
+        Swal.fire({
+          title: "Error",
+          text: "Debe buscar un titular existente antes de continuar",
+          icon: "error",
+        });
+        return false;
+      }
     } else {
-      const today = new Date();
-      const birthDate = new Date(titular.fechaNacimiento);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
+      // Validar campos del titular
+      const camposTitular = {
+        nombre: titular.nombre,
+        apellidoPaterno: titular.apellidoPaterno,
+        apellidoMaterno: titular.apellidoMaterno,
+        telefono: titular.telefono,
+        correo: titular.correo,
+        rfc: titular.rfc,
+      };
 
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        age--;
-      }
+      Object.keys(camposTitular).forEach((key) => {
+        const error = validateInput(key, camposTitular[key], true);
+        if (error) {
+          newErrors.titular[key] = error;
+          hasErrors = true;
+        }
+      });
 
-      if (age < 18) {
+      // Validar fecha de nacimiento del titular
+      if (!titular.fechaNacimiento) {
         newErrors.titular.fechaNacimiento =
-          "El titular debe ser mayor de edad (18 años)";
+          "La fecha de nacimiento es obligatoria";
         hasErrors = true;
+      } else {
+        const today = new Date();
+        const birthDate = new Date(titular.fechaNacimiento);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          age--;
+        }
+
+        if (age < 18) {
+          newErrors.titular.fechaNacimiento =
+            "El titular debe ser mayor de edad (18 años)";
+          hasErrors = true;
+        }
       }
     }
 
@@ -356,14 +453,21 @@ const DatosCotizar = () => {
         showConfirmButton: false,
       });
 
-      const datosCliente = { ...titular, idUsuario };
+      let newIdCliente;
 
-      // **Paso 1:** Crear cliente y obtener `idCliente`
-      const responseCliente = await axios.post(
-        "http://localhost:3000/nar/clientes",
-        datosCliente
-      );
-      const newIdCliente = responseCliente.data._id; // Suponiendo que el backend devuelve `idCliente`
+      // Si es titular existente, usar el ID del titular existente
+      if (esTitularExistente && titularExistente) {
+        newIdCliente = titularExistente._id;
+      } else {
+        // Crear nuevo cliente
+        const datosCliente = { ...titular, idUsuario };
+        const responseCliente = await axios.post(
+          "http://localhost:3000/nar/clientes",
+          datosCliente
+        );
+        newIdCliente = responseCliente.data._id;
+      }
+
       setIdCliente(newIdCliente);
 
       if (!newIdCliente) {
@@ -410,6 +514,10 @@ const DatosCotizar = () => {
         correo: "",
         rfc: "",
       });
+      setRfcTitularExistente("");
+      setTitularExistente(null);
+      setEsTitularExistente(false);
+      setMostrarFormularioTitular(true);
 
       // Navegar a la ruta de seguros con los IDs recién obtenidos
       navigate("/inicioAgentes/seguros", {
@@ -444,126 +552,215 @@ const DatosCotizar = () => {
         Datos del titular
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
-        <div>
-          <input
-            type="text"
-            name="nombre"
-            placeholder="Nombre"
-            value={titular.nombre}
-            onChange={handleChange}
-            className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-              errors.titular.nombre ? "border-red-500" : ""
-            }`}
-          />
-          {errors.titular.nombre && (
-            <p className="text-red-500 text-xs mt-1">{errors.titular.nombre}</p>
-          )}
-        </div>
-        <div>
-          <input
-            type="text"
-            name="apellidoPaterno"
-            placeholder="Apellido Paterno"
-            value={titular.apellidoPaterno}
-            onChange={handleChange}
-            className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-              errors.titular.apellidoPaterno ? "border-red-500" : ""
-            }`}
-          />
-          {errors.titular.apellidoPaterno && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.titular.apellidoPaterno}
-            </p>
-          )}
-        </div>
-        <div>
-          <input
-            type="text"
-            name="apellidoMaterno"
-            placeholder="Apellido Materno"
-            value={titular.apellidoMaterno}
-            onChange={handleChange}
-            className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-              errors.titular.apellidoMaterno ? "border-red-500" : ""
-            }`}
-          />
-          {errors.titular.apellidoMaterno && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.titular.apellidoMaterno}
-            </p>
-          )}
-        </div>
-        <div>
-          <DatePicker
-            selected={titular.fechaNacimiento}
-            onChange={handleFechaNacimientoChange}
-            placeholderText="Fecha de Nacimiento"
-            className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-              errors.titular.fechaNacimiento ? "border-red-500" : ""
-            }`}
-            dateFormat="yyyy-MM-dd"
-            locale="es"
-            showYearDropdown
-            scrollableYearDropdown
-            yearDropdownItemNumber={125}
-            minDate={minDate}
-            maxDate={maxDate}
-          />
-          {errors.titular.fechaNacimiento && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.titular.fechaNacimiento}
-            </p>
-          )}
-        </div>
-        <div>
-          <input
-            type="text"
-            name="telefono"
-            placeholder="Teléfono"
-            value={titular.telefono}
-            onChange={handleChange}
-            className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-              errors.titular.telefono ? "border-red-500" : ""
-            }`}
-          />
-          {errors.titular.telefono && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.titular.telefono}
-            </p>
-          )}
-        </div>
-        <div>
-          <input
-            type="email"
-            name="correo"
-            placeholder="Correo Electrónico"
-            value={titular.correo}
-            onChange={handleChange}
-            className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-              errors.titular.correo ? "border-red-500" : ""
-            }`}
-          />
-          {errors.titular.correo && (
-            <p className="text-red-500 text-xs mt-1">{errors.titular.correo}</p>
-          )}
-        </div>
-        <div>
-          <input
-            type="text"
-            name="rfc"
-            placeholder="RFC"
-            value={titular.rfc}
-            onChange={handleChange}
-            className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-              errors.titular.rfc ? "border-red-500" : ""
-            }`}
-          />
-          {errors.titular.rfc && (
-            <p className="text-red-500 text-xs mt-1">{errors.titular.rfc}</p>
-          )}
+      <div className="mt-5">
+        <label className="text-gray-700 text-sm font-bold">
+          ¿Ya ha sido titular antes?*
+        </label>
+        <div className="flex items-center">
+          <label className="ml-2">
+            <input
+              type="radio"
+              name="titularExistente"
+              checked={esTitularExistente}
+              onChange={() => {
+                setEsTitularExistente(true);
+                setMostrarFormularioTitular(false);
+              }}
+            />{" "}
+            Sí
+          </label>
+          <label className="ml-4">
+            <input
+              type="radio"
+              name="titularExistente"
+              checked={!esTitularExistente}
+              onChange={() => {
+                setEsTitularExistente(false);
+                setMostrarFormularioTitular(true);
+                setTitularExistente(null);
+              }}
+            />{" "}
+            No
+          </label>
         </div>
       </div>
+
+      {esTitularExistente && (
+        <div className="mt-5">
+          <div className="flex items-center">
+            <div className="flex-grow">
+              <input
+                type="text"
+                placeholder="Ingrese el RFC del titular existente"
+                value={rfcTitularExistente}
+                onChange={handleRfcTitularExistenteChange}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.rfcTitularExistente ? "border-red-500" : ""
+                }`}
+              />
+              {errors.rfcTitularExistente && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.rfcTitularExistente}
+                </p>
+              )}
+            </div>
+            <button
+              className="ml-2 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              style={{ backgroundColor: "#0B1956" }}
+              onClick={buscarTitularExistente}
+            >
+              Buscar
+            </button>
+          </div>
+
+          {titularExistente && (
+            <div className="mt-5 p-4 bg-gray-100 rounded-lg">
+              <h3 className="font-bold">Datos del titular existente:</h3>
+              <p>
+                <strong>Nombre:</strong> {titularExistente.nombre}{" "}
+                {titularExistente.apellidoPaterno}{" "}
+                {titularExistente.apellidoMaterno}
+              </p>
+              <p>
+                <strong>RFC:</strong> {titularExistente.rfc}
+              </p>
+              <p>
+                <strong>Teléfono:</strong> {titularExistente.telefono}
+              </p>
+              <p>
+                <strong>Correo:</strong> {titularExistente.correo}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {mostrarFormularioTitular && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+          <div>
+            <input
+              type="text"
+              name="nombre"
+              placeholder="Nombre"
+              value={titular.nombre}
+              onChange={handleChange}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.nombre ? "border-red-500" : ""
+              }`}
+            />
+            {errors.titular.nombre && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.titular.nombre}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              type="text"
+              name="apellidoPaterno"
+              placeholder="Apellido Paterno"
+              value={titular.apellidoPaterno}
+              onChange={handleChange}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.apellidoPaterno ? "border-red-500" : ""
+              }`}
+            />
+            {errors.titular.apellidoPaterno && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.titular.apellidoPaterno}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              type="text"
+              name="apellidoMaterno"
+              placeholder="Apellido Materno"
+              value={titular.apellidoMaterno}
+              onChange={handleChange}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.apellidoMaterno ? "border-red-500" : ""
+              }`}
+            />
+            {errors.titular.apellidoMaterno && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.titular.apellidoMaterno}
+              </p>
+            )}
+          </div>
+          <div>
+            <DatePicker
+              selected={titular.fechaNacimiento}
+              onChange={handleFechaNacimientoChange}
+              placeholderText="Fecha de Nacimiento"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.fechaNacimiento ? "border-red-500" : ""
+              }`}
+              dateFormat="yyyy-MM-dd"
+              locale="es"
+              showYearDropdown
+              scrollableYearDropdown
+              yearDropdownItemNumber={125}
+              minDate={minDate}
+              maxDate={maxDate}
+            />
+            {errors.titular.fechaNacimiento && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.titular.fechaNacimiento}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              type="text"
+              name="telefono"
+              placeholder="Teléfono"
+              value={titular.telefono}
+              onChange={handleChange}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.telefono ? "border-red-500" : ""
+              }`}
+            />
+            {errors.titular.telefono && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.titular.telefono}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              type="email"
+              name="correo"
+              placeholder="Correo Electrónico"
+              value={titular.correo}
+              onChange={handleChange}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.correo ? "border-red-500" : ""
+              }`}
+            />
+            {errors.titular.correo && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.titular.correo}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              type="text"
+              name="rfc"
+              placeholder="RFC"
+              value={titular.rfc}
+              onChange={handleChange}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.rfc ? "border-red-500" : ""
+              }`}
+            />
+            {errors.titular.rfc && (
+              <p className="text-red-500 text-xs mt-1">{errors.titular.rfc}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="mt-6">
         <label className="text-gray-700 text-sm font-bold">
@@ -660,7 +857,7 @@ const DatosCotizar = () => {
                 scrollableYearDropdown
                 yearDropdownItemNumber={125}
                 minDate={new Date(1950, 0, 1)}
-                maxDate={new Date(currentYear, 11, 31)}
+                maxDate={new Date(2024, 11, 31)}
               />
               {errors.asegurado.fechaNacimiento && (
                 <p className="text-red-500 text-xs mt-1">
