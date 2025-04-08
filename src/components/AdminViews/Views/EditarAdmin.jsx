@@ -21,6 +21,15 @@ const EditarAdmin = () => {
     correo: "",
     telefono: "",
   });
+
+  const [errors, setErrors] = useState({
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    correo: "",
+    telefono: "",
+  });
+
   const [loading, setLoading] = useState(true);
 
   const swalWithTailwindButtons = Swal.mixin({
@@ -59,10 +68,61 @@ const EditarAdmin = () => {
     obtenerAdmin();
   }, [idAdmin, location.state]);
 
+  const validateInput = (name, value) => {
+    let error = "";
+
+    // Validación de longitud máxima para campos específicos
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (value.length > 20) {
+        error = "No debe exceder 20 caracteres";
+      }
+    }
+
+    //Validacion maximo de campos en telefono
+    if (["telefono"].includes(name)) {
+      if (value.length > 10) {
+        error = "No debe exceder 10 caracteres";
+      }
+    }
+
+    // Validación para campos que no deben contener números
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (/\d/.test(value)) {
+        error = "No se permiten números en este campo";
+      }
+    }
+
+    // Validación específica para teléfono
+    if (name === "telefono") {
+      if (!/^\d{0,10}$/.test(value)) {
+        error = "Solo se permiten números y máximo 10 dígitos";
+      }
+    }
+
+    // Validación de correo electrónico
+    if (name === "correo" && value) {
+      if (value.length > 25) {
+        error = "No debe exceder 25 caracteres";
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        error = "Formato de correo electrónico inválido";
+      }
+    }
+
+    return error;
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    const error = validateInput(name, value);
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+
     setAdmin({
       ...admin,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
@@ -106,6 +166,37 @@ const EditarAdmin = () => {
     const { nombre, apellidoPaterno, apellidoMaterno, correo, telefono } =
       admin;
 
+    // Validar todos los campos
+    const newErrors = {};
+    let hasErrors = false;
+
+    // Validar cada campo
+    const fields = {
+      nombre,
+      apellidoPaterno,
+      apellidoMaterno,
+      correo,
+      telefono,
+    };
+
+    Object.keys(fields).forEach((key) => {
+      const error = validateInput(key, fields[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return false;
+    }
+
     if (
       !nombre ||
       !apellidoPaterno ||
@@ -117,16 +208,6 @@ const EditarAdmin = () => {
         icon: "warning",
         title: "Campos obligatorios",
         text: "Por favor, llena todos los campos obligatorios.",
-      });
-      return false;
-    }
-
-    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regexCorreo.test(correo)) {
-      swalWithTailwindButtons.fire({
-        icon: "error",
-        title: "Correo inválido",
-        text: "Por favor, ingresa un correo electrónico válido.",
       });
       return false;
     }
@@ -165,6 +246,11 @@ const EditarAdmin = () => {
   };
 
   const showEditAlert = () => {
+    // Validar todos los campos antes de mostrar la alerta
+    if (!validarCampos()) {
+      return;
+    }
+
     swalWithTailwindButtons
       .fire({
         title: "¿Deseas guardar los cambios?",
@@ -186,7 +272,7 @@ const EditarAdmin = () => {
           });
           handleEditSubmit();
         }
-      });   
+      });
   };
 
   if (loading) {
@@ -207,57 +293,90 @@ const EditarAdmin = () => {
               name="nombre"
               value={admin.nombre}
               onChange={handleChange}
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.nombre ? "border-red-500" : ""
+              }`}
             />
+            {errors.nombre && (
+              <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
+            )}
 
             <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-                Apellido paterno*</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Apellido paterno*
+              </label>
               <input
                 type="text"
                 name="apellidoPaterno"
                 value={admin.apellidoPaterno}
                 onChange={handleChange}
-                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.apellidoPaterno ? "border-red-500" : ""
+                }`}
               />
+              {errors.apellidoPaterno && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.apellidoPaterno}
+                </p>
+              )}
             </div>
 
             <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-                Correo electrónico*</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Correo electrónico*
+              </label>
               <input
                 type="email"
                 name="correo"
                 value={admin.correo}
                 onChange={handleChange}
-                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.correo ? "border-red-500" : ""
+                }`}
               />
+              {errors.correo && (
+                <p className="text-red-500 text-xs mt-1">{errors.correo}</p>
+              )}
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-                Apellido Materno*</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Apellido Materno*
+              </label>
               <input
                 type="text"
                 name="apellidoMaterno"
                 value={admin.apellidoMaterno}
                 onChange={handleChange}
-                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.apellidoMaterno ? "border-red-500" : ""
+                }`}
               />
+              {errors.apellidoMaterno && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.apellidoMaterno}
+                </p>
+              )}
             </div>
 
             <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-                Teléfono*</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Teléfono*
+              </label>
               <input
                 type="tel"
                 name="telefono"
                 value={admin.telefono}
                 onChange={handleChange}
-                className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.telefono ? "border-red-500" : ""
+                }`}
               />
+              {errors.telefono && (
+                <p className="text-red-500 text-xs mt-1">{errors.telefono}</p>
+              )}
             </div>
           </div>
         </form>

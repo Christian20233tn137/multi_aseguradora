@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 const EditarPerfil = () => {
   const location = useLocation();
   const id = location.state?.id;
-  console.log(id);
+  console.log("Prueba", id);
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -15,6 +15,17 @@ const EditarPerfil = () => {
     correo: "",
     telefono: "",
     rfc: "",
+    nuevaContrasena: "",
+    confirmarContrasena: "",
+    contrasenaActual: "",
+  });
+
+  const [errors, setErrors] = useState({
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    correo: "",
+    telefono: "",
     nuevaContrasena: "",
     confirmarContrasena: "",
     contrasenaActual: "",
@@ -49,12 +60,138 @@ const EditarPerfil = () => {
     fetchData();
   }, [id]);
 
+  const validateInput = (name, value) => {
+    let error = "";
+
+    // Validación de longitud máxima para campos específicos
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (value.length > 20) {
+        error = "No debe exceder 20 caracteres";
+      }
+    }
+
+    //Validacion maximo de campos en telefono
+    if (["telefono"].includes(name)) {
+      if (value.length > 10) {
+        error = "No debe exceder 10 caracteres";
+      }
+    }
+
+    // Validación para campos que no deben contener números
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (/\d/.test(value)) {
+        error = "No se permiten números en este campo";
+      }
+    }
+
+    // Validación específica para teléfono
+    if (name === "telefono") {
+      if (!/^\d{0,10}$/.test(value)) {
+        error = "Solo se permiten números y máximo 10 dígitos";
+      }
+    }
+
+    // Validación de correo electrónico
+    if (name === "correo" && value) {
+      if (value.length > 25) {
+        error = "No debe exceder 25 caracteres";
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        error = "Formato de correo electrónico inválido";
+      }
+    }
+
+    // Validación de contraseña
+    if (name === "nuevaContrasena" && value) {
+      if (value.length < 8) {
+        error = "La contraseña debe tener al menos 8 caracteres";
+      } else if (!/(?=.*[a-z])/.test(value)) {
+        error = "La contraseña debe contener al menos una letra minúscula";
+      } else if (!/(?=.*\d)/.test(value)) {
+        error = "La contraseña debe contener al menos un número";
+      } else if (!/(?=.*[!@#$%^&*])/.test(value)) {
+        error =
+          "La contraseña debe contener al menos un carácter especial (!@#$%^&*)";
+      }
+    }
+
+    // Validación de confirmación de contraseña
+    if (name === "confirmarContrasena" && value) {
+      if (value !== formData.nuevaContrasena) {
+        error = "Las contraseñas no coinciden";
+      }
+    }
+
+    return error;
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const error = validateInput(name, value);
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validar todos los campos
+    const newErrors = {};
+    let hasErrors = false;
+
+    // Validar cada campo
+    const fields = {
+      nombre: formData.nombre,
+      apellidoPaterno: formData.apellidoPaterno,
+      apellidoMaterno: formData.apellidoMaterno,
+      correo: formData.correo,
+      telefono: formData.telefono,
+    };
+
+    Object.keys(fields).forEach((key) => {
+      const error = validateInput(key, fields[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
+
+    // Validar campos de contraseña si se está modificando
+    if (modificarContrasena) {
+      const passwordFields = {
+        nuevaContrasena: formData.nuevaContrasena,
+        confirmarContrasena: formData.confirmarContrasena,
+        contrasenaActual: formData.contrasenaActual,
+      };
+
+      Object.keys(passwordFields).forEach((key) => {
+        const error = validateInput(key, passwordFields[key]);
+        if (error) {
+          newErrors[key] = error;
+          hasErrors = true;
+        }
+      });
+
+      // Validar que la contraseña actual no esté vacía
+      if (!formData.contrasenaActual) {
+        newErrors.contrasenaActual = "Debe ingresar su contraseña actual";
+        hasErrors = true;
+      }
+    }
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
 
     // Validar que las contraseñas coincidan si se desea modificar la contraseña
     if (
@@ -62,12 +199,6 @@ const EditarPerfil = () => {
       formData.nuevaContrasena !== formData.confirmarContrasena
     ) {
       setError("Las contraseñas no coinciden");
-      return;
-    }
-
-    // Validar que la contraseña tenga al menos 6 dígitos
-    if (modificarContrasena && formData.nuevaContrasena.length < 6) {
-      setError("La contraseña debe tener al menos 6 dígitos");
       return;
     }
 
@@ -167,6 +298,60 @@ const EditarPerfil = () => {
   };
 
   const confirmarActualizacion = () => {
+    // Validar todos los campos antes de mostrar la alerta
+    const newErrors = {};
+    let hasErrors = false;
+
+    // Validar cada campo
+    const fields = {
+      nombre: formData.nombre,
+      apellidoPaterno: formData.apellidoPaterno,
+      apellidoMaterno: formData.apellidoMaterno,
+      correo: formData.correo,
+      telefono: formData.telefono,
+    };
+
+    Object.keys(fields).forEach((key) => {
+      const error = validateInput(key, fields[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
+
+    // Validar campos de contraseña si se está modificando
+    if (modificarContrasena) {
+      const passwordFields = {
+        nuevaContrasena: formData.nuevaContrasena,
+        confirmarContrasena: formData.confirmarContrasena,
+        contrasenaActual: formData.contrasenaActual,
+      };
+
+      Object.keys(passwordFields).forEach((key) => {
+        const error = validateInput(key, passwordFields[key]);
+        if (error) {
+          newErrors[key] = error;
+          hasErrors = true;
+        }
+      });
+
+      // Validar que la contraseña actual no esté vacía
+      if (!formData.contrasenaActual) {
+        newErrors.contrasenaActual = "Debe ingresar su contraseña actual";
+        hasErrors = true;
+      }
+    }
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
     swalWithTailwindButtons
       .fire({
         title: "¿Estás seguro?",
@@ -180,7 +365,7 @@ const EditarPerfil = () => {
       .then((result) => {
         if (result.isConfirmed) {
           swalWithTailwindButtons.fire({
-            title: "Actualizando...",
+            title: "Realizando cambios..",
             text: "Por favor espera.",
             icon: "info",
             showConfirmButton: false,
@@ -204,8 +389,13 @@ const EditarPerfil = () => {
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
+            className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+              errors.nombre ? "border-red-500" : ""
+            }`}
           />
+          {errors.nombre && (
+            <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
+          )}
         </div>
 
         <div>
@@ -215,8 +405,15 @@ const EditarPerfil = () => {
             name="apellidoPaterno"
             value={formData.apellidoPaterno}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
+            className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+              errors.apellidoPaterno ? "border-red-500" : ""
+            }`}
           />
+          {errors.apellidoPaterno && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.apellidoPaterno}
+            </p>
+          )}
         </div>
 
         <div>
@@ -226,8 +423,15 @@ const EditarPerfil = () => {
             name="apellidoMaterno"
             value={formData.apellidoMaterno}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
+            className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+              errors.apellidoMaterno ? "border-red-500" : ""
+            }`}
           />
+          {errors.apellidoMaterno && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.apellidoMaterno}
+            </p>
+          )}
         </div>
 
         <div>
@@ -239,8 +443,13 @@ const EditarPerfil = () => {
             name="correo"
             value={formData.correo}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
+            className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+              errors.correo ? "border-red-500" : ""
+            }`}
           />
+          {errors.correo && (
+            <p className="text-red-500 text-xs mt-1">{errors.correo}</p>
+          )}
         </div>
 
         <div>
@@ -250,8 +459,13 @@ const EditarPerfil = () => {
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
+            className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+              errors.telefono ? "border-red-500" : ""
+            }`}
           />
+          {errors.telefono && (
+            <p className="text-red-500 text-xs mt-1">{errors.telefono}</p>
+          )}
         </div>
 
         <div>
@@ -261,7 +475,7 @@ const EditarPerfil = () => {
             name="rfc"
             value={formData.rfc}
             onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded"
+            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
             disabled // Deshabilitar el campo RFC
           />
         </div>
@@ -303,8 +517,15 @@ const EditarPerfil = () => {
                 name="contrasenaActual"
                 value={formData.contrasenaActual}
                 onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
+                className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+                  errors.contrasenaActual ? "border-red-500" : ""
+                }`}
               />
+              {errors.contrasenaActual && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.contrasenaActual}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium">
@@ -315,8 +536,15 @@ const EditarPerfil = () => {
                 name="nuevaContrasena"
                 value={formData.nuevaContrasena}
                 onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
+                className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+                  errors.nuevaContrasena ? "border-red-500" : ""
+                }`}
               />
+              {errors.nuevaContrasena && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.nuevaContrasena}
+                </p>
+              )}
             </div>
 
             <div>
@@ -328,8 +556,15 @@ const EditarPerfil = () => {
                 name="confirmarContrasena"
                 value={formData.confirmarContrasena}
                 onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 p-2 rounded"
+                className={`mt-1 w-full border border-gray-300 p-2 rounded ${
+                  errors.confirmarContrasena ? "border-red-500" : ""
+                }`}
               />
+              {errors.confirmarContrasena && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.confirmarContrasena}
+                </p>
+              )}
             </div>
           </>
         )}

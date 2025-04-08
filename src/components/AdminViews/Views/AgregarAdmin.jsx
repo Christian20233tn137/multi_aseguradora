@@ -4,9 +4,9 @@ import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
 
 const AgregarAdmin = () => {
-    const location = useLocation();
-    const id = location.state?.id;
-    console.log("Prueba", id);
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log("Prueba", id);
   // Estados editables
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
@@ -16,35 +16,160 @@ const AgregarAdmin = () => {
   const [rfc, setRfc] = useState("");
   const [curp, setCurp] = useState("");
 
+  // Estado para errores
+  const [errors, setErrors] = useState({
+    nombre: "",
+    correo: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    telefono: "",
+    rfc: "",
+    curp: "",
+  });
+
+  //Validaciones:
+  const validateInput = (name, value) => {
+    let error = "";
+
+    // Validación de longitud máxima para campos específicos
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (value.length > 20) {
+        error = "No debe exceder 20 caracteres";
+      }
+    }
+
+    //Validacion maximo de campos en telefono
+    if (["telefono"].includes(name)) {
+      if (value.length > 10) {
+        error = "No debe exceder 10 caracteres";
+      }
+    }
+
+    // Validación para campos que no deben contener números
+    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
+      if (/\d/.test(value)) {
+        error = "No se permiten números en este campo";
+      }
+    }
+
+    // Validación específica para teléfono
+    if (name === "telefono") {
+      if (!/^\d{0,10}$/.test(value)) {
+        error = "Solo se permiten números y máximo 10 dígitos";
+      }
+    }
+
+    // Validación de correo electrónico
+    if (name === "correo" && value) {
+      if (value.length > 25) {
+        error = "No debe exceder 25 caracteres";
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        error = "Formato de correo electrónico inválido";
+      }
+    }
+
+    //Validacion de RFC
+    if (name === "rfc" && value) {
+      if (value.length !== 13) {
+        error = "El RFC debe tener 13 caracteres";
+      }
+    }
+
+    //Validacion de CURP
+    if (name === "curp" && value) {
+      if (value.length !== 18) {
+        error = "El CURP debe tener 18 caracteres";
+      }
+    }
+
+    return error;
+  };
+
+  // Función para manejar cambios en los inputs
+  const handleInputChange = (name, value, setValue) => {
+    const error = validateInput(name, value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+    setValue(value);
+  };
+
   // Función para enviar la cotización al backend
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
-      confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-      cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+      confirmButton:
+        "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton:
+        "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
     },
-    buttonsStyling: false
+    buttonsStyling: false,
   });
 
   const agregarCotizacion = async () => {
+    // Validar todos los campos antes de enviar
+    const newErrors = {};
+    let hasErrors = false;
+
+    // Validar cada campo
+    const fields = {
+      nombre,
+      correo,
+      apellidoPaterno,
+      apellidoMaterno,
+      telefono,
+      rfc,
+      curp,
+    };
+
+    Object.keys(fields).forEach((key) => {
+      const error = validateInput(key, fields[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
     // Validación básica
     if (!nombre || !correo || !apellidoPaterno || !telefono || !rfc || !curp) {
-      swalWithTailwindButtons.fire("Error", "Todos los campos marcados con * son obligatorios.", "error");
+      swalWithTailwindButtons.fire(
+        "Error",
+        "Todos los campos marcados con * son obligatorios.",
+        "error"
+      );
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/nar/usuarios/admin", {
-        nombre,
-        correo,
-        apellidoPaterno,
-        apellidoMaterno,
-        telefono,
-        rfc,
-        curp,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/nar/usuarios/admin",
+        {
+          nombre,
+          correo,
+          apellidoPaterno,
+          apellidoMaterno,
+          telefono,
+          rfc,
+          curp,
+        }
+      );
 
       if (response.status === 200) {
-        swalWithTailwindButtons.fire("Administrador agregado", "El administrador se registró correctamente.", "success");
+        swalWithTailwindButtons.fire(
+          "Administrador agregado",
+          "El administrador se registró correctamente.",
+          "success"
+        );
         // Opcional: limpiar el formulario
         setNombre("");
         setCorreo("");
@@ -54,63 +179,164 @@ const AgregarAdmin = () => {
         setRfc("");
         setCurp("");
       } else {
-        swalWithTailwindButtons.fire("Error", "Hubo un problema al registrar el administrador.", "error");
+        swalWithTailwindButtons.fire(
+          "Error",
+          "Hubo un problema al registrar el administrador.",
+          "error"
+        );
       }
     } catch (error) {
       console.error("Error al registrar:", error);
-      swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
+      swalWithTailwindButtons.fire(
+        "Error",
+        "Ocurrió un error inesperado.",
+        "error"
+      );
     }
   };
 
   // Confirmación con SweetAlert
   const confirmarCotizacion = () => {
-    swalWithTailwindButtons.fire({
-      title: "¿Estás seguro?",
-      text: "¿Quieres registrar a este administrador?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, enviar",
-      cancelButtonText: "Cancelar",
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swalWithTailwindButtons.fire({
-          title: "Agregando administrador..",
-          text: "Por favor espera.",
-          icon: "info",
-          showConfirmButton: false,
-          allowOutsideClick: false,
-        });
-        agregarCotizacion();
+    // Validar todos los campos antes de mostrar la alerta
+    const newErrors = {};
+    let hasErrors = false;
+
+    // Validar cada campo
+    const fields = {
+      nombre,
+      correo,
+      apellidoPaterno,
+      apellidoMaterno,
+      telefono,
+      rfc,
+      curp,
+    };
+
+    Object.keys(fields).forEach((key) => {
+      const error = validateInput(key, fields[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasErrors = true;
       }
     });
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      swalWithTailwindButtons.fire({
+        title: "Error de validación",
+        text: "Por favor, corrija los errores en el formulario",
+        icon: "error",
+      });
+      return;
+    }
+
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro?",
+        text: "¿Quieres registrar a este administrador?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, enviar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Agregando administrador..",
+            text: "Por favor espera.",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
+          agregarCotizacion();
+        }
+      });
   };
 
   return (
     <div className="p-6 w-full h-auto overflow-hidden">
       <h1 className="text-3xl w-full p-3 text-center font-normal text-black miColor rounded-2xl">
-         Agregar Administrador
+        Agregar Administrador
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
         {[
-          { label: "Nombre*", value: nombre, setValue: setNombre, type: "text", placeholder: "Nombre" },
-          { label: "Apellido paterno*", value: apellidoPaterno, setValue: setApellidoPaterno, type: "text", placeholder: "Apellido Paterno" },
-          { label: "Apellido materno", value: apellidoMaterno, setValue: setApellidoMaterno, type: "text", placeholder: "Apellido Materno" },
-          { label: "Teléfono*", value: telefono, setValue: setTelefono, type: "text", placeholder: "Teléfono" },
-          { label: "Correo electrónico*", value: correo, setValue: setCorreo, type: "email", placeholder: "Correo electrónico" },
-          { label: "RFC*", value: rfc, setValue: setRfc, type: "text", placeholder: "RFC" },
-          { label: "CURP*", value: curp, setValue: setCurp, type: "text", placeholder: "CURP" },
+          {
+            label: "Nombre*",
+            value: nombre,
+            setValue: setNombre,
+            type: "text",
+            placeholder: "Nombre",
+            name: "nombre",
+          },
+          {
+            label: "Apellido paterno*",
+            value: apellidoPaterno,
+            setValue: setApellidoPaterno,
+            type: "text",
+            placeholder: "Apellido Paterno",
+            name: "apellidoPaterno",
+          },
+          {
+            label: "Apellido materno",
+            value: apellidoMaterno,
+            setValue: setApellidoMaterno,
+            type: "text",
+            placeholder: "Apellido Materno",
+            name: "apellidoMaterno",
+          },
+          {
+            label: "Teléfono*",
+            value: telefono,
+            setValue: setTelefono,
+            type: "text",
+            placeholder: "Teléfono",
+            name: "telefono",
+          },
+          {
+            label: "Correo electrónico*",
+            value: correo,
+            setValue: setCorreo,
+            type: "email",
+            placeholder: "Correo electrónico",
+            name: "correo",
+          },
+          {
+            label: "RFC*",
+            value: rfc,
+            setValue: setRfc,
+            type: "text",
+            placeholder: "RFC",
+            name: "rfc",
+          },
+          {
+            label: "CURP*",
+            value: curp,
+            setValue: setCurp,
+            type: "text",
+            placeholder: "CURP",
+            name: "curp",
+          },
         ].map((field, index) => (
           <div key={index} className="flex flex-col">
-            <label className="text-gray-700 text-sm font-bold mb-2">{field.label}</label>
+            <label className="text-gray-700 text-sm font-bold mb-2">
+              {field.label}
+            </label>
             <input
-              className="border-0 shadow-md rounded-lg py-2 px-3 w-full"
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors[field.name] ? "border-red-500" : ""
+              }`}
               type={field.type}
               value={field.value}
-              onChange={(e) => field.setValue(e.target.value)}
+              onChange={(e) =>
+                handleInputChange(field.name, e.target.value, field.setValue)
+              }
               placeholder={field.placeholder}
             />
+            {errors[field.name] && (
+              <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
+            )}
           </div>
         ))}
       </div>
