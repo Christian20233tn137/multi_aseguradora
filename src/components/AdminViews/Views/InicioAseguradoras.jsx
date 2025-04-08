@@ -47,7 +47,7 @@ const InicioAseguradoras = () => {
           initialCheckedItems[aseguradora._id] =
             storedState[aseguradora._id] !== undefined
               ? storedState[aseguradora._id]
-              : aseguradora.active === "activo";
+              : aseguradora.estado === "activo";
         });
 
         setCheckedItems(initialCheckedItems);
@@ -164,7 +164,10 @@ const InicioAseguradoras = () => {
               setAseguradoras((prevAseguradoras) =>
                 prevAseguradoras.map((aseguradora) =>
                   aseguradora._id === aseguradoraId
-                    ? { ...aseguradora, active: !isActive ? "activo" : "inactivo" }
+                    ? {
+                        ...aseguradora,
+                        estado: !isActive ? "activo" : "inactivo",
+                      }
                     : aseguradora
                 )
               );
@@ -213,7 +216,9 @@ const InicioAseguradoras = () => {
       <div className="border-0 p-6 space-y-6">
         {currentItems.length > 0 ? (
           currentItems.map((aseguradora) => {
-            const fechaFormateada = new Date(aseguradora.createdAt).toISOString().slice(0, 10);
+            const fechaFormateada = new Date(aseguradora.createdAt)
+              .toISOString()
+              .slice(0, 10);
             return (
               <div
                 key={aseguradora._id}
@@ -221,11 +226,13 @@ const InicioAseguradoras = () => {
               >
                 <div className="flex items-center mb-6 md:mb-0">
                   <div>
-                    <p className="text-xl font-semibold">{aseguradora.nombre}</p>
+                    <p className="text-xl font-semibold">
+                      {aseguradora.nombre}
+                    </p>
                     <p className="text-gray-600 text-lg"></p>
                     <div>
                       <h3 className="text-lg mt-4">
-                          <p className="text-gray-600" >{fechaFormateada}</p>
+                        <p className="text-gray-600">{fechaFormateada}</p>
                       </h3>
                       <ul>
                         {Array.isArray(seguros[aseguradora._id])
