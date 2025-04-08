@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 const Estadisticas = () => {
-  const API_URL = "http://localhost:3000/nar/usuarios/cotizacionesYEmisiones";
+  const API_URL = "http://localhost:3001/nar/usuarios/cotizacionesYEmisiones";
   const location = useLocation();
   const id = location.state?.id;
 
@@ -52,7 +52,7 @@ const Estadisticas = () => {
   useEffect(() => {
     const fetchEmisionesActuales = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/nar/cuotas/");
+        const response = await axios.get("http://localhost:3001/nar/cuotas/");
         const data = response.data;
 
         if (data.length > 0) {

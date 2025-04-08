@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/nar/emisiones/id";
+const API_URL = "http://localhost:3001/nar/emisiones/id";
 
 const InformacionPolizas = () => {
   const location = useLocation();

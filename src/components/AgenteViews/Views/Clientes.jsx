@@ -15,7 +15,7 @@ const Clientes = () => {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/nar/clientes");
+        const response = await axios.get("http://localhost:3001/nar/clientes");
         setClientes(response.data);
       } catch (error) {
         console.error("Error al obtener clientes:", error);
