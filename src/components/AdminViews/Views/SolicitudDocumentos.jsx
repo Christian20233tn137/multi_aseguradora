@@ -7,7 +7,6 @@ import DocumentRow from "../Views/DocumentRow";
 const SolicitudDocumentos = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const id = location.state?.id;
   const { profile } = location.state || {};
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,18 +25,36 @@ const SolicitudDocumentos = () => {
           ];
 
           const documentPromises = documentTypes.map(async (docType) => {
-            const response = await axios.get(
-              `http://localhost:3000/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
-            );
-            return {
-              id: response.data.idDocumento,
-              name: docType.name,
-              status: response.data.estado || "Pending",
-              type: docType.endpoint,
-            };
+            try {
+              const response = await axios.get(
+                `http://localhost:3000/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
+              );
+
+              console.log(`Respuesta para ${docType.endpoint}:`, response.data);
+
+              // Verificar que idDocumento exista y sea válido
+              const idDocumento = response.data.idDocumento || null;
+
+              return {
+                id: idDocumento,
+                name: docType.name,
+                status: response.data.estado || "pendiente",
+                type: docType.endpoint,
+              };
+            } catch (error) {
+              console.error(`Error obteniendo ${docType.endpoint}:`, error);
+              // En caso de error, devolver un objeto con ID nulo
+              return {
+                id: null,
+                name: docType.name,
+                status: "Error",
+                type: docType.endpoint,
+              };
+            }
           });
 
           const transformedDocuments = await Promise.all(documentPromises);
+          console.log("Documentos transformados:", transformedDocuments);
           setDocuments(transformedDocuments);
         } catch (error) {
           setError("Error al obtener los documentos.");
@@ -46,8 +63,8 @@ const SolicitudDocumentos = () => {
           setLoading(false);
         }
       } else {
-        console.error("Invalid profile ID:", profile._id);
-        setError("Invalid profile ID format.");
+        console.error("Invalid profile ID:", profile?._id);
+        setError("ID de perfil inválido o no encontrado.");
         setLoading(false);
       }
     };
@@ -56,7 +73,18 @@ const SolicitudDocumentos = () => {
   }, [profile]);
 
   const handleViewDocument = (documentId, documentType) => {
-    navigate(`/solicitudes/verDocumento/${documentId}/${documentType}`);
+    // Verificar que documentId sea válido antes de navegar
+    if (documentId && documentId !== "undefined" && documentId !== "null") {
+      console.log("Navegando a documento:", documentId, documentType);
+      navigate(`/solicitudes/verDocumento/${documentType}/${documentId}`);
+    } else {
+      console.error("ID de documento inválido:", documentId);
+      Swal.fire({
+        title: "Error",
+        text: "No se puede visualizar este documento porque no tiene un ID válido",
+        icon: "error",
+      });
+    }
   };
 
   const handleBack = () => {
@@ -95,7 +123,7 @@ const SolicitudDocumentos = () => {
             });
             handleBack();
           } catch (error) {
-            setError("Error updating postulante. Please try again later.");
+            setError("Error al actualizar el postulante. Inténtalo más tarde.");
             console.error("Error updating postulante:", error);
             swalWithTailwindButtons.fire({
               title: "Error",
@@ -107,10 +135,26 @@ const SolicitudDocumentos = () => {
       });
   };
 
-  const nombrePostulante = `${profile.nombre} ${profile.apellidoPaterno} ${profile.apellidoMaterno}`;
+  const nombrePostulante = profile ? `${profile.nombre || ''} ${profile.apellidoPaterno || ''} ${profile.apellidoMaterno || ''}` : 'Postulante';
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="text-red-500 text-xl mb-4">{error}</div>
+      <button
+        type="button"
+        className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
+        onClick={() => navigate(-1)}
+      >
+        Regresar
+      </button>
+    </div>
+  );
 
   return (
     <div className="p-6 w-auto h-auto overflow-hidden">

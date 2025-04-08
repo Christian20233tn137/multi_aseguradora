@@ -22,8 +22,12 @@ const DocumentViewer = () => {
   useEffect(() => {
     const fetchDocument = async () => {
       try {
-        if (!type || !id) {
-          throw new Error("Faltan parámetros: tipo de documento o id.");
+        console.log("ID recibido:", id);
+        console.log("Tipo recibido:", type);
+
+        // Verificar que el ID y el tipo sean válidos
+        if (!type || !id || id === "undefined" || id === "null") {
+          throw new Error("Faltan parámetros: tipo de documento o id válido.");
         }
 
         const endpoint = documentEndpoints[type];
@@ -32,15 +36,23 @@ const DocumentViewer = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:3000/nar/${endpoint}/descargarDocumento/${id}`,
-          { responseType: "blob" }
+          `http://localhost:3000/nar/${endpoint}/consultarDocumento/${id}`,
+          { responseType: "json" } // Asegúrate de que el backend devuelva JSON
         );
 
-        const fileURL = URL.createObjectURL(response.data);
+        console.log("Respuesta del servidor:", response.data);
+
+        // Asume que la respuesta contiene una URL o el contenido del documento
+        const fileURL = response.data.url; // Ajusta según la estructura de tu respuesta
         setDocumentContent(fileURL);
       } catch (error) {
-        setError("Error al obtener el documento.");
-        console.error("Error fetching document:", error);
+        console.error("Error completo:", error);
+        if (error.response && error.response.status === 500) {
+          setError("Error del servidor: El documento no existe o no está disponible.");
+        } else {
+          setError(`Error al obtener el documento: ${error.message}`);
+        }
+        console.error("Error al consultar el documento:", error);
       } finally {
         setLoading(false);
       }
@@ -84,6 +96,7 @@ const DocumentViewer = () => {
             }
             navigate(-2);
           } catch (error) {
+            console.error("Error al procesar documento:", error);
             Swal.fire("Error", "Hubo un problema al procesar el documento.", "error");
           } finally {
             setIsProcessing(false);
@@ -99,7 +112,18 @@ const DocumentViewer = () => {
       </div>
     );
 
-  if (error) return <div>{error}</div>;
+  if (error) return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="text-red-500 text-xl mb-4">{error}</div>
+      <button
+        type="button"
+        className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
+        onClick={() => navigate(-1)}
+      >
+        Regresar
+      </button>
+    </div>
+  );
 
   return (
     <div className="flex flex-col items-center justify-center h-screen relative">

@@ -24,35 +24,58 @@ const ArchivosSection = () => {
     afiliacion: false,
   });
 
+  const [documentIds, setDocumentIds] = useState({
+    domicilio: null,
+    fiscal: null,
+    identificacion: null,
+    banco: null,
+    afiliacion: null,
+  });
+
   useEffect(() => {
     const fetchUploadedFiles = async () => {
       try {
         const userString = localStorage.getItem("user");
-        if (!userString) {
-          return;
-        }
+        if (!userString) return;
 
         const user = JSON.parse(userString);
-        if (!user || !user._id) {
-          return;
-        }
+        if (!user || !user._id) return;
 
-        const responseDomicilio = await axios.get(`http://localhost:3000/nar/comprobanteDomicilio/documentosPostulante/${user._id}`);
-        const responseFiscal = await axios.get(`http://localhost:3000/nar/constanciaFiscal/documentosPostulante/${user._id}`);
-        const responseIdentificacion = await axios.get(`http://localhost:3000/nar/identificacionOficial/documentosPostulante/${user._id}`);
-        const responseBanco = await axios.get(`http://localhost:3000/nar/caratulaBanco/documentosPostulante/${user._id}`);
-        const responseAfiliacion = await axios.get(`http://localhost:3000/nar/documentoAfiliacion/documentosPostulante/${user._id}`);
-
-        // Asumiendo que el backend devuelve un objeto con el estado de cada documento
-        const uploadedFilesState = {
-          domicilio: responseDomicilio.data.estado === 'aceptado',
-          fiscal: responseFiscal.data.estado === 'aceptado',
-          identificacion: responseIdentificacion.data.estado === 'aceptado',
-          banco: responseBanco.data.estado === 'aceptado',
-          afiliacion: responseAfiliacion.data.estado === 'aceptado',
+        const endpoints = {
+          domicilio: "comprobanteDomicilio",
+          fiscal: "constanciaFiscal",
+          identificacion: "identificacionOficial",
+          banco: "caratulaBanco",
+          afiliacion: "documentoAfiliacion",
         };
 
-        setLoadedFiles(uploadedFilesState);
+        const newLoadedFiles = {};
+        const newDocumentIds = {};
+
+        const requests = Object.entries(endpoints).map(async ([key, endpoint]) => {
+          try {
+            const response = await axios.get(
+              `http://localhost:3000/nar/${endpoint}/documentosPostulante/${user._id}`
+            );
+            console.log(`Respuesta para ${key}:`, response.data);
+
+            newLoadedFiles[key] = response.data.estado === 'aceptado';
+            newDocumentIds[key] = response.data.idDocumento || null;
+
+            return { key, success: true };
+          } catch (error) {
+            console.error(`Error al obtener documento ${key}:`, error);
+            newLoadedFiles[key] = false;
+            newDocumentIds[key] = null;
+            return { key, success: false };
+          }
+        });
+
+        await Promise.all(requests);
+
+        setLoadedFiles(newLoadedFiles);
+        setDocumentIds(newDocumentIds);
+
       } catch (error) {
         console.error("Error al obtener el estado de los archivos:", error);
       }
@@ -65,19 +88,16 @@ const ArchivosSection = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validar que el archivo sea una imagen o PDF
     if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
       Swal.fire("Error", "Solo se permiten imágenes y archivos PDF.", "error");
       return;
     }
 
-    // Validar tamaño del archivo (ejemplo: máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
       Swal.fire("Error", "El archivo no debe exceder los 5MB", "error");
       return;
     }
 
-    // Validar que los archivos se carguen en orden
     const keys = Object.keys(files);
     const currentIndex = keys.indexOf(key);
     for (let i = 0; i < currentIndex; i++) {
@@ -92,7 +112,6 @@ const ArchivosSection = () => {
       [key]: file,
     }));
 
-    // Simulamos la carga con un pequeño delay
     setProgress((prevProgress) => ({
       ...prevProgress,
       [key]: 0,
@@ -107,7 +126,6 @@ const ArchivosSection = () => {
       }));
       if (fakeProgress >= 100) {
         clearInterval(interval);
-        // Marcar el archivo como cargado
         setLoadedFiles((prevLoadedFiles) => ({
           ...prevLoadedFiles,
           [key]: true,
@@ -125,17 +143,18 @@ const ArchivosSection = () => {
       ...prevProgress,
       [key]: null,
     }));
-    setLoadedFiles((prevLoadedFiles) => ({
-      ...prevLoadedFiles,
-      [key]: false,
-    }));
+    if (!documentIds[key]) {
+      setLoadedFiles((prevLoadedFiles) => ({
+        ...prevLoadedFiles,
+        [key]: false,
+      }));
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      // Obtener usuario del localStorage
       const userString = localStorage.getItem("user");
       if (!userString) {
         Swal.fire("Error", "No se encontró la información del usuario", "error");
@@ -148,10 +167,9 @@ const ArchivosSection = () => {
         return;
       }
 
-      // Verificar que todos los archivos estén cargados
-      const allFilesLoaded = Object.values(loadedFiles).every(isLoaded => isLoaded);
-      if (!allFilesLoaded) {
-        Swal.fire("Error", "Debes cargar todos los archivos en orden antes de enviar", "error");
+      const hasFilesToUpload = Object.values(files).some(file => file !== null);
+      if (!hasFilesToUpload) {
+        Swal.fire("Error", "No hay archivos para enviar", "error");
         return;
       }
 
@@ -184,75 +202,96 @@ const ArchivosSection = () => {
 
       setIsSubmitting(true);
 
-      const formData = new FormData();
+      const endpoints = {
+        domicilio: "comprobanteDomicilio",
+        fiscal: "constanciaFiscal",
+        identificacion: "identificacionOficial",
+        banco: "caratulaBanco",
+        afiliacion: "documentoAfiliacion",
+      };
 
-      // Agregar cada archivo con su nombre de campo correspondiente
-      Object.entries(files).forEach(([key, file]) => {
-        if (file) formData.append('archivo', file); // Asegúrate de que el nombre coincida con el backend
-      });
+      const uploadPromises = Object.entries(files).map(async ([key, file]) => {
+        if (!file) return null;
 
-      // Agregar solo el ID del usuario
-      formData.append("idUsuario", user._id);
+        const formData = new FormData();
+        formData.append('archivo', file);
+        formData.append("idUsuario", user._id);
 
-      const response = await axios.post(
-        "http://localhost:3000/nar/comprobanteDomicilio/subirDocumento",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            // Actualizar el progreso real
-            setProgress((prevProgress) => {
-              const updatedProgress = { ...prevProgress };
-              Object.keys(files).forEach((key) => {
-                if (files[key]) {
-                  updatedProgress[key] = percentCompleted;
-                }
-              });
-              return updatedProgress;
-            });
-          },
+        try {
+          const response = await axios.post(
+            `http://localhost:3000/nar/${endpoints[key]}/subirDocumento`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+              onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round(
+                  (progressEvent.loaded * 100) / progressEvent.total
+                );
+                setProgress((prevProgress) => ({
+                  ...prevProgress,
+                  [key]: percentCompleted,
+                }));
+              },
+            }
+          );
+
+          console.log(`Respuesta para ${key}:`, response.data);
+
+          if (response.data && response.data.idDocumento) {
+            setDocumentIds(prev => ({
+              ...prev,
+              [key]: response.data.idDocumento
+            }));
+          }
+
+          return { key, success: true };
+        } catch (error) {
+          console.error(`Error al subir ${key}:`, error);
+          return { key, success: false, error };
         }
-      );
-
-      console.log("Respuesta del backend:", response.data);
-
-      await swalWithTailwindButtons.fire(
-        "¡Enviado!",
-        "Tus archivos han sido enviados correctamente.",
-        "success"
-      );
-
-      // Limpiar el formulario después del envío exitoso
-      setFiles({
-        domicilio: null,
-        fiscal: null,
-        identificacion: null,
-        banco: null,
-        afiliacion: null,
       });
-      setProgress({});
-      setLoadedFiles({
-        domicilio: false,
-        fiscal: false,
-        identificacion: false,
-        banco: false,
-        afiliacion: false,
-      });
+
+      const results = await Promise.all(uploadPromises);
+      const allSucceeded = results.every(result => !result || result.success);
+
+      if (allSucceeded) {
+        await swalWithTailwindButtons.fire(
+          "¡Enviado!",
+          "Tus archivos han sido enviados correctamente.",
+          "success"
+        );
+
+        const newFiles = {...files};
+        results.forEach(result => {
+          if (result && result.success) {
+            newFiles[result.key] = null;
+          }
+        });
+
+        setFiles(newFiles);
+        setProgress({});
+      } else {
+        const failedFiles = results
+          .filter(result => result && !result.success)
+          .map(result => result.key)
+          .join(", ");
+
+        await swalWithTailwindButtons.fire(
+          "Error",
+          `Hubo problemas al subir los siguientes archivos: ${failedFiles}`,
+          "error"
+        );
+      }
 
     } catch (error) {
       console.error("Error al enviar los archivos:", error);
 
       let errorMessage = "No se pudieron enviar los archivos";
       if (error.response) {
-        // Error del servidor
         errorMessage = error.response.data.message || errorMessage;
       } else if (error.request) {
-        // Error de conexión
         errorMessage = "No se pudo conectar con el servidor";
       }
 
@@ -282,7 +321,7 @@ const ArchivosSection = () => {
                   className="hidden"
                   onChange={(e) => handleFileChange(e, key)}
                   accept="image/*,application/pdf"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || (documentIds[key] && loadedFiles[key])}
                 />
               </label>
 
@@ -306,7 +345,7 @@ const ArchivosSection = () => {
 
               {loadedFiles[key] && (
                 <div className="mt-2 text-green-500">
-                  Archivo cargado
+                  {documentIds[key] ? "Documento aceptado" : "Archivo listo para enviar"}
                 </div>
               )}
             </div>
@@ -332,12 +371,6 @@ const ArchivosSection = () => {
         >
           {isSubmitting ? 'Enviando...' : 'Enviar archivos'}
         </button>
-
-        {isSubmitting && (
-          <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-            <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
-          </div>
-        )}
       </div>
     </div>
   );
