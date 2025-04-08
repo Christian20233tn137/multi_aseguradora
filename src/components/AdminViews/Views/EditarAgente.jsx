@@ -139,6 +139,13 @@ const EditarAgente = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
+          swalWithTailwindButtons.fire({
+            title: "Realizando los cambios..",
+            text: "Por favor espera.",
+            icon: "info",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
           try {
             const nuevaContrasena = agente.correo;
             await axios.put(`${API_URL}/resetearContra/${idAgente}`, {

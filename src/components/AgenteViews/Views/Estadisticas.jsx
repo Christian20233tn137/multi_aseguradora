@@ -53,16 +53,16 @@ const Estadisticas = () => {
     const fetchEmisionesActuales = async () => {
       try {
         const response = await axios.get("http://localhost:3000/nar/cuotas/");
-        const data = response.data; // Accede a la propiedad data de la respuesta
-  
+        const data = response.data;
+
         if (data.length > 0) {
-          setCuotas(data[0].cuotaMensual); // Accede al primer elemento del arreglo
+          setCuotas(data[0].cuotaMensual);
           setTittle("Cuotas a cumplir: ");
           console.log("Cuotas a cumplir: ", data[0].cuotaMensual);
         } else {
           console.log("No se encontraron cuotas.");
         }
-  
+
       } catch (error) {
         console.error("Error al obtener las emisiones:", error);
         swalWithTailwindButtons.fire({
@@ -72,10 +72,9 @@ const Estadisticas = () => {
         });
       }
     };
-  
+
     fetchEmisionesActuales();
   }, []);
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,6 +126,10 @@ const Estadisticas = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const currentMonth = new Date().getMonth();
+  const currentCotizaciones = dataCotizaciones[currentMonth].cotizaciones;
+  const currentEmisiones = dataVentas[currentMonth].ventas;
+
   return (
     <div className="p-6 w-auto h-auto overflow-hidden">
       <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black miColor rounded-2xl">
@@ -156,6 +159,11 @@ const Estadisticas = () => {
           </BarChart>
         </div>
       </div>
+      {currentEmisiones >= cuotas ? (
+        <p className="text-green-600 text-center mt-4">Meta mensual completada</p>
+      ) : (
+        <p className="text-red-600 text-center mt-4">¡Sigue realizando cuotas!</p>
+      )}
     </div>
   );
 };
