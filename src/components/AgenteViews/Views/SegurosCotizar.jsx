@@ -5,11 +5,12 @@ import Swal from "sweetalert2";
 
 const SegurosCotizar = () => {
   const navigate = useNavigate();
-  const API_URL = "http://localhost:3000/nar/seguros/tipo";
+  const API_URL = "http://localhost:3001/nar/seguros/tipo";
   const location = useLocation();
   const id = location.state?.id;
   const idCliente = location.state?.idCliente;
   const idAsegurado = location.state?.idAsegurado;
+  console.log("Id del asegurado",idAsegurado)
   let seguro = location.state?.seguro;
   const [seguros, setSeguros] = useState([]);
   const idCotizacion = location.state?.idCotizacion;
@@ -55,7 +56,7 @@ const SegurosCotizar = () => {
       }
 
       const responseCotizacion = await axios.post(
-        "http://localhost:3000/nar/cotizaciones",
+        "http://localhost:3001/nar/cotizaciones",
         datosCotizacion
       );
 

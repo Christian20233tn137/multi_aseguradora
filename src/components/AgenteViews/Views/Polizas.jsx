@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/nar/emisiones/cliente";
+const API_URL = "http://localhost:3001/nar/emisiones/cliente";
 
 const Polizas = () => {
   const location = useLocation();
   const id = location.state.id;
   const idPoliza = location.state.idPoliza;
-  console.log(id); 
+  console.log(id);
   
   const [polizas, setPolizas] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,28 +27,24 @@ const Polizas = () => {
         const response = await axios.get(`${API_URL}/${idPoliza}`);
 
         if (response.data.success) {
-          setPolizas(response.data.data);
-          setError(null);
+          const polizasData = response.data.data;
+          if (polizasData.length === 0) {
+            setError(null); 
+            setPolizas([]); 
+          } else {
+            setPolizas(polizasData);
+          }
         } else {
           setError(response.data.message || "Error al obtener las pólizas");
         }
       } catch (error) {
         console.error("Error al obtener la información de las pólizas:", error);
-        setError("Error al conectar con el servidor");
+        setError("No hay polizas disponibles en este cliente");
       }
     };
 
     fetchInformacionPolizas();
   }, [idPoliza]);
-
-  // Muestra mensaje de error si existe
-  if (error) {
-    return (
-      <div className="p-6 text-center">
-        <div className="text-red-600">Error: {error}</div>
-      </div>
-    );
-  }
 
   const handleInfo = (idPoliza) => {
     console.log("Id de la poliza", idPoliza);
@@ -80,23 +76,29 @@ const Polizas = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-        {filteredPolizas.map((poliza) => (
-          <div
-            key={poliza.numeroPoliza}
-            className="border-0 shadow-md rounded-lg p-4"
-          >
-            <h2 className="font-bold">PÓLIZA N. {poliza.numeroPoliza}</h2>
-            <p>{poliza.nombreSeguro}</p>
-            <p>Vigencia: {poliza.vigencia}</p>
-            <p>Costo total: ${poliza.montoTotal}</p>
-            <button
-              className="mt-4 botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-              onClick={() => handleInfo(poliza.idPoliza)}
-            >
-              Ver más
-            </button>
+        {filteredPolizas.length === 0 ? (
+          <div className="col-span-full text-center text-gray-500">
+            {error ? error : "No hay pólizas disponibles"}
           </div>
-        ))}
+        ) : (
+          filteredPolizas.map((poliza) => (
+            <div
+              key={poliza.numeroPoliza}
+              className="border-0 shadow-md rounded-lg p-4"
+            >
+              <h2 className="font-bold">PÓLIZA N. {poliza.numeroPoliza}</h2>
+              <p>{poliza.nombreSeguro}</p>
+              <p>Vigencia: {poliza.vigencia}</p>
+              <p>Costo total: ${poliza.montoTotal}</p>
+              <button
+                className="mt-4 botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                onClick={() => handleInfo(poliza.idPoliza)}
+              >
+                Ver más
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

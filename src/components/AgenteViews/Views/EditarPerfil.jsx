@@ -51,7 +51,7 @@ const EditarPerfil = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/nar/usuarios/id/${id}`
+          `http://localhost:3001/nar/usuarios/id/${id}`
         );
         setFormData(response.data);
         // Guardar el correo y teléfono originales para comparar después
@@ -216,7 +216,7 @@ const EditarPerfil = () => {
       if (modificarContrasena) {
         // Actualizar la contraseña
         const passwordResponse = await axios.put(
-          `http://localhost:3000/nar/usuarios/updPostulante/${id}`,
+          `http://localhost:3001/nar/usuarios/updPostulante/${id}`,
           {
             contrasenaActual: formData.contrasenaActual,
             nuevaContrasena: formData.nuevaContrasena,
@@ -237,7 +237,7 @@ const EditarPerfil = () => {
         };
 
         const response = await axios.put(
-          `http://localhost:3000/nar/usuarios/byAdmin/${id}`,
+          `http://localhost:3001/nar/usuarios/byAdmin/${id}`,
           dataToSend
         );
 

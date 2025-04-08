@@ -248,7 +248,7 @@ const DatosCotizar = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/clientes/rfc/${rfcTitularExistente}`
+        `http://localhost:3001/nar/clientes/rfc/${rfcTitularExistente}`
       );
 
       if (response.data) {
@@ -464,7 +464,7 @@ const DatosCotizar = () => {
           // Crear nuevo cliente
           const datosCliente = { ...titular, idUsuario };
           const responseCliente = await axios.post(
-            "http://localhost:3000/nar/clientes",
+            "http://localhost:3001/nar/clientes",
             datosCliente
           );
           newIdCliente = responseCliente.data._id;
@@ -515,7 +515,7 @@ const DatosCotizar = () => {
           ? { ...titular, idCliente: newIdCliente }
           : { ...asegurado, idCliente: newIdCliente };
         const responseAsegurado = await axios.post(
-          "http://localhost:3000/nar/asegurados",
+          "http://localhost:3001/nar/asegurados",
           datosAsegurado
         );
         newIdAsegurado = responseAsegurado.data._id; // Suponiendo que el backend devuelve `idAsegurado`
@@ -594,7 +594,7 @@ const DatosCotizar = () => {
           id: id,
           seguro: seguro,
           idCliente: newIdCliente,
-          idAsegurado: idAsegurado,
+          idAsegurado: newIdAsegurado,
         },
       });
     } catch (error) {

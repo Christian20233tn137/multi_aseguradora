@@ -15,7 +15,7 @@ const Clientes = () => {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/nar/clientes");
+        const response = await axios.get("http://localhost:3001/nar/clientes");
         setClientes(response.data);
       } catch (error) {
         console.error("Error al obtener clientes:", error);
@@ -28,13 +28,17 @@ const Clientes = () => {
   useEffect(() => {
     const results = clientes.filter(
       (cliente) =>
-        (cliente.nombre && cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (cliente.apellidoPaterno && cliente.apellidoMaterno &&
+        (cliente.nombre &&
+          cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (cliente.apellidoPaterno &&
+          cliente.apellidoMaterno &&
           (cliente.apellidoPaterno + " " + cliente.apellidoMaterno)
             .toLowerCase()
             .includes(searchTerm.toLowerCase())) ||
-        (cliente.rfc && cliente.rfc.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (cliente.curp && cliente.curp.toLowerCase().includes(searchTerm.toLowerCase()))
+        (cliente.rfc &&
+          cliente.rfc.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (cliente.curp &&
+          cliente.curp.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredClientes(results);
   }, [searchTerm, clientes]);
@@ -46,7 +50,10 @@ const Clientes = () => {
 
   const indexOfLastClient = currentPage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentClients = filteredClientes.slice(indexOfFirstClient, indexOfLastClient);
+  const currentClients = filteredClientes.slice(
+    indexOfFirstClient,
+    indexOfLastClient
+  );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const Seguros = () => {
-  const API_URL = "http://localhost:3000/nar/cotizaciones/id";
+  const API_URL = "http://localhost:3001/nar/cotizaciones/id";
   const navigate = useNavigate();
 
   const [emision, setEmisiones] = useState(null);
@@ -70,7 +70,7 @@ const Seguros = () => {
           try {
             // Hacer la solicitud POST a la nueva ruta
             const response = await axios.put(
-              `http://localhost:3000/nar/cotizaciones/emitida/${idCotizacion}`
+              `http://localhost:3001/nar/cotizaciones/emitida/${idCotizacion}`
             );
 
             if (response.status === 200) {
