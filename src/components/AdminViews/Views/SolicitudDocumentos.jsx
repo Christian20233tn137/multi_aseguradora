@@ -26,7 +26,7 @@ const SolicitudDocumentos = () => {
           const documentPromises = documentTypes.map(async (docType) => {
             try {
               const response = await axios.get(
-                `http://localhost:3000/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
+                `http://localhost:3001/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
               );
 
               const idDocumento = response.data.idDocumento || null;
@@ -104,7 +104,7 @@ const SolicitudDocumentos = () => {
         if (result.isConfirmed) {
           try {
             await axios.put(
-              `http://localhost:3000/nar/usuarios/postulanteAgente/${profile._id}`
+              `http://localhost:3001/nar/usuarios/postulanteAgente/${profile._id}`
             );
             swalWithTailwindButtons.fire({
               title: `${action.charAt(0).toUpperCase() + action.slice(1)}!`,

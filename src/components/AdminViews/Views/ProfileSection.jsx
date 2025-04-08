@@ -48,9 +48,9 @@ const ProfileSection = () => {
 
     try {
       const [agentesRes, cotizacionesRes, emisionesRes] = await Promise.all([
-        axios.get(`http://localhost:3000/nar/usuarios/agentesActivos?mes=${mesIndex}`),
-        axios.get(`http://localhost:3000/nar/cotizaciones?mes=${mesIndex}`),
-        axios.get(`http://localhost:3000/nar/emisiones/?mes=${mesIndex}`),
+        axios.get(`http://localhost:3001/nar/usuarios/agentesActivos?mes=${mesIndex}`),
+        axios.get(`http://localhost:3001/nar/cotizaciones?mes=${mesIndex}`),
+        axios.get(`http://localhost:3001/nar/emisiones/?mes=${mesIndex}`),
       ]);
 
       setData({

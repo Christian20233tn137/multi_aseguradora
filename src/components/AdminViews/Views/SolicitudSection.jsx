@@ -38,7 +38,7 @@ const SolicitudSection = () => {
           setIsLoading(true); // Mostrar el loader
           try {
             const response = await axios.put(
-              `http://localhost:3000/nar/usuarios/postulanteAceptado/${profile._id}`
+              `http://localhost:3001/nar/usuarios/postulanteAceptado/${profile._id}`
             );
             swalWithTailwindButtons.fire({
               title: "¡Aceptado!",

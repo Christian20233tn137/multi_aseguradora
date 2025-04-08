@@ -33,7 +33,7 @@ const InicioAseguradoras = () => {
     const fetchAseguradoras = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/nar/aseguradoras"
+          "http://localhost:3001/nar/aseguradoras"
         );
         setAseguradoras(response.data);
 
@@ -65,7 +65,7 @@ const InicioAseguradoras = () => {
       for (const aseguradora of aseguradoras) {
         try {
           const response = await axios.get(
-            `http://localhost:3000/nar/aseguradoras/id/${aseguradora._id}`
+            `http://localhost:3001/nar/aseguradoras/id/${aseguradora._id}`
           );
           segurosData[aseguradora._id] = response.data;
         } catch (error) {
@@ -138,7 +138,7 @@ const InicioAseguradoras = () => {
             showConfirmButton: false,
           });
           try {
-            const endpoint = `http://localhost:3000/nar/aseguradoras/${action}/${aseguradoraId}`;
+            const endpoint = `http://localhost:3001/nar/aseguradoras/${action}/${aseguradoraId}`;
             const response = await axios.put(endpoint);
 
             if (response.status === 200) {

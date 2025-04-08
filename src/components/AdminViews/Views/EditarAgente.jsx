@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/nar/usuarios";
+const API_URL = "http://localhost:3001/nar/usuarios";
 
 const EditarAgente = () => {
   const navigate = useNavigate();
@@ -128,7 +128,7 @@ const EditarAgente = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
+        `http://localhost:3001/nar/usuarios/checkEmail/${email}`
       );
       return response.data.exists;
     } catch (error) {
@@ -145,7 +145,7 @@ const EditarAgente = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
+        `http://localhost:3001/nar/usuarios/checkPhone/${phone}`
       );
       return response.data.exists;
     } catch (error) {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import UsuarioProfile from "../AdminViews/assets/UsuarioProfile.png";
-import MenuIcon from "../AdminViews/assets/Menu.png";
+import UsuarioProfile from "../AgenteInactivoViews/assets/UsuarioProfile.png";
+import MenuIcon from "../AgenteInactivoViews/assets/Menu.png";
 import EditIcon from "../AdminViews/assets/BotonEdit.png";
 import Swal from "sweetalert2";
 

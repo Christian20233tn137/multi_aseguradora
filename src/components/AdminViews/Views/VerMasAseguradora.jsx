@@ -34,12 +34,12 @@ const VerMasAseguradora = () => {
         }
 
         const aseguradoraResponse = await axios.get(
-          `http://localhost:3000/nar/aseguradoras/id/${idAseguradora}`
+          `http://localhost:3001/nar/aseguradoras/id/${idAseguradora}`
         );
         setAseguradoraData(aseguradoraResponse.data);
 
         const segurosResponse = await axios.get(
-          `http://localhost:3000/nar/seguros/segurosByAseguradora/${idAseguradora}`
+          `http://localhost:3001/nar/seguros/segurosByAseguradora/${idAseguradora}`
         );
         setSeguros(segurosResponse.data);
 
@@ -133,7 +133,7 @@ const VerMasAseguradora = () => {
       .then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const endpoint = `http://localhost:3000/nar/seguros/${action}/${seguroId}`;
+            const endpoint = `http://localhost:3001/nar/seguros/${action}/${seguroId}`;
             const response = await axios.put(endpoint);
 
             if (response.status === 200) {

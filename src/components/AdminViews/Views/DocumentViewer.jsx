@@ -32,7 +32,7 @@ const DocumentViewer = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:3000/nar/${endpoint}/consultarDocumento/${id}`,
+          `http://localhost:3001/nar/${endpoint}/consultarDocumento/${id}`,
           { responseType: "json" }
         );
 
@@ -77,12 +77,12 @@ const DocumentViewer = () => {
           try {
             if (action === "aceptar") {
               await axios.put(
-                `http://localhost:3000/nar/documentosPersona/aceptarDocumento/${id}`
+                `http://localhost:3001/nar/documentosPersona/aceptarDocumento/${id}`
               );
               Swal.fire("¡Aceptado!", "El documento ha sido aceptado.", "success");
             } else if (action === "rechazar") {
               await axios.delete(
-                `http://localhost:3000/nar/documentosPersona/rechazarDocumento/${id}`
+                `http://localhost:3001/nar/documentosPersona/rechazarDocumento/${id}`
               );
               Swal.fire("¡Rechazado!", "El documento ha sido rechazado.", "success");
             }

@@ -26,7 +26,7 @@ const ConfigurarCuotas = () => {
     const fetchEmisionesActuales = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:3000/nar/cuotas/");
+        const response = await axios.get("http://localhost:3001/nar/cuotas/");
         const data = response.data;
         console.log("Datos de la API:", data); // Verifica la respuesta de la API
         if (data.length > 0) {
@@ -87,7 +87,7 @@ const ConfigurarCuotas = () => {
             setLoading(true);
 
             const response = await axios.put(
-              `http://localhost:3000/nar/cuotas/id/67ef962c86cbecc00539053d`,
+              `http://localhost:3001/nar/cuotas/id/67ef962c86cbecc00539053d`,
               {
                 cuotaMensual: cantidad,
               }

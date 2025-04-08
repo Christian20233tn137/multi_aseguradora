@@ -22,8 +22,8 @@ const InicioAgentes = () => {
     const fetchAgentes = async () => {
       try {
         const [activos, inactivos] = await Promise.all([
-          axios.get("http://localhost:3000/nar/usuarios/agentesActivos"),
-          axios.get("http://localhost:3000/nar/usuarios/agentesInactivos"),
+          axios.get("http://localhost:3001/nar/usuarios/agentesActivos"),
+          axios.get("http://localhost:3001/nar/usuarios/agentesInactivos"),
         ]);
         setAgentesActivos(activos.data);
         setAgentesInactivos(inactivos.data);
@@ -60,7 +60,7 @@ const InicioAgentes = () => {
         return false;
       }
 
-      await axios.put(`http://localhost:3000/nar/usuarios/active/${agenteId}`);
+      await axios.put(`http://localhost:3001/nar/usuarios/active/${agenteId}`);
 
       setAgentesInactivos(
         agentesInactivos.filter((agente) => agente._id !== agenteId)
