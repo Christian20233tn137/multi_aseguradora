@@ -50,7 +50,7 @@ const AgenteInactivo = () => {
             <p className="text-lg font-semibold">Clientes</p>
           </div>
         </div>
-        <button className="mt-8 bg-blue-500 text-white p-3 rounded-md">
+        <button className="mt-8 botones text-white p-3 rounded-md">
           Solicitar Reactivación
         </button>
       </div>

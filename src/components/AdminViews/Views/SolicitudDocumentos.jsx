@@ -6,7 +6,11 @@ import Swal from "sweetalert2";
 const SolicitudDocumentos = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const id = location.state?.id;
+  console.log("id del admin", id);
   const { profile } = location.state || {};
+  console.log("Id del postulante: ", profile._id);
+  
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

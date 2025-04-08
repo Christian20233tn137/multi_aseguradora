@@ -38,6 +38,7 @@ import SegurosCotizar from "./components/AgenteViews/Views/SegurosCotizar";
 import DocumentRow from "./components/AdminViews/Views/DocumentRow";
 import DocumentViewer from "./components/AdminViews/Views/DocumentViewer";
 import AgenteInactivo from "./components/AgenteInactivoViews/Views/AgenteInactivo";
+import LayoutAgenteInactivo from "./components/AgenteInactivoViews/LayoutAgenteInactivo";
 
 const App = () => {
   const location = useLocation();
@@ -254,7 +255,7 @@ const App = () => {
         path="/agenteInactivo"
         element={
           <ProtectedRoute allowedRoles={["agente"]}>
-        <AgenteInactivo />
+            <LayoutAgenteInactivo title={getTitle()}/>
           </ProtectedRoute>
         }
       />
