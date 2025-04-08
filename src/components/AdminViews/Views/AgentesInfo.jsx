@@ -18,7 +18,7 @@ const AgentesInfo = () => {
   const idAgente = location.state?.idAgente;
 
   const API_URL = "http://localhost:3001/nar/usuarios/cotizacionesYEmisiones";
-  const API_URL_DATOS = "http://localhost:3000/nar/usuarios";
+  const API_URL_DATOS = "http://localhost:3001/nar/usuarios";
 
   const [nombrePostulante, setNombrePostulante] = useState("");
   const [agente, setAgente] = useState({

@@ -23,7 +23,7 @@ const InicioAgentes = () => {
       try {
         const [activos, inactivos] = await Promise.all([
           axios.get("http://localhost:3001/nar/usuarios/agentesActivos"),
-          axios.get("http://localhost:3001/nar/usuarios/agentesInactivos"),
+          axios.get("http://localhost:3001/nar/usuarios/agentesInactivosEnReactivacion"),
         ]);
         setAgentesActivos(activos.data);
         setAgentesInactivos(inactivos.data);
