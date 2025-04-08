@@ -39,7 +39,7 @@ const LoginForm = ({ setUser }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/nar/usuarios/login",
+        "http://localhost:3001/nar/usuarios/login",
         {
           correo,
           contrasena,
@@ -58,13 +58,22 @@ const LoginForm = ({ setUser }) => {
             state: { id: data._id },
             replace: true, 
           });
-        } else if (data.rol === "agente") {
+        }
+        else if (data.rol === "agente" && data.estado === "inactivo") {
+          navigate("/agenteInactivo",{
+            state: { id: data._id },
+            replace: true, 
+          })
+        }
+         else if (data.rol === "agente") {
           navigate("/inicioAgentes", {
             state: { id: data._id },
             replace: true, 
           });
         } else if (data.rol === "postulante") {
           navigate("/archivosPostulante");
+        } else if (data.rol==="agenteInactivo"){
+          navigate("/agenteInactivo");
         }
       } else {
         setErrorBackend(message);

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import DocumentRow from "../Views/DocumentRow";
 
 const SolicitudDocumentos = () => {
   const navigate = useNavigate();
@@ -30,11 +29,7 @@ const SolicitudDocumentos = () => {
                 `http://localhost:3000/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
               );
 
-              console.log(`Respuesta para ${docType.endpoint}:`, response.data);
-
-              // Verificar que idDocumento exista y sea válido
               const idDocumento = response.data.idDocumento || null;
-
               return {
                 id: idDocumento,
                 name: docType.name,
@@ -43,7 +38,6 @@ const SolicitudDocumentos = () => {
               };
             } catch (error) {
               console.error(`Error obteniendo ${docType.endpoint}:`, error);
-              // En caso de error, devolver un objeto con ID nulo
               return {
                 id: null,
                 name: docType.name,
@@ -54,7 +48,6 @@ const SolicitudDocumentos = () => {
           });
 
           const transformedDocuments = await Promise.all(documentPromises);
-          console.log("Documentos transformados:", transformedDocuments);
           setDocuments(transformedDocuments);
         } catch (error) {
           setError("Error al obtener los documentos.");
@@ -73,12 +66,9 @@ const SolicitudDocumentos = () => {
   }, [profile]);
 
   const handleViewDocument = (documentId, documentType) => {
-    // Verificar que documentId sea válido antes de navegar
-    if (documentId && documentId !== "undefined" && documentId !== "null") {
-      console.log("Navegando a documento:", documentId, documentType);
+    if (documentId) {
       navigate(`/solicitudes/verDocumento/${documentType}/${documentId}`);
     } else {
-      console.error("ID de documento inválido:", documentId);
       Swal.fire({
         title: "Error",
         text: "No se puede visualizar este documento porque no tiene un ID válido",
@@ -171,9 +161,31 @@ const SolicitudDocumentos = () => {
           </tr>
         </thead>
         <tbody>
-          {documents.map((doc, index) => (
-            <DocumentRow key={index} document={doc} onView={handleViewDocument} />
-          ))}
+          {documents.map((doc, index) => {
+            const hasValidId = doc.id && doc.id !== "undefined" && doc.id !== "null" && doc.id !== "";
+            return (
+              <tr key={index} className="border-b border-gray-200">
+                <td className="py-2 text-center">
+                  <p className="text-gray-800">{doc.name}</p>
+                </td>
+                <td className="py-2 text-center">
+                  <p className={`${doc.status === "aceptado" ? "text-green-600" : doc.status === "pendiente" ? "text-yellow-600" : "text-gray-800"}`}>
+                    {doc.status}
+                  </p>
+                </td>
+                <td className="py-2 text-center">
+                  <button
+                    onClick={() => hasValidId ? handleViewDocument(doc.id, doc.type) : null}
+                    className={`botones text-white py-1 px-3 rounded ${!hasValidId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={!hasValidId}
+                    aria-label={`Ver más detalles de ${doc.name}`}
+                  >
+                    {hasValidId ? "Ver más" : "No disponible"}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       <div className="flex space-x-5 justify-center mt-10">

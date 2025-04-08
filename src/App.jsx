@@ -37,6 +37,7 @@ import CotizacionesPendientes from "./components/AgenteViews/Views/CotizacionesP
 import SegurosCotizar from "./components/AgenteViews/Views/SegurosCotizar";
 import DocumentRow from "./components/AdminViews/Views/DocumentRow";
 import DocumentViewer from "./components/AdminViews/Views/DocumentViewer";
+import AgenteInactivo from "./components/AgenteInactivoViews/Views/AgenteInactivo";
 
 const App = () => {
   const location = useLocation();
@@ -115,6 +116,8 @@ const App = () => {
         return "Clientes";
       case "/clientes/polizas/:id":
         return "Seguros";
+        case "/agenteInactivo":
+        return "Agente Inactivo";
       default:
         return "Administradores";
     }
@@ -245,6 +248,17 @@ const App = () => {
           element={<InformacionPolizas />}
         />
       </Route>
+
+       {/* Ruta para agente inactivo */}
+       <Route
+        path="/agenteInactivo"
+        element={
+          <ProtectedRoute allowedRoles={["agente"]}>
+        <AgenteInactivo />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Ruta recuperar contra */}
       <Route path="recuperacion" element={<RecuperarContra />} />
       <Route path="/recuperacion/codigo" element={<Codigo />} />

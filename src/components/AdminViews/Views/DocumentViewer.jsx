@@ -22,10 +22,6 @@ const DocumentViewer = () => {
   useEffect(() => {
     const fetchDocument = async () => {
       try {
-        console.log("ID recibido:", id);
-        console.log("Tipo recibido:", type);
-
-        // Verificar que el ID y el tipo sean válidos
         if (!type || !id || id === "undefined" || id === "null") {
           throw new Error("Faltan parámetros: tipo de documento o id válido.");
         }
@@ -37,16 +33,12 @@ const DocumentViewer = () => {
 
         const response = await axios.get(
           `http://localhost:3000/nar/${endpoint}/consultarDocumento/${id}`,
-          { responseType: "json" } // Asegúrate de que el backend devuelva JSON
+          { responseType: "json" }
         );
 
-        console.log("Respuesta del servidor:", response.data);
-
-        // Asume que la respuesta contiene una URL o el contenido del documento
-        const fileURL = response.data.url; // Ajusta según la estructura de tu respuesta
+        const fileURL = response.data.url;
         setDocumentContent(fileURL);
       } catch (error) {
-        console.error("Error completo:", error);
         if (error.response && error.response.status === 500) {
           setError("Error del servidor: El documento no existe o no está disponible.");
         } else {
