@@ -594,7 +594,7 @@ const DatosCotizar = () => {
           id: id,
           seguro: seguro,
           idCliente: newIdCliente,
-          idAsegurado: idAsegurado,
+          idAsegurado: newIdAsegurado,
         },
       });
     } catch (error) {
