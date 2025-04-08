@@ -91,19 +91,19 @@ const ProfileSection = () => {
           ))}
         </select>
       </div>
-
-      <div className="flex flex-wrap justify-center gap-6">
-        <div className="flex flex-col items-center flex-1 p-6 bg-blue-100 rounded-lg shadow min-w-[200px]">
-          <h2 className="text-lg font-semibold mb-2">Agentes activos</h2>
-          <p className="text-3xl font-bold">{data.agentesActivos}</p>
+  
+      <div className="flex justify-center gap-10">
+        <div className="flex flex-col items-center p-10 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-base font-medium text-gray-700 mb-2">Agentes activos</h2>
+          <p className="text-6xl font-extrabold text-black">{data.agentesActivos}</p>
         </div>
-        <div className="flex flex-col items-center flex-1 p-6 bg-blue-100 rounded-lg shadow min-w-[200px]">
-          <h2 className="text-lg font-semibold mb-2">Cotizaciones</h2>
-          <p className="text-3xl font-bold">{data.cotizaciones}</p>
+        <div className="flex flex-col items-center p-10 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-base font-medium text-gray-700 mb-2">Cotizaciones</h2>
+          <p className="text-6xl font-extrabold text-black">{data.cotizaciones}</p>
         </div>
-        <div className="flex flex-col items-center flex-1 p-6 bg-blue-100 rounded-lg shadow min-w-[200px]">
-          <h2 className="text-lg font-semibold mb-2">Emisiones</h2>
-          <p className="text-3xl font-bold">{data.emisiones}</p>
+        <div className="flex flex-col items-center p-10 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-base font-medium text-gray-700 mb-2">Emisiones</h2>
+          <p className="text-6xl font-extrabold text-black">{data.emisiones}</p>
         </div>
       </div>
     </div>
