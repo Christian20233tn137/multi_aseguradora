@@ -98,8 +98,8 @@ const DatosCotizar = () => {
 
     // Validación de correo electrónico
     if (name === "correo" && value) {
-      if (value.length > 25) {
-        error = "No debe exceder 25 caracteres";
+      if (value.length > 35) {
+        error = "No debe exceder 35 caracteres";
       } else if (!/\S+@\S+\.\S+/.test(value)) {
         error = "Formato de correo electrónico inválido";
       }

@@ -55,7 +55,7 @@ const ArchivosSection = () => {
         const requests = Object.entries(endpoints).map(async ([key, endpoint]) => {
           try {
             const response = await axios.get(
-              `http://localhost:3000/nar/${endpoint}/documentosPostulante/${user._id}`
+              `http://localhost:3001/nar/${endpoint}/documentosPostulante/${user._id}`
             );
             console.log(`Respuesta para ${key}:`, response.data);
 
@@ -219,7 +219,7 @@ const ArchivosSection = () => {
 
         try {
           const response = await axios.post(
-            `http://localhost:3000/nar/${endpoints[key]}/subirDocumento`,
+            `http://localhost:3001/nar/${endpoints[key]}/subirDocumento`,
             formData,
             {
               headers: {
