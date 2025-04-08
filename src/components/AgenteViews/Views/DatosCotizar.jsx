@@ -454,18 +454,53 @@ const DatosCotizar = () => {
       });
 
       let newIdCliente;
+      let newIdAsegurado;
 
       // Si es titular existente, usar el ID del titular existente
       if (esTitularExistente && titularExistente) {
         newIdCliente = titularExistente._id;
       } else {
-        // Crear nuevo cliente
-        const datosCliente = { ...titular, idUsuario };
-        const responseCliente = await axios.post(
-          "http://localhost:3000/nar/clientes",
-          datosCliente
-        );
-        newIdCliente = responseCliente.data._id;
+        try {
+          // Crear nuevo cliente
+          const datosCliente = { ...titular, idUsuario };
+          const responseCliente = await axios.post(
+            "http://localhost:3000/nar/clientes",
+            datosCliente
+          );
+          newIdCliente = responseCliente.data._id;
+        } catch (error) {
+          // Cerrar el indicador de carga en caso de error
+          swalWithTailwindButtons.close();
+
+          // Verificar si el error es por correo o RFC duplicado
+          if (error.response && error.response.data) {
+            const errorMessage = error.response.data.message;
+
+            if (errorMessage.includes("correo")) {
+              swalWithTailwindButtons.fire({
+                title: "Error",
+                text: "El correo electrónico ya está registrado en el sistema",
+                icon: "error",
+              });
+              return;
+            } else if (errorMessage.includes("RFC")) {
+              swalWithTailwindButtons.fire({
+                title: "Error",
+                text: "El RFC ya está registrado en el sistema",
+                icon: "error",
+              });
+              return;
+            }
+          }
+
+          // Si no es un error específico, mostrar mensaje genérico
+          swalWithTailwindButtons.fire({
+            title: "Error",
+            text: "Ocurrió un error al crear el cliente",
+            icon: "error",
+          });
+          return;
+        }
       }
 
       setIdCliente(newIdCliente);
@@ -475,15 +510,49 @@ const DatosCotizar = () => {
       }
 
       // **Paso 2:** Crear asegurado
-      const datosAsegurado = esTitularAsegurado
-        ? { ...titular, idCliente: newIdCliente }
-        : { ...asegurado, idCliente: newIdCliente };
-      const responseAsegurado = await axios.post(
-        "http://localhost:3000/nar/asegurados",
-        datosAsegurado
-      );
-      const newIdAsegurado = responseAsegurado.data._id; // Suponiendo que el backend devuelve `idAsegurado`
-      setIdAsegurado(newIdAsegurado);
+      try {
+        const datosAsegurado = esTitularAsegurado
+          ? { ...titular, idCliente: newIdCliente }
+          : { ...asegurado, idCliente: newIdCliente };
+        const responseAsegurado = await axios.post(
+          "http://localhost:3000/nar/asegurados",
+          datosAsegurado
+        );
+        newIdAsegurado = responseAsegurado.data._id; // Suponiendo que el backend devuelve `idAsegurado`
+        setIdAsegurado(newIdAsegurado);
+      } catch (error) {
+        // Cerrar el indicador de carga en caso de error
+        swalWithTailwindButtons.close();
+
+        // Verificar si el error es por correo o RFC duplicado
+        if (error.response && error.response.data) {
+          const errorMessage = error.response.data.message;
+
+          if (errorMessage.includes("correo")) {
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "El correo electrónico del asegurado ya está registrado en el sistema",
+              icon: "error",
+            });
+            return;
+          } else if (errorMessage.includes("RFC")) {
+            swalWithTailwindButtons.fire({
+              title: "Error",
+              text: "El RFC del asegurado ya está registrado en el sistema",
+              icon: "error",
+            });
+            return;
+          }
+        }
+
+        // Si no es un error específico, mostrar mensaje genérico
+        swalWithTailwindButtons.fire({
+          title: "Error",
+          text: "Ocurrió un error al crear el asegurado",
+          icon: "error",
+        });
+        return;
+      }
 
       // Cerrar el indicador de carga
       swalWithTailwindButtons.close();
@@ -525,7 +594,7 @@ const DatosCotizar = () => {
           id: id,
           seguro: seguro,
           idCliente: newIdCliente,
-          idAsegurado: newIdAsegurado,
+          idAsegurado: idAsegurado,
         },
       });
     } catch (error) {
