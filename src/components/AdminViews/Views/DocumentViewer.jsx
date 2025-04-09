@@ -16,6 +16,8 @@ const DocumentViewer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [documentStatus, setDocumentStatus] = useState(null);
+
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -29,6 +31,14 @@ const DocumentViewer = () => {
           throw new Error("Faltan parámetros: tipo de documento o id válido.");
         }
 
+        // 1. Obtener el estado del documento
+        const statusResponse = await axios.get(
+          `http://localhost:3001/nar/${documentType}/estado/${documentId}`
+        );
+        const estado = statusResponse.data.estado; // Ajusta según tu respuesta exacta
+        setDocumentStatus(estado);
+
+        // 2. Descargar el documento
         const endpoint = documentType;
         if (!endpoint) {
           throw new Error("Tipo de documento no válido.");
@@ -41,7 +51,6 @@ const DocumentViewer = () => {
           }
         );
 
-        // Crear una URL para el blob
         const blob = new Blob([response.data], { type: "application/pdf" });
         const fileURL = URL.createObjectURL(blob);
         setDocumentContent(fileURL);
@@ -61,6 +70,7 @@ const DocumentViewer = () => {
 
     fetchDocument();
   }, [documentId, documentType]);
+
 
   const showAlert = async (action) => {
     const swalWithTailwindButtons = Swal.mixin({
@@ -134,7 +144,7 @@ const DocumentViewer = () => {
         <button
           type="button"
           className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
-          onClick={() => navigate(-1, {state : {id:id, } })}
+          onClick={() => navigate(-1, { state: { id: id, } })}
         >
           Regresar
         </button>
@@ -157,7 +167,8 @@ const DocumentViewer = () => {
       <div className="flex space-x-4">
         <button
           type="button"
-          className="w-32 text-white py-2 rounded-md bg-green-500 hover:bg-green-600"
+          className={`w-32 text-white py-2 rounded-md ${documentStatus === 'aceptado' ? 'bg-green-300 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
+          disabled={documentStatus === 'aceptado'}
           onClick={() => showAlert("aceptar")}
         >
           Aceptar
@@ -165,13 +176,14 @@ const DocumentViewer = () => {
         <button
           type="button"
           className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
-          onClick={() => navigate(-1, {state : {id:id, } })}
+          onClick={() => navigate(-1, { state: { id: id, } })}
         >
           Regresar
         </button>
         <button
           type="button"
-          className="w-32 text-white py-2 rounded-md bg-red-500 hover:bg-red-600"
+          className={`w-32 text-white py-2 rounded-md ${documentStatus === 'aceptado' ? 'bg-red-300 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'}`}
+          disabled={documentStatus === 'aceptado'}
           onClick={() => showAlert("rechazar")}
         >
           Rechazar
