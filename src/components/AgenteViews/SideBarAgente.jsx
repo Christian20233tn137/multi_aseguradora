@@ -56,7 +56,7 @@ const SideBarAgente = () => {
     { nombre: "Inicio", ruta: "/inicioAgentes" },
     { nombre: "Cotizar", ruta: "/inicioAgentes/cotizar" },
     { nombre: "Cotizaciones", ruta: `/inicioAgentes/cotizaciones` },
-    { nombre: "Estadisticas", ruta: "/inicioAgentes/estadisticas" },
+    { nombre: "Estadísticas", ruta: "/inicioAgentes/estadisticas" },
     { nombre: "Clientes", ruta: `/inicioAgentes/clientes` },
   ];
 
