@@ -85,25 +85,36 @@ const ProfileSection = () => {
   return (
     <div className="flex flex-col p-6">
       <div className="mb-6 self-end">
-        <select className="p-2 border rounded" value={month} onChange={handleMonthChange}>
+        <select
+          className="w-full p-3 border border-gray-300 rounded bg-blue-900 text-white text-xl"
+          value={month}
+          onChange={handleMonthChange}
+        >
           {meses.map((mes, idx) => (
-            <option key={idx} value={mes}>{mes}</option>
+            <option
+              key={idx}
+              value={mes}
+              className="bg-white text-black"
+            >
+              {mes}
+            </option>
           ))}
         </select>
       </div>
-  
-      <div className="flex justify-center gap-10">
-        <div className="flex flex-col items-center p-10 bg-blue-100 rounded-lg shadow w-56">
-          <h2 className="text-base font-medium text-gray-700 mb-2">Agentes activos</h2>
-          <p className="text-6xl font-extrabold text-black">{data.agentesActivos}</p>
+
+
+      <div className="flex justify-center gap-12">
+        <div className="flex flex-col items-center  p-12 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-3xl font-extrabold text-gray-700 mt-2">Agentes activos</h2>
+          <p className="text-8xl font-extrabold text-black">{data.agentesActivos}</p>
         </div>
-        <div className="flex flex-col items-center p-10 bg-blue-100 rounded-lg shadow w-56">
-          <h2 className="text-base font-medium text-gray-700 mb-2">Cotizaciones</h2>
-          <p className="text-6xl font-extrabold text-black">{data.cotizaciones}</p>
+        <div className="flex flex-col items-center p-20 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-3xl font-extrabold text-gray-700 mb-2">Cotizaciones</h2>
+          <p className="text-8xl font-extrabold text-black">{data.cotizaciones}</p>
         </div>
-        <div className="flex flex-col items-center p-10 bg-blue-100 rounded-lg shadow w-56">
-          <h2 className="text-base font-medium text-gray-700 mb-2">Emisiones</h2>
-          <p className="text-6xl font-extrabold text-black">{data.emisiones}</p>
+        <div className="flex flex-col items-center p-20 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-3xl font-extrabold text-gray-700 mb-2">Emisiones</h2>
+          <p className="text-8xl font-extrabold text-black">{data.emisiones}</p>
         </div>
       </div>
     </div>
