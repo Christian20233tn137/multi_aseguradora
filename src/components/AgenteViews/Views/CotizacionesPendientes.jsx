@@ -76,11 +76,11 @@ const CotizacionesPendientes = () => {
 
   return (
     <div className="p-6">
-      <div className="flex flex-col sm:flex-row items-center mb-6">
+      <div className="flex flex-col sm:flex-row mb-6">
         <input
           type="text"
           placeholder="Buscar cotización"
-          className="border-gray-300 p-3 w-72 rounded-lg shadow-sm focus:outline-none"
+          className="border-gray-300 p-3 w-72 rounded-lg shadow-sm focus:outline-none ml-auto"
           aria-label="Buscar cotización"
           value={searchTerm}
           onChange={handleSearch}
