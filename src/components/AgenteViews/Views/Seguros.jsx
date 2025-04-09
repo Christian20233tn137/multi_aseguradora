@@ -19,6 +19,7 @@ const Seguros = () => {
       try {
         const response = await axios.get(`${API_URL}/${idCotizacion}`);
         if (response.data.success) {
+          console.log("Datos de cotización recibidos:", response.data.data);
           setEmisiones(response.data.data);
         } else {
           console.error(
@@ -147,7 +148,10 @@ const Seguros = () => {
         {/* Precio Final */}
         <div className="border border-gray-300 rounded-lg p-4 mt-4">
           <p>
-            <strong>Precio Final:</strong> ${emision.precioFinal}
+            <strong>Precio Final:</strong> $
+            {typeof emision.montoPrima === "number"
+              ? emision.montoPrima.toFixed(2)
+              : emision.precioFinal || "No disponible"}
           </p>
         </div>
 

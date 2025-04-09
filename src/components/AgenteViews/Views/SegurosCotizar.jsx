@@ -40,9 +40,9 @@ const SegurosCotizar = () => {
   const calcularMontoPrima = (montoPrima, edad) => {
     let incremento = 0;
     if (edad >= 18 && edad <= 25) {
-      incremento = 0.20; // 20% más
+      incremento = 0.2; // 20% más
     } else if (edad >= 26 && edad <= 40) {
-      incremento = 0.10; // 10% más
+      incremento = 0.1; // 10% más
     } else if (edad >= 41 && edad <= 60) {
       incremento = 0.15; // 15% más
     } else if (edad > 60) {
@@ -81,9 +81,23 @@ const SegurosCotizar = () => {
         throw new Error("Debes seleccionar un seguro.");
       }
 
+      // Encontrar el seguro seleccionado para obtener el montoPrima
+      const seguroSeleccionado = seguros.find(
+        (s) => s.idSeguro === datosCotizacion.idSeguro
+      );
+      if (!seguroSeleccionado) {
+        throw new Error("No se encontró el seguro seleccionado.");
+      }
+
+      // Incluir el montoPrima en los datos de la cotización
+      const datosCotizacionCompletos = {
+        ...datosCotizacion,
+        montoPrima: seguroSeleccionado.montoPrima,
+      };
+
       const responseCotizacion = await axios.post(
         "http://localhost:3001/nar/cotizaciones",
-        datosCotizacion
+        datosCotizacionCompletos
       );
 
       swalWithTailwindButtons.fire(
@@ -127,10 +141,23 @@ const SegurosCotizar = () => {
 
         if (response.data.success) {
           const edad = calcularEdad(fechaNacimiento);
-          const segurosConIncremento = response.data.data.map((seguro) => ({
-            ...seguro,
-            montoPrima: calcularMontoPrima(seguro.montoPrima, edad),
-          }));
+          console.log("Edad calculada:", edad);
+
+          const segurosConIncremento = response.data.data.map((seguro) => {
+            const montoPrimaOriginal = seguro.montoPrima;
+            const montoPrimaCalculado = calcularMontoPrima(
+              seguro.montoPrima,
+              edad
+            );
+            console.log(
+              `Seguro: ${seguro.nombreSeguro}, Monto original: ${montoPrimaOriginal}, Monto con incremento: ${montoPrimaCalculado}`
+            );
+
+            return {
+              ...seguro,
+              montoPrima: montoPrimaCalculado,
+            };
+          });
           setSeguros(segurosConIncremento);
         } else {
           console.error("Error al obtener los seguros:", response.data.message);
@@ -186,6 +213,7 @@ const SegurosCotizar = () => {
                           ...cotizacion,
                           idSeguro: seguro.idSeguro,
                           idAsegurado: cotizacion.idAsegurado, // Asegúrate de incluir idAsegurado
+                          montoPrima: seguro.montoPrima, // Añadir el montoPrima calculado
                         };
                         agregarCotizacion(datosCotizacion);
                       }}
