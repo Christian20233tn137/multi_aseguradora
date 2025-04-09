@@ -596,7 +596,7 @@ const DatosCotizar = () => {
           seguro: seguro,
           idCliente: newIdCliente,
           idAsegurado: newIdAsegurado,
-          fechaNacimiento: asegurado.fechaNacimiento,
+          fechaNacimiento: titular.fechaNacimiento,
         },
       });
 
