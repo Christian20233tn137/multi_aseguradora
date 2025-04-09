@@ -40,7 +40,7 @@ const RecuperarContra = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/nar/usuarios/recuperacion/generar', {
+      const response = await axios.post('http://localhost:3001/nar/usuarios/recuperacion/generar', {
         correo: email
       });
 

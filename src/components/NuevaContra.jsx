@@ -33,7 +33,7 @@ const NuevaContra = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/nar/usuarios/recuperacion/cambiar', {
+      const response = await axios.post('http://localhost:3001/nar/usuarios/recuperacion/cambiar', {
         correo,
         codigoRecuperacion,
         nuevaContrasena: password
