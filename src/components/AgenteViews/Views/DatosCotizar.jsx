@@ -589,14 +589,17 @@ const DatosCotizar = () => {
       setMostrarFormularioTitular(true);
 
       // Navegar a la ruta de seguros con los IDs recién obtenidos
+      // En DatosCotizar.js
       navigate("/inicioAgentes/seguros", {
         state: {
           id: id,
           seguro: seguro,
           idCliente: newIdCliente,
           idAsegurado: idAsegurado,
+          fechaNacimiento: titular.fechaNacimiento, // Añade esta línea
         },
       });
+
     } catch (error) {
       console.error("Error al cotizar:", error);
 
@@ -663,9 +666,8 @@ const DatosCotizar = () => {
                 placeholder="Ingrese el RFC del titular existente"
                 value={rfcTitularExistente}
                 onChange={handleRfcTitularExistenteChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.rfcTitularExistente ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.rfcTitularExistente ? "border-red-500" : ""
+                  }`}
               />
               {errors.rfcTitularExistente && (
                 <p className="text-red-500 text-xs mt-1">
@@ -713,9 +715,8 @@ const DatosCotizar = () => {
               placeholder="Nombre"
               value={titular.nombre}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.titular.nombre ? "border-red-500" : ""
-              }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.nombre ? "border-red-500" : ""
+                }`}
             />
             {errors.titular.nombre && (
               <p className="text-red-500 text-xs mt-1">
@@ -730,9 +731,8 @@ const DatosCotizar = () => {
               placeholder="Apellido Paterno"
               value={titular.apellidoPaterno}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.titular.apellidoPaterno ? "border-red-500" : ""
-              }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.apellidoPaterno ? "border-red-500" : ""
+                }`}
             />
             {errors.titular.apellidoPaterno && (
               <p className="text-red-500 text-xs mt-1">
@@ -747,9 +747,8 @@ const DatosCotizar = () => {
               placeholder="Apellido Materno"
               value={titular.apellidoMaterno}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.titular.apellidoMaterno ? "border-red-500" : ""
-              }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.apellidoMaterno ? "border-red-500" : ""
+                }`}
             />
             {errors.titular.apellidoMaterno && (
               <p className="text-red-500 text-xs mt-1">
@@ -762,9 +761,8 @@ const DatosCotizar = () => {
               selected={titular.fechaNacimiento}
               onChange={handleFechaNacimientoChange}
               placeholderText="Fecha de Nacimiento"
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.titular.fechaNacimiento ? "border-red-500" : ""
-              }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.fechaNacimiento ? "border-red-500" : ""
+                }`}
               dateFormat="yyyy-MM-dd"
               locale="es"
               showYearDropdown
@@ -786,9 +784,8 @@ const DatosCotizar = () => {
               placeholder="Teléfono"
               value={titular.telefono}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.titular.telefono ? "border-red-500" : ""
-              }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.telefono ? "border-red-500" : ""
+                }`}
             />
             {errors.titular.telefono && (
               <p className="text-red-500 text-xs mt-1">
@@ -803,9 +800,8 @@ const DatosCotizar = () => {
               placeholder="Correo Electrónico"
               value={titular.correo}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.titular.correo ? "border-red-500" : ""
-              }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.correo ? "border-red-500" : ""
+                }`}
             />
             {errors.titular.correo && (
               <p className="text-red-500 text-xs mt-1">
@@ -820,9 +816,8 @@ const DatosCotizar = () => {
               placeholder="RFC"
               value={titular.rfc}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                errors.titular.rfc ? "border-red-500" : ""
-              }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.rfc ? "border-red-500" : ""
+                }`}
             />
             {errors.titular.rfc && (
               <p className="text-red-500 text-xs mt-1">{errors.titular.rfc}</p>
@@ -868,9 +863,8 @@ const DatosCotizar = () => {
                 placeholder="Nombre"
                 value={asegurado.nombre}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.asegurado.nombre ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.nombre ? "border-red-500" : ""
+                  }`}
               />
               {errors.asegurado.nombre && (
                 <p className="text-red-500 text-xs mt-1">
@@ -885,9 +879,8 @@ const DatosCotizar = () => {
                 placeholder="Apellido Paterno"
                 value={asegurado.apellidoPaterno}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.asegurado.apellidoPaterno ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.apellidoPaterno ? "border-red-500" : ""
+                  }`}
               />
               {errors.asegurado.apellidoPaterno && (
                 <p className="text-red-500 text-xs mt-1">
@@ -902,9 +895,8 @@ const DatosCotizar = () => {
                 placeholder="Apellido Materno"
                 value={asegurado.apellidoMaterno}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.asegurado.apellidoMaterno ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.apellidoMaterno ? "border-red-500" : ""
+                  }`}
               />
               {errors.asegurado.apellidoMaterno && (
                 <p className="text-red-500 text-xs mt-1">
@@ -917,9 +909,8 @@ const DatosCotizar = () => {
                 selected={asegurado.fechaNacimiento}
                 onChange={handleFechaNacimientoAseguradoChange}
                 placeholderText="Fecha de Nacimiento"
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.asegurado.fechaNacimiento ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.fechaNacimiento ? "border-red-500" : ""
+                  }`}
                 dateFormat="yyyy-MM-dd"
                 locale="es"
                 showYearDropdown
@@ -941,9 +932,8 @@ const DatosCotizar = () => {
                 placeholder="Teléfono"
                 value={asegurado.telefono}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.asegurado.telefono ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.telefono ? "border-red-500" : ""
+                  }`}
               />
               {errors.asegurado.telefono && (
                 <p className="text-red-500 text-xs mt-1">
@@ -958,9 +948,8 @@ const DatosCotizar = () => {
                 placeholder="Correo Electrónico"
                 value={asegurado.correo}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.asegurado.correo ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.correo ? "border-red-500" : ""
+                  }`}
               />
               {errors.asegurado.correo && (
                 <p className="text-red-500 text-xs mt-1">
@@ -975,9 +964,8 @@ const DatosCotizar = () => {
                 placeholder="RFC"
                 value={asegurado.rfc}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
-                  errors.asegurado.rfc ? "border-red-500" : ""
-                }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.rfc ? "border-red-500" : ""
+                  }`}
               />
               {errors.asegurado.rfc && (
                 <p className="text-red-500 text-xs mt-1">

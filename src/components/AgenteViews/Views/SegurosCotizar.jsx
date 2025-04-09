@@ -10,7 +10,7 @@ const SegurosCotizar = () => {
   const id = location.state?.id;
   const idCliente = location.state?.idCliente;
   const idAsegurado = location.state?.idAsegurado;
-  console.log("Id del asegurado",idAsegurado)
+  const fechaNacimiento = location.state?.fechaNacimiento; // Recibe la fecha de nacimiento
   let seguro = location.state?.seguro;
   const [seguros, setSeguros] = useState([]);
   const idCotizacion = location.state?.idCotizacion;
@@ -18,7 +18,7 @@ const SegurosCotizar = () => {
   const [cotizacion, setCotizacion] = useState({
     idUsuario: id,
     idCliente: idCliente,
-    idAsegurado: idAsegurado,
+    idAsegurado: idAsegurado, // Asegúrate de que este valor esté presente
     idSeguro: "",
   });
 
@@ -26,7 +26,33 @@ const SegurosCotizar = () => {
     setCotizacion({ ...cotizacion, [e.target.name]: e.target.value });
   };
 
+  const calcularEdad = (fechaNacimiento) => {
+    const hoy = new Date();
+    const fechaNac = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const m = hoy.getMonth() - fechaNac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+      edad--;
+    }
+    return edad;
+  };
+
+  const calcularMontoPrima = (montoPrima, edad) => {
+    let incremento = 0;
+    if (edad >= 18 && edad <= 25) {
+      incremento = 0.20; // 20% más
+    } else if (edad >= 26 && edad <= 40) {
+      incremento = 0.10; // 10% más
+    } else if (edad >= 41 && edad <= 60) {
+      incremento = 0.15; // 15% más
+    } else if (edad > 60) {
+      incremento = 0.25; // 25% más
+    }
+    return montoPrima * (1 + incremento);
+  };
+
   const agregarCotizacion = async (datosCotizacion) => {
+    console.log("Datos de la cotización enviados:", datosCotizacion); // Verifica el contenido
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
         confirmButton:
@@ -65,7 +91,7 @@ const SegurosCotizar = () => {
         "La cotización se envió correctamente.",
         "success"
       );
-      
+
       console.log("idCotizacion", responseCotizacion.data._id);
       navigate("/inicioAgentes/emisiones", {
         state: {
@@ -100,7 +126,12 @@ const SegurosCotizar = () => {
         console.log("API Response:", response.data);
 
         if (response.data.success) {
-          setSeguros(response.data.data);
+          const edad = calcularEdad(fechaNacimiento);
+          const segurosConIncremento = response.data.data.map((seguro) => ({
+            ...seguro,
+            montoPrima: calcularMontoPrima(seguro.montoPrima, edad),
+          }));
+          setSeguros(segurosConIncremento);
         } else {
           console.error("Error al obtener los seguros:", response.data.message);
         }
@@ -109,7 +140,7 @@ const SegurosCotizar = () => {
       }
     };
     fetchSeguros();
-  }, [seguro]);
+  }, [seguro, fechaNacimiento]);
 
   console.log("Seguros State:", seguros);
 
@@ -154,6 +185,7 @@ const SegurosCotizar = () => {
                         const datosCotizacion = {
                           ...cotizacion,
                           idSeguro: seguro.idSeguro,
+                          idAsegurado: cotizacion.idAsegurado, // Asegúrate de incluir idAsegurado
                         };
                         agregarCotizacion(datosCotizacion);
                       }}
