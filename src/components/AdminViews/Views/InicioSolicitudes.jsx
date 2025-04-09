@@ -20,8 +20,8 @@ const InicioSolicitudes = () => {
     const fetchData = async () => {
       try {
         const [datosResponse, documentosResponse] = await Promise.all([
-          axios.get("http://localhost:3000/nar/usuarios/postulantesInactivos"),
-          axios.get("http://localhost:3000/nar/usuarios/postulantesActivos"),
+          axios.get("http://localhost:3001/nar/usuarios/postulantesInactivos"),
+          axios.get("http://localhost:3001/nar/usuarios/postulantesActivos"),
         ]);
 
         if (

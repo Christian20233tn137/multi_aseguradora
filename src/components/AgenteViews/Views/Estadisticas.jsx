@@ -159,10 +159,11 @@ const Estadisticas = () => {
           </BarChart>
         </div>
       </div>
+      
       {currentEmisiones >= cuotas ? (
         <p className="text-green-600 text-center mt-4">Meta mensual completada</p>
       ) : (
-        <p className="text-red-600 text-center mt-4">¡Sigue realizando cuotas!</p>
+        <p className="text-red-600 text-center mt-4">¡Sigue realizando emisiones!</p>
       )}
     </div>
   );

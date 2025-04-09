@@ -17,7 +17,7 @@ const InicioAdmin = () => {
   useEffect(() => {
     const fetchAdministradores = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/nar/usuarios");
+        const response = await axios.get("http://localhost:3001/nar/usuarios");
         const admins = response.data.filter(
           (user) => user.rol === "administrador"
         );
@@ -119,7 +119,7 @@ const InicioAdmin = () => {
             showConfirmButton: false,
           });
           try {
-            const endpoint = `http://localhost:3000/nar/usuarios/${action}/${adminId}`;
+            const endpoint = `http://localhost:3001/nar/usuarios/${action}/${adminId}`;
             const response = await axios.put(endpoint);
 
             if (response.status === 200) {

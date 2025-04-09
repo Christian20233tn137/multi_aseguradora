@@ -47,9 +47,11 @@ const MainContent = () => {
       return <InformacionAdmin />;
     }
 
-    if (location.pathname.startsWith("/solicitudes/verDocumento/")) {
+    if (location.pathname.startsWith("/solicitudes/solicitud-documentos/verDocumento")) {
       return <DocumentViewer />;
     }
+
+
 
     // Rutas estáticas
     switch (location.pathname) {

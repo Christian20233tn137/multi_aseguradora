@@ -6,14 +6,7 @@ import Notfound from "../Notfound";
 const MainContentAgenteInactivo = () => {
   const location = useLocation();
 
-  const getTitle = () => {
-    switch (location.pathname) {
-      case "/agenteInactivo":
-        return "Agente Inactivo";
-      default:
-        return "Bienvenido al sistema";
-    }
-  };
+  
 
   const renderContent = () => {
     switch (location.pathname) {

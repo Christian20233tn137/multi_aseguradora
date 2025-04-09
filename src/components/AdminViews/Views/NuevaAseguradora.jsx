@@ -113,7 +113,7 @@ const NuevaAseguradora = () => {
   const checkIfEmailExists = async (email) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/aseguradoras/checkEmail/${email}`
+        `http://localhost:3001/nar/aseguradoras/checkEmail/${email}`
       );
       return response.data.exists;
     } catch (error) {
@@ -125,7 +125,7 @@ const NuevaAseguradora = () => {
   const checkIfPhoneExists = async (phone) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/aseguradoras/checkPhone/${phone}`
+        `http://localhost:3001/nar/aseguradoras/checkPhone/${phone}`
       );
       return response.data.exists;
     } catch (error) {
@@ -201,7 +201,7 @@ const NuevaAseguradora = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/nar/aseguradoras",
+        "http://localhost:3001/nar/aseguradoras",
         formData
       );
 

@@ -1,9 +1,9 @@
 import React from 'react'
-import Header from "./HeaderAgenteInactivo";
-import SideBar from "./SideBarAgenteInactivo";
-import MainContent from '../AgenteViews/MainContentAgente';
+import Header from "../AgenteInactivoViews/HeaderAgenteInactivo";
+import SideBar from "../AgenteInactivoViews/SideBarAgenteInactivo";
+import MainContent from '../AgenteInactivoViews/MainContentAgenteInactivo';
 
-const LayoutAgente = ({title}) => {
+const LayoutAgenteInactivo = ({title}) => {
   return (
     <div className='flex h-screen'>
       <SideBar/>
@@ -15,4 +15,4 @@ const LayoutAgente = ({title}) => {
   )
 }
 
-export default LayoutAgente
+export default LayoutAgenteInactivo

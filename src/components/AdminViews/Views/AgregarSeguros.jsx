@@ -55,7 +55,7 @@ const AgregarSeguro = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/nar/seguros/",
+        "http://localhost:3001/nar/seguros/",
         dataToSend
       );
 

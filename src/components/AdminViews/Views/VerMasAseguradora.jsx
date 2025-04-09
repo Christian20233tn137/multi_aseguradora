@@ -34,12 +34,12 @@ const VerMasAseguradora = () => {
         }
 
         const aseguradoraResponse = await axios.get(
-          `http://localhost:3000/nar/aseguradoras/id/${idAseguradora}`
+          `http://localhost:3001/nar/aseguradoras/id/${idAseguradora}`
         );
         setAseguradoraData(aseguradoraResponse.data);
 
         const segurosResponse = await axios.get(
-          `http://localhost:3000/nar/seguros/segurosByAseguradora/${idAseguradora}`
+          `http://localhost:3001/nar/seguros/segurosByAseguradora/${idAseguradora}`
         );
         setSeguros(segurosResponse.data);
 
@@ -48,7 +48,9 @@ const VerMasAseguradora = () => {
         const initialCheckedItems = {};
         segurosResponse.data.forEach((seguro) => {
           initialCheckedItems[seguro._id] =
-            storedState[seguro._id] ?? seguro.active;
+            storedState[seguro._id] !== undefined
+              ? storedState[seguro._id]
+              : seguro.estado === "activo";
         });
 
         setCheckedItems(initialCheckedItems);
@@ -133,7 +135,7 @@ const VerMasAseguradora = () => {
       .then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const endpoint = `http://localhost:3000/nar/seguros/${action}/${seguroId}`;
+            const endpoint = `http://localhost:3001/nar/seguros/${action}/${seguroId}`;
             const response = await axios.put(endpoint);
 
             if (response.status === 200) {
@@ -154,7 +156,7 @@ const VerMasAseguradora = () => {
               setSeguros((prevSeguros) =>
                 prevSeguros.map((seguro) =>
                   seguro._id === seguroId
-                    ? { ...seguro, active: !isActive }
+                    ? { ...seguro, estado: !isActive ? "activo" : "inactivo" }
                     : seguro
                 )
               );
@@ -197,7 +199,6 @@ const VerMasAseguradora = () => {
     <div className="min-h-screen flex flex-col p-4 overflow-hidden">
       <div className="flex flex-col md:flex-row items-center justify-between mb-6">
         <div className="flex items-center space-x-4 mb-4 md:mb-0">
-          <div className="w-16 h-16 bg-gray-300 rounded-lg"></div>
           <div className="flex flex-col">
             <p>
               <strong>Aseguradora:</strong> {aseguradoraData.nombre}
@@ -243,7 +244,9 @@ const VerMasAseguradora = () => {
           currentItems.map((seguro) => {
             const seguroId = seguro?.id || seguro?._id;
             const nombreSeguro = seguro?.name || seguro?.nombre || "Sin nombre";
-            const fechaCreacion = new Date(seguro.createdAt).toISOString().slice(0, 10);
+            const fechaCreacion = new Date(seguro.createdAt)
+              .toISOString()
+              .slice(0, 10);
 
             return (
               <div

@@ -1,5 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 import Cotizar from "../assets/cotizar.png";
 import Clientes from "../assets/clientes.png";
 import Estadisticas from "../assets/estadisticas.png";
@@ -9,6 +11,43 @@ const AgenteInactivo = () => {
   const location = useLocation();
   const id = location.state?.id;
   console.log(id);
+
+  const swalWithTailwindButtons = Swal.mixin({
+    customClass: {
+      confirmButton:
+        "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+      cancelButton:
+        "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+    },
+    buttonsStyling: false,
+  });
+
+  const solicitarReactivacion = async () => {
+    if (!id) {
+      Swal.fire({
+        title: "Error",
+        text: "ID de agente no válido. Por favor, inténtalo de nuevo.",
+        icon: "error",
+      });
+      return;
+    }
+
+    try {
+      await axios.put(`http://localhost:3001/nar/usuarios/reactivacionesActive/${id}`);
+
+      Swal.fire({
+        title: "Solicitud enviada",
+        text: "Tu solicitud de reactivación ha sido enviada con éxito.",
+        icon: "success",
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al enviar la solicitud de reactivación. Por favor, inténtalo de nuevo más tarde.",
+        icon: "error",
+      });
+    }
+  };
 
   return (
     <div className="p-6 w-full h-full overflow-hidden">
@@ -50,7 +89,10 @@ const AgenteInactivo = () => {
             <p className="text-lg font-semibold">Clientes</p>
           </div>
         </div>
-        <button className="mt-8 bg-blue-500 text-white p-3 rounded-md">
+        <button
+          className="mt-8 botones text-white p-3 rounded-md"
+          onClick={solicitarReactivacion}
+        >
           Solicitar Reactivación
         </button>
       </div>

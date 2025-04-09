@@ -1,46 +1,55 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const DocumentViewer = () => {
-  const { id, type } = useParams();
+  const location = useLocation();
+  const documentId = location.state?.documentId;
+  const id = location.state?.id;
+  const documentType = location.state?.documentType;
+  console.log("Tipo de documento: ", documentType);
+  console.log("El id del admin es: ", id);
+  console.log("El id del documento es: ", documentId);
   const navigate = useNavigate();
   const [documentContent, setDocumentContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const documentEndpoints = {
-    comprobanteDomicilio: "comprobanteDomicilio",
-    constanciaFiscal: "constanciaFiscal",
-    identificacionOficial: "identificacionOficial",
-    caratulaBanco: "caratulaBanco",
-    documentoAfiliacion: "documentoAfiliacion",
-  };
-
   useEffect(() => {
     const fetchDocument = async () => {
       try {
-        if (!type || !id || id === "undefined" || id === "null") {
+        if (
+          !documentType ||
+          !documentId ||
+          documentId === "undefined" ||
+          documentId === "null"
+        ) {
           throw new Error("Faltan parámetros: tipo de documento o id válido.");
         }
 
-        const endpoint = documentEndpoints[type];
+        const endpoint = documentType;
         if (!endpoint) {
           throw new Error("Tipo de documento no válido.");
         }
 
         const response = await axios.get(
-          `http://localhost:3000/nar/${endpoint}/consultarDocumento/${id}`,
-          { responseType: "json" }
+          `http://localhost:3001/nar/${endpoint}/descargarDocumento/${documentId}`,
+          {
+            responseType: "blob",
+          }
         );
 
-        const fileURL = response.data.url;
+        // Crear una URL para el blob
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const fileURL = URL.createObjectURL(blob);
         setDocumentContent(fileURL);
       } catch (error) {
         if (error.response && error.response.status === 500) {
-          setError("Error del servidor: El documento no existe o no está disponible.");
+          setError(
+            "Error del servidor: El documento no existe o no está disponible."
+          );
         } else {
           setError(`Error al obtener el documento: ${error.message}`);
         }
@@ -51,13 +60,15 @@ const DocumentViewer = () => {
     };
 
     fetchDocument();
-  }, [id, type]);
+  }, [documentId]);
 
   const showAlert = async (action) => {
     const swalWithTailwindButtons = Swal.mixin({
       customClass: {
-        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+        confirmButton:
+          "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton:
+          "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
       },
       buttonsStyling: false,
     });
@@ -77,19 +88,31 @@ const DocumentViewer = () => {
           try {
             if (action === "aceptar") {
               await axios.put(
-                `http://localhost:3000/nar/documentosPersona/aceptarDocumento/${id}`
+                `http://localhost:3001/nar/documentosPersona/aceptarDocumento/${documentId}`
               );
-              Swal.fire("¡Aceptado!", "El documento ha sido aceptado.", "success");
+              Swal.fire(
+                "¡Aceptado!",
+                "El documento ha sido aceptado.",
+                "success"
+              );
             } else if (action === "rechazar") {
               await axios.delete(
-                `http://localhost:3000/nar/documentosPersona/rechazarDocumento/${id}`
+                `http://localhost:3001/nar/documentosPersona/rechazarDocumento/${documentId}`
               );
-              Swal.fire("¡Rechazado!", "El documento ha sido rechazado.", "success");
+              Swal.fire(
+                "¡Rechazado!",
+                "El documento ha sido rechazado.",
+                "success"
+              );
             }
             navigate(-2);
           } catch (error) {
             console.error("Error al procesar documento:", error);
-            Swal.fire("Error", "Hubo un problema al procesar el documento.", "error");
+            Swal.fire(
+              "Error",
+              "Hubo un problema al procesar el documento.",
+              "error"
+            );
           } finally {
             setIsProcessing(false);
           }
@@ -104,18 +127,19 @@ const DocumentViewer = () => {
       </div>
     );
 
-  if (error) return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="text-red-500 text-xl mb-4">{error}</div>
-      <button
-        type="button"
-        className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
-        onClick={() => navigate(-1)}
-      >
-        Regresar
-      </button>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div className="text-red-500 text-xl mb-4">{error}</div>
+        <button
+          type="button"
+          className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
+          onClick={() => navigate(-1, {state : {id:id, } })}
+        >
+          Regresar
+        </button>
+      </div>
+    );
 
   return (
     <div className="flex flex-col items-center justify-center h-screen relative">
@@ -141,7 +165,7 @@ const DocumentViewer = () => {
         <button
           type="button"
           className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1, {state : {id:id, } })}
         >
           Regresar
         </button>

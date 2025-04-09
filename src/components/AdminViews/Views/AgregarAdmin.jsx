@@ -102,7 +102,7 @@ const AgregarAdmin = () => {
   const checkIfEmailExists = async (email) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkEmail/${email}`
+        `http://localhost:3001/nar/usuarios/checkEmail/${email}`
       );
       return response.data.exists;
     } catch (error) {
@@ -115,7 +115,7 @@ const AgregarAdmin = () => {
   const checkIfPhoneExists = async (phone) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkPhone/${phone}`
+        `http://localhost:3001/nar/usuarios/checkPhone/${phone}`
       );
       return response.data.exists;
     } catch (error) {
@@ -128,7 +128,7 @@ const AgregarAdmin = () => {
   const checkIfRfcExists = async (rfc) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkRfc/${rfc}`
+        `http://localhost:3001/nar/usuarios/checkRfc/${rfc}`
       );
       return response.data.exists;
     } catch (error) {
@@ -141,7 +141,7 @@ const AgregarAdmin = () => {
   const checkIfCurpExists = async (curp) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/nar/usuarios/checkCurp/${curp}`
+        `http://localhost:3001/nar/usuarios/checkCurp/${curp}`
       );
       return response.data.exists;
     } catch (error) {
@@ -267,7 +267,7 @@ const AgregarAdmin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/nar/usuarios/admin",
+        "http://localhost:3001/nar/usuarios/admin",
         {
           nombre,
           correo,

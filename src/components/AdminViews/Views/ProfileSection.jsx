@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import emitter from "../../../utils/eventEmitter"; // Asegúrate de que esta ruta sea correcta
+import emitter from "../../../utils/eventEmitter";
 
 const ProfileSection = () => {
   const [month, setMonth] = useState("");
@@ -15,23 +15,17 @@ const ProfileSection = () => {
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
   ];
 
-  // Setear mes actual al iniciar
   useEffect(() => {
-    const mesActual = new Date().getMonth();
+    const mesActual = new Date().getMonth(); // 0-11
     setMonth(meses[mesActual]);
   }, []);
 
-  // Llamar datos cuando cambia el mes
   useEffect(() => {
-    if (month) {
-      fetchAllStats(month);
-    }
+    if (month) fetchAllStats(month);
   }, [month]);
 
-  // Escuchar eventos para actualizar las cards dinámicamente
   useEffect(() => {
     const refresh = () => fetchAllStats(month);
-
     emitter.on("cotizacionRealizada", refresh);
     emitter.on("emisionRealizada", refresh);
     emitter.on("nuevoAgente", refresh);
@@ -44,22 +38,43 @@ const ProfileSection = () => {
   }, [month]);
 
   const fetchAllStats = async (mesSeleccionado) => {
-    const mesIndex = meses.indexOf(mesSeleccionado) + 1; // Convertir nombre del mes a índice (1-12)
+    const monthIndex = meses.indexOf(mesSeleccionado); // 0-11
 
     try {
       const [agentesRes, cotizacionesRes, emisionesRes] = await Promise.all([
-        axios.get(`http://localhost:3000/nar/usuarios/agentesActivos?mes=${mesIndex}`),
-        axios.get(`http://localhost:3000/nar/cotizaciones?mes=${mesIndex}`),
-        axios.get(`http://localhost:3000/nar/emisiones/?mes=${mesIndex}`),
+        axios.get("http://localhost:3001/nar/usuarios/agentesActivos"),
+        axios.get("http://localhost:3001/nar/cotizaciones"),
+        axios.get("http://localhost:3001/nar/emisiones"),
       ]);
 
+      // Filtrar por mes
+      const agentesFiltrados = agentesRes.data.filter(a => {
+        const fecha = new Date(a.fechaRegistro);
+        return fecha.getMonth() === monthIndex;
+      });
+
+      const cotizacionesFiltradas = cotizacionesRes.data.filter(c => {
+        const fecha = new Date(c.fechaCotizacion);
+        return fecha.getMonth() === monthIndex;
+      });
+
+      const emisionesFiltradas = emisionesRes.data.filter(e => {
+        const fecha = new Date(e.fechaEmision);
+        return fecha.getMonth() === monthIndex;
+      });
+
       setData({
-        agentesActivos: agentesRes.data.length || 0,
-        cotizaciones: cotizacionesRes.data.length || 0,
-        emisiones: emisionesRes.data.length || 0,
+        agentesActivos: agentesFiltrados.length,
+        cotizaciones: cotizacionesFiltradas.length,
+        emisiones: emisionesFiltradas.length,
       });
     } catch (error) {
       console.error("Error al obtener datos:", error);
+      setData({
+        agentesActivos: 0,
+        cotizaciones: 0,
+        emisiones: 0,
+      });
     }
   };
 
@@ -69,33 +84,37 @@ const ProfileSection = () => {
 
   return (
     <div className="flex flex-col p-6">
-      {/* Dropdown */}
       <div className="mb-6 self-end">
-        <select className="p-2 border rounded" value={month} onChange={handleMonthChange}>
+        <select
+          className="w-full p-3 border border-gray-300 rounded bg-blue-900 text-white text-xl"
+          value={month}
+          onChange={handleMonthChange}
+        >
           {meses.map((mes, idx) => (
-            <option key={idx} value={mes}>{mes}</option>
+            <option
+              key={idx}
+              value={mes}
+              className="bg-white text-black"
+            >
+              {mes}
+            </option>
           ))}
         </select>
       </div>
 
-      {/* Cards */}
-      <div className="flex flex-wrap justify-center gap-6">
-        {/* Agentes activos */}
-        <div className="flex flex-col items-center flex-1 p-6 bg-blue-100 rounded-lg shadow min-w-[200px]">
-          <h2 className="text-lg font-semibold mb-2">Agentes activos</h2>
-          <p className="text-3xl font-bold">{data.agentesActivos}</p>
-        </div>
 
-        {/* Cotizaciones */}
-        <div className="flex flex-col items-center flex-1 p-6 bg-blue-100 rounded-lg shadow min-w-[200px]">
-          <h2 className="text-lg font-semibold mb-2">Cotizaciones</h2>
-          <p className="text-3xl font-bold">{data.cotizaciones}</p>
+      <div className="flex justify-center gap-12">
+        <div className="flex flex-col items-center  p-12 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-3xl font-extrabold text-gray-700 mt-2">Agentes activos</h2>
+          <p className="text-8xl font-extrabold text-black">{data.agentesActivos}</p>
         </div>
-
-        {/* Emisiones */}
-        <div className="flex flex-col items-center flex-1 p-6 bg-blue-100 rounded-lg shadow min-w-[200px]">
-          <h2 className="text-lg font-semibold mb-2">Emisiones</h2>
-          <p className="text-3xl font-bold">{data.emisiones}</p>
+        <div className="flex flex-col items-center p-20 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-3xl font-extrabold text-gray-700 mb-2">Cotizaciones</h2>
+          <p className="text-8xl font-extrabold text-black">{data.cotizaciones}</p>
+        </div>
+        <div className="flex flex-col items-center p-20 bg-blue-100 rounded-lg shadow w-56">
+          <h2 className="text-3xl font-extrabold text-gray-700 mb-2">Emisiones</h2>
+          <p className="text-8xl font-extrabold text-black">{data.emisiones}</p>
         </div>
       </div>
     </div>
