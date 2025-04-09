@@ -46,7 +46,7 @@ const App = () => {
   const getTitle = () => {
     switch (location.pathname) {
       case "/inicio":
-        return "Perfil";
+        return "Inicio";
       case "/documentos":
         return "Documentos";
       case "/solicitudes":
@@ -86,7 +86,7 @@ const App = () => {
       case "/inicioAgentes":
         return "Inicio";
       case "/inicioAgentes/emisiones":
-        return "Emision";
+        return "Emisión";
       case "/inicioAgentes/cotizaciones":
         return "Cotizaciones";
       case "/inicioAgentes/cotizar":
@@ -96,11 +96,11 @@ const App = () => {
       case "/inicioAgentes/clientes":
         return "Clientes";
       case "/inicioAgentes/clientes/polizas":
-        return "Polizas";
+        return "Pólizas";
       case "/inicioAgentes/clientes/polizas/informacion":
-        return "Polizas";
+        return "Pólizas";
       case "/inicioAgentes/estadisticas":
-        return "Estadisticas";
+        return "Estadísticas";
       case "/inicioAgentes/editarPerfil":
         return "Editar Perfil";
       case "/cotizar":
@@ -112,7 +112,7 @@ const App = () => {
       case "/cotizar/informacion/cotizacion/seguros":
         return "Seguros";
       case "/estadisticas":
-        return "Estadisticas";
+        return "Estadísticas";
       case "/clientes":
         return "Clientes";
       case "/clientes/polizas/:id":
