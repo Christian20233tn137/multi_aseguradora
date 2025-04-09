@@ -98,13 +98,9 @@ const ArchivosSection = () => {
       return;
     }
 
-    const keys = Object.keys(files);
-    const currentIndex = keys.indexOf(key);
-    for (let i = 0; i < currentIndex; i++) {
-      if (!loadedFiles[keys[i]]) {
-        Swal.fire("Error", `Debes cargar primero el archivo de ${keys[i]}`, "error");
-        return;
-      }
+    if (documentIds[key]) {
+      Swal.fire("Error", `Este archivo ya ha sido enviado.`, "error");
+      return;
     }
 
     setFiles((prevFiles) => ({
@@ -321,7 +317,7 @@ const ArchivosSection = () => {
                   className="hidden"
                   onChange={(e) => handleFileChange(e, key)}
                   accept="image/*,application/pdf"
-                  disabled={isSubmitting || (documentIds[key] && loadedFiles[key])}
+                  disabled={isSubmitting || documentIds[key]}
                 />
               </label>
 

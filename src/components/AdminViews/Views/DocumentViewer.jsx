@@ -60,7 +60,7 @@ const DocumentViewer = () => {
     };
 
     fetchDocument();
-  }, [documentId]);
+  }, [documentId, documentType]);
 
   const showAlert = async (action) => {
     const swalWithTailwindButtons = Swal.mixin({
@@ -88,7 +88,7 @@ const DocumentViewer = () => {
           try {
             if (action === "aceptar") {
               await axios.put(
-                `http://localhost:3001/nar/documentosPersona/aceptarDocumento/${documentId}`
+                `http://localhost:3001/nar/${documentType}/aceptarDocumento/${documentId}`
               );
               Swal.fire(
                 "¡Aceptado!",
@@ -97,7 +97,7 @@ const DocumentViewer = () => {
               );
             } else if (action === "rechazar") {
               await axios.delete(
-                `http://localhost:3001/nar/documentosPersona/rechazarDocumento/${documentId}`
+                `http://localhost:3001/nar/${documentType}/rechazarDocumento/${documentId}`
               );
               Swal.fire(
                 "¡Rechazado!",
