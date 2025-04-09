@@ -21,22 +21,24 @@ const Sidebar = () => {
       text: "No podrás volver a acceder a tu cuenta sin iniciar sesión nuevamente.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      confirmButtonColor: "#28a745", // Cambia el color del botón de confirmación a verde
       cancelButtonColor: "#d33",
       confirmButtonText: "Sí, cerrar sesión",
       cancelButtonText: "Cancelar",
+      reverseButtons: true, // Invierte el orden de los botones
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar datos de autenticación
         localStorage.removeItem("id");
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-
+  
         // Redirigir al login
         navigate("/login");
       }
     });
   };
+  
 
   const handelEditProfile = () => {
     if (id) {
