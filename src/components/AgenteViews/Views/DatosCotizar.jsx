@@ -39,6 +39,8 @@ const DatosCotizar = () => {
     apellidoMaterno: "",
     fechaNacimiento: null,
     telefono: "",
+    correo: "",
+    rfc: "",
   });
 
   const [errors, setErrors] = useState({
@@ -57,6 +59,8 @@ const DatosCotizar = () => {
       apellidoMaterno: "",
       fechaNacimiento: "",
       telefono: "",
+      correo: "",
+      rfc: "",
     },
     rfcTitularExistente: "",
   });
@@ -92,13 +96,13 @@ const DatosCotizar = () => {
       }
     }
 
-    // Validación de correo electrónico y RFC solo para el titular
-    if (isTitular) {
-      if (name === "correo" && value) {
-        if (value.length > 35) {
-          error = "No debe exceder 35 caracteres";
-        } else if (!/\S+@\S+\.\S+/.test(value)) {
-          error = "Formato de correo electrónico inválido";
+    
+    // Validación de correo electrónico
+    if (name === "correo" && value) {
+      if (value.length > 35) {
+        error = "No debe exceder 35 caracteres";
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        error = "Formato de correo electrónico inválido";
         }
       }
 
@@ -107,8 +111,6 @@ const DatosCotizar = () => {
           error = "El RFC debe tener exactamente 13 caracteres";
         }
       }
-    }
-
     return error;
   };
 
@@ -361,6 +363,8 @@ const DatosCotizar = () => {
         apellidoPaterno: asegurado.apellidoPaterno,
         apellidoMaterno: asegurado.apellidoMaterno,
         telefono: asegurado.telefono,
+        correo: asegurado.correo,
+        rfc: asegurado.rfc,
       };
 
       Object.keys(camposAsegurado).forEach((key) => {
@@ -561,6 +565,8 @@ const DatosCotizar = () => {
         apellidoMaterno: "",
         fechaNacimiento: null,
         telefono: "",
+        correo: "",
+        rfc: "",
       });
       setRfcTitularExistente("");
       setTitularExistente(null);
@@ -925,16 +931,48 @@ const DatosCotizar = () => {
                   errors.asegurado.telefono ? "border-red-500" : ""
                 }`}
               />
-              {errors.asegurado.telefono && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.asegurado.telefono}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
+               {errors.asegurado.telefono && (
+                 <p className="text-red-500 text-xs mt-1">
+                   {errors.asegurado.telefono}
+                 </p>
+               )}
+             </div>
+             <div>
+               <input
+                 type="email"
+                 name="correo"
+                 placeholder="Correo Electrónico"
+                 value={asegurado.correo}
+                 onChange={handleAseguradoChange}
+                 className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.correo ? "border-red-500" : ""
+                   }`}
+               />
+               {errors.asegurado.correo && (
+                 <p className="text-red-500 text-xs mt-1">
+                   {errors.asegurado.correo}
+                 </p>
+               )}
+             </div>
+             <div>
+               <input
+                 type="text"
+                 name="rfc"
+                 placeholder="RFC"
+                 value={asegurado.rfc}
+                 onChange={handleAseguradoChange}
+                 className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.rfc ? "border-red-500" : ""
+                   }`}
+               />
+               {errors.asegurado.rfc && (
+                 <p className="text-red-500 text-xs mt-1">
+                   {errors.asegurado.rfc}
+                 </p>
+               )}
+             </div>
+           </div>
+         </div>
+       )}
+ 
       <div className="mt-10">
         <button
           className="botones text-white px-4 py-2 rounded hover:bg-blue-600"
