@@ -113,6 +113,14 @@ const SegurosCotizar = () => {
           id: id,
         },
       });
+
+      setCotizacion({
+        idUsuario: id,
+        idCliente: idCliente,
+        idAsegurado: idAsegurado,
+        idSeguro: "",
+      });
+
     } catch (error) {
       console.error("Error al cotizar:", error);
       swalWithTailwindButtons.fire(
@@ -136,6 +144,7 @@ const SegurosCotizar = () => {
   useEffect(() => {
     const fetchSeguros = async () => {
       try {
+        setSeguros([]);
         const response = await axios.get(`${API_URL}/${seguro}`);
         console.log("API Response:", response.data);
 
@@ -174,7 +183,7 @@ const SegurosCotizar = () => {
   return (
     <div className="p-6 w-full h-auto overflow-hidden">
       <h1 className="text-3xl w-full p-3 text-center font-normal text-black miColor rounded-2xl">
-        Cotizacion del seguro de: {seguro}
+        Cotización del seguro de: {seguro}
       </h1>
       <div className="overflow-x-auto mt-10">
         <table className="min-w-full">
@@ -203,7 +212,7 @@ const SegurosCotizar = () => {
                     {seguro.nombreSeguro}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-200 text-center">
-                    {seguro.montoPrima}
+                    {seguro.montoPrima.toFixed(2)}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-200 text-center">
                     <button
