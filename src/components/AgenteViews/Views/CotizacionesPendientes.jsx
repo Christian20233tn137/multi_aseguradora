@@ -10,12 +10,16 @@ const CotizacionesPendientes = () => {
   const id = location.state?.id;
 
   const handleEmision = (idCotizacion) => {
-    navigate("/inicioAgentes/emisiones", { state: { id: id, idCotizacion: idCotizacion } });
+    navigate("/inicioAgentes/emisiones", {
+      state: { id: id, idCotizacion: idCotizacion },
+    });
   };
 
   const [cotizaciones, setCotizaciones] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCotizaciones, setFilteredCotizaciones] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const cotizacionesPerPage = 3;
 
   useEffect(() => {
     const fetchCotizaciones = async () => {
@@ -44,10 +48,30 @@ const CotizacionesPendientes = () => {
       cotizacion.nombreCliente.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCotizaciones(results);
+    setCurrentPage(1); // Reset to first page when search changes
   }, [searchTerm, cotizaciones]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  // Calculate pagination
+  const indexOfLastCotizacion = currentPage * cotizacionesPerPage;
+  const indexOfFirstCotizacion = indexOfLastCotizacion - cotizacionesPerPage;
+  const currentCotizaciones = filteredCotizaciones.slice(
+    indexOfFirstCotizacion,
+    indexOfLastCotizacion
+  );
+  const totalPages = Math.ceil(
+    filteredCotizaciones.length / cotizacionesPerPage
+  );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   return (
@@ -63,34 +87,71 @@ const CotizacionesPendientes = () => {
         />
       </div>
 
-      <div className="border-0 shadow-md rounded-lg space-y-6">
-        {filteredCotizaciones.map((cotizacion) => (
-          <div
-            key={cotizacion.idCotizacion}
-            className="bg-white p-6 border-0 shadow-md rounded-lg flex items-center"
-          >
-            <div className="flex flex-col space-y-2 flex-grow">
-              <p className="text-lg font-semibold text-gray-900">
-                {cotizacion.nombreCliente}
-              </p>
-              <p className="text-base text-gray-700">
-                <span className="font-medium">Asegurado:</span>{" "}
-                {cotizacion.nombreAsegurado}
-              </p>
-              <p className="text-base text-gray-700">
-                <span className="font-medium">Tipo de seguro:</span>{" "}
-                {cotizacion.tipoSeguro}
-              </p>
-            </div>
-
-            <button
-              className="px-6 py-2 botones rounded-lg font-medium ml-auto"
-              onClick={() => handleEmision(cotizacion.idCotizacion)}
-            >
-              Información
-            </button>
+      <div className="rounded-lg space-y-6">
+        {filteredCotizaciones.length === 0 ? (
+          <div className="bg-white p-6 border-0 shadow-md rounded-lg text-center">
+            <p className="text-lg text-gray-700">
+              No hay cotizaciones actuales
+            </p>
           </div>
-        ))}
+        ) : (
+          <>
+            {currentCotizaciones.map((cotizacion) => (
+              <div
+                key={cotizacion.idCotizacion}
+                className="bg-white p-6 border-0 shadow-md rounded-lg flex items-center"
+              >
+                <div className="flex flex-col space-y-2 flex-grow">
+                  <p className="text-lg font-semibold text-gray-900">
+                    {cotizacion.nombreCliente}
+                  </p>
+                  <p className="text-base text-gray-700">
+                    <span className="font-medium">Asegurado:</span>{" "}
+                    {cotizacion.nombreAsegurado}
+                  </p>
+                  <p className="text-base text-gray-700">
+                    <span className="font-medium">Tipo de seguro:</span>{" "}
+                    {cotizacion.tipoSeguro}
+                  </p>
+                </div>
+
+                <button
+                  className="px-6 py-2 botones rounded-lg font-medium ml-auto"
+                  onClick={() => handleEmision(cotizacion.idCotizacion)}
+                >
+                  Información
+                </button>
+              </div>
+            ))}
+
+            {totalPages > 1 && (
+              <div className="flex justify-between mt-6">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg font-medium ${
+                    currentPage === 1
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "botones"
+                  }`}
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg font-medium ${
+                    currentPage === totalPages
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "botones"
+                  }`}
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
