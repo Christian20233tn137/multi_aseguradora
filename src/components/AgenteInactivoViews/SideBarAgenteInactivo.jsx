@@ -18,10 +18,11 @@ const SideBarAgente = () => {
       text: "No podrás volver a acceder a tu cuenta sin iniciar sesión nuevamente.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      confirmButtonColor: "#28a745",
       cancelButtonColor: "#d33",
       confirmButtonText: "Sí, cerrar sesión",
       cancelButtonText: "Cancelar",
+      reverseButtons:true,
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar datos de autenticación

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -10,7 +10,7 @@ import Cotizaciones from "../assets/cotizaciones.png";
 const AgenteInactivo = () => {
   const location = useLocation();
   const id = location.state?.id;
-  console.log(id);
+  const [isReactivationRequested, setIsReactivationRequested] = useState(false);
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -40,6 +40,9 @@ const AgenteInactivo = () => {
         text: "Tu solicitud de reactivación ha sido enviada con éxito.",
         icon: "success",
       });
+
+      // Deshabilitar el botón después de enviar la solicitud
+      setIsReactivationRequested(true);
     } catch (error) {
       Swal.fire({
         title: "Error",
@@ -90,8 +93,11 @@ const AgenteInactivo = () => {
           </div>
         </div>
         <button
-          className="mt-8 botones text-white p-3 rounded-md"
+          className={`mt-8 botones p-3 rounded-md ${
+            isReactivationRequested ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 text-white"
+          }`}
           onClick={solicitarReactivacion}
+          disabled={isReactivationRequested}
         >
           Solicitar Reactivación
         </button>
