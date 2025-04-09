@@ -115,9 +115,7 @@ const Seguros = () => {
       <div className="bg-white p-6 rounded-lg max-w-3xl w-full mt-6 overflow-hidden">
         {/* Imagen y título alineados */}
         <div className="flex items-center space-x-6 mb-6">
-          <div className="w-24 h-24 bg-gray-400 rounded-full flex items-center justify-center">
-            <span className="text-white">Foto</span>
-          </div>
+          
           <h2 className="text-2xl font-semibold">{emision.nombreSeguro}</h2>
         </div>
 

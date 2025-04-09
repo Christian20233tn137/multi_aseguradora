@@ -39,8 +39,6 @@ const DatosCotizar = () => {
     apellidoMaterno: "",
     fechaNacimiento: null,
     telefono: "",
-    correo: "",
-    rfc: "",
   });
 
   const [errors, setErrors] = useState({
@@ -59,8 +57,6 @@ const DatosCotizar = () => {
       apellidoMaterno: "",
       fechaNacimiento: "",
       telefono: "",
-      correo: "",
-      rfc: "",
     },
     rfcTitularExistente: "",
   });
@@ -96,19 +92,20 @@ const DatosCotizar = () => {
       }
     }
 
-    // Validación de correo electrónico
-    if (name === "correo" && value) {
-      if (value.length > 35) {
-        error = "No debe exceder 35 caracteres";
-      } else if (!/\S+@\S+\.\S+/.test(value)) {
-        error = "Formato de correo electrónico inválido";
+    // Validación de correo electrónico y RFC solo para el titular
+    if (isTitular) {
+      if (name === "correo" && value) {
+        if (value.length > 35) {
+          error = "No debe exceder 35 caracteres";
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+          error = "Formato de correo electrónico inválido";
+        }
       }
-    }
 
-    // Validación de RFC
-    if (name === "rfc" && value) {
-      if (value.length !== 13) {
-        error = "El RFC debe tener exactamente 13 caracteres";
+      if (name === "rfc" && value) {
+        if (value.length !== 13) {
+          error = "El RFC debe tener exactamente 13 caracteres";
+        }
       }
     }
 
@@ -364,8 +361,6 @@ const DatosCotizar = () => {
         apellidoPaterno: asegurado.apellidoPaterno,
         apellidoMaterno: asegurado.apellidoMaterno,
         telefono: asegurado.telefono,
-        correo: asegurado.correo,
-        rfc: asegurado.rfc,
       };
 
       Object.keys(camposAsegurado).forEach((key) => {
@@ -513,37 +508,23 @@ const DatosCotizar = () => {
       try {
         const datosAsegurado = esTitularAsegurado
           ? { ...titular, idCliente: newIdCliente }
-          : { ...asegurado, idCliente: newIdCliente };
+          : {
+              nombre: asegurado.nombre,
+              apellidoPaterno: asegurado.apellidoPaterno,
+              apellidoMaterno: asegurado.apellidoMaterno,
+              fechaNacimiento: asegurado.fechaNacimiento,
+              telefono: asegurado.telefono,
+              idCliente: newIdCliente,
+            };
         const responseAsegurado = await axios.post(
           "http://localhost:3001/nar/asegurados",
           datosAsegurado
         );
-        newIdAsegurado = responseAsegurado.data._id; // Suponiendo que el backend devuelve `idAsegurado`
+        newIdAsegurado = responseAsegurado.data._id;
         setIdAsegurado(newIdAsegurado);
       } catch (error) {
         // Cerrar el indicador de carga en caso de error
         swalWithTailwindButtons.close();
-
-        // Verificar si el error es por correo o RFC duplicado
-        if (error.response && error.response.data) {
-          const errorMessage = error.response.data.message;
-
-          if (errorMessage.includes("correo")) {
-            swalWithTailwindButtons.fire({
-              title: "Error",
-              text: "El correo electrónico del asegurado ya está registrado en el sistema",
-              icon: "error",
-            });
-            return;
-          } else if (errorMessage.includes("RFC")) {
-            swalWithTailwindButtons.fire({
-              title: "Error",
-              text: "El RFC del asegurado ya está registrado en el sistema",
-              icon: "error",
-            });
-            return;
-          }
-        }
 
         // Si no es un error específico, mostrar mensaje genérico
         swalWithTailwindButtons.fire({
@@ -580,8 +561,6 @@ const DatosCotizar = () => {
         apellidoMaterno: "",
         fechaNacimiento: null,
         telefono: "",
-        correo: "",
-        rfc: "",
       });
       setRfcTitularExistente("");
       setTitularExistente(null);
@@ -589,7 +568,6 @@ const DatosCotizar = () => {
       setMostrarFormularioTitular(true);
 
       // Navegar a la ruta de seguros con los IDs recién obtenidos
-      // En DatosCotizar.js
       navigate("/inicioAgentes/seguros", {
         state: {
           id: id,
@@ -599,7 +577,6 @@ const DatosCotizar = () => {
           fechaNacimiento: titular.fechaNacimiento,
         },
       });
-
     } catch (error) {
       console.error("Error al cotizar:", error);
 
@@ -666,8 +643,9 @@ const DatosCotizar = () => {
                 placeholder="Ingrese el RFC del titular existente"
                 value={rfcTitularExistente}
                 onChange={handleRfcTitularExistenteChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.rfcTitularExistente ? "border-red-500" : ""
-                  }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.rfcTitularExistente ? "border-red-500" : ""
+                }`}
               />
               {errors.rfcTitularExistente && (
                 <p className="text-red-500 text-xs mt-1">
@@ -715,8 +693,9 @@ const DatosCotizar = () => {
               placeholder="Nombre"
               value={titular.nombre}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.nombre ? "border-red-500" : ""
-                }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.nombre ? "border-red-500" : ""
+              }`}
             />
             {errors.titular.nombre && (
               <p className="text-red-500 text-xs mt-1">
@@ -731,8 +710,9 @@ const DatosCotizar = () => {
               placeholder="Apellido Paterno"
               value={titular.apellidoPaterno}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.apellidoPaterno ? "border-red-500" : ""
-                }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.apellidoPaterno ? "border-red-500" : ""
+              }`}
             />
             {errors.titular.apellidoPaterno && (
               <p className="text-red-500 text-xs mt-1">
@@ -747,8 +727,9 @@ const DatosCotizar = () => {
               placeholder="Apellido Materno"
               value={titular.apellidoMaterno}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.apellidoMaterno ? "border-red-500" : ""
-                }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.apellidoMaterno ? "border-red-500" : ""
+              }`}
             />
             {errors.titular.apellidoMaterno && (
               <p className="text-red-500 text-xs mt-1">
@@ -761,8 +742,9 @@ const DatosCotizar = () => {
               selected={titular.fechaNacimiento}
               onChange={handleFechaNacimientoChange}
               placeholderText="Fecha de Nacimiento"
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.fechaNacimiento ? "border-red-500" : ""
-                }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.fechaNacimiento ? "border-red-500" : ""
+              }`}
               dateFormat="yyyy-MM-dd"
               locale="es"
               showYearDropdown
@@ -784,8 +766,9 @@ const DatosCotizar = () => {
               placeholder="Teléfono"
               value={titular.telefono}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.telefono ? "border-red-500" : ""
-                }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.telefono ? "border-red-500" : ""
+              }`}
             />
             {errors.titular.telefono && (
               <p className="text-red-500 text-xs mt-1">
@@ -800,8 +783,9 @@ const DatosCotizar = () => {
               placeholder="Correo Electrónico"
               value={titular.correo}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.correo ? "border-red-500" : ""
-                }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.correo ? "border-red-500" : ""
+              }`}
             />
             {errors.titular.correo && (
               <p className="text-red-500 text-xs mt-1">
@@ -816,8 +800,9 @@ const DatosCotizar = () => {
               placeholder="RFC"
               value={titular.rfc}
               onChange={handleChange}
-              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.titular.rfc ? "border-red-500" : ""
-                }`}
+              className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                errors.titular.rfc ? "border-red-500" : ""
+              }`}
             />
             {errors.titular.rfc && (
               <p className="text-red-500 text-xs mt-1">{errors.titular.rfc}</p>
@@ -863,8 +848,9 @@ const DatosCotizar = () => {
                 placeholder="Nombre"
                 value={asegurado.nombre}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.nombre ? "border-red-500" : ""
-                  }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.asegurado.nombre ? "border-red-500" : ""
+                }`}
               />
               {errors.asegurado.nombre && (
                 <p className="text-red-500 text-xs mt-1">
@@ -879,8 +865,9 @@ const DatosCotizar = () => {
                 placeholder="Apellido Paterno"
                 value={asegurado.apellidoPaterno}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.apellidoPaterno ? "border-red-500" : ""
-                  }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.asegurado.apellidoPaterno ? "border-red-500" : ""
+                }`}
               />
               {errors.asegurado.apellidoPaterno && (
                 <p className="text-red-500 text-xs mt-1">
@@ -895,8 +882,9 @@ const DatosCotizar = () => {
                 placeholder="Apellido Materno"
                 value={asegurado.apellidoMaterno}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.apellidoMaterno ? "border-red-500" : ""
-                  }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.asegurado.apellidoMaterno ? "border-red-500" : ""
+                }`}
               />
               {errors.asegurado.apellidoMaterno && (
                 <p className="text-red-500 text-xs mt-1">
@@ -909,15 +897,16 @@ const DatosCotizar = () => {
                 selected={asegurado.fechaNacimiento}
                 onChange={handleFechaNacimientoAseguradoChange}
                 placeholderText="Fecha de Nacimiento"
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.fechaNacimiento ? "border-red-500" : ""
-                  }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.asegurado.fechaNacimiento ? "border-red-500" : ""
+                }`}
                 dateFormat="yyyy-MM-dd"
                 locale="es"
                 showYearDropdown
                 scrollableYearDropdown
                 yearDropdownItemNumber={125}
-                minDate={new Date(1950, 0, 1)}
-                maxDate={new Date(2024, 11, 31)}
+                minDate={minDate}
+                maxDate={maxDate}
               />
               {errors.asegurado.fechaNacimiento && (
                 <p className="text-red-500 text-xs mt-1">
@@ -932,8 +921,9 @@ const DatosCotizar = () => {
                 placeholder="Teléfono"
                 value={asegurado.telefono}
                 onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.telefono ? "border-red-500" : ""
-                  }`}
+                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${
+                  errors.asegurado.telefono ? "border-red-500" : ""
+                }`}
               />
               {errors.asegurado.telefono && (
                 <p className="text-red-500 text-xs mt-1">
@@ -941,46 +931,13 @@ const DatosCotizar = () => {
                 </p>
               )}
             </div>
-            <div>
-              <input
-                type="email"
-                name="correo"
-                placeholder="Correo Electrónico"
-                value={asegurado.correo}
-                onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.correo ? "border-red-500" : ""
-                  }`}
-              />
-              {errors.asegurado.correo && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.asegurado.correo}
-                </p>
-              )}
-            </div>
-            <div>
-              <input
-                type="text"
-                name="rfc"
-                placeholder="RFC"
-                value={asegurado.rfc}
-                onChange={handleAseguradoChange}
-                className={`border-0 shadow-md rounded-lg py-2 px-3 w-full ${errors.asegurado.rfc ? "border-red-500" : ""
-                  }`}
-              />
-              {errors.asegurado.rfc && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.asegurado.rfc}
-                </p>
-              )}
-            </div>
           </div>
         </div>
       )}
 
-      <div className="flex items-center justify-center mt-6">
+      <div className="mt-10">
         <button
-          className="text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-          style={{ backgroundColor: "#0B1956" }}
+          className="botones text-white px-4 py-2 rounded hover:bg-blue-600"
           onClick={agregarCotizacion}
         >
           Cotizar

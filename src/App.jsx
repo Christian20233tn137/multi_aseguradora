@@ -46,7 +46,7 @@ const App = () => {
   const getTitle = () => {
     switch (location.pathname) {
       case "/inicio":
-        return "Perfil";
+        return "Inicio";
       case "/documentos":
         return "Documentos";
       case "/solicitudes":

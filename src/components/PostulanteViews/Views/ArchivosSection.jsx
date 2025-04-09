@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import FileUploadIcon from "../assets/FileUpload.png";
-import { MdCancel } from 'react-icons/md';
-import Swal from 'sweetalert2';
+import { MdCancel } from "react-icons/md";
+import Swal from "sweetalert2";
 import { AiOutlineDownload } from "react-icons/ai";
-import axios from 'axios';
+import axios from "axios";
 
 const ArchivosSection = () => {
   const [files, setFiles] = useState({
@@ -52,30 +52,31 @@ const ArchivosSection = () => {
         const newLoadedFiles = {};
         const newDocumentIds = {};
 
-        const requests = Object.entries(endpoints).map(async ([key, endpoint]) => {
-          try {
-            const response = await axios.get(
-              `http://localhost:3001/nar/${endpoint}/documentosPostulante/${user._id}`
-            );
-            console.log(`Respuesta para ${key}:`, response.data);
+        const requests = Object.entries(endpoints).map(
+          async ([key, endpoint]) => {
+            try {
+              const response = await axios.get(
+                `http://localhost:3001/nar/${endpoint}/documentosPostulante/${user._id}`
+              );
+              console.log(`Respuesta para ${key}:`, response.data);
 
-            newLoadedFiles[key] = response.data.estado === 'aceptado';
-            newDocumentIds[key] = response.data.idDocumento || null;
+              newLoadedFiles[key] = response.data.estado === "aceptado";
+              newDocumentIds[key] = response.data.idDocumento || null;
 
-            return { key, success: true };
-          } catch (error) {
-            console.error(`Error al obtener documento ${key}:`, error);
-            newLoadedFiles[key] = false;
-            newDocumentIds[key] = null;
-            return { key, success: false };
+              return { key, success: true };
+            } catch (error) {
+              console.error(`Error al obtener documento ${key}:`, error);
+              newLoadedFiles[key] = false;
+              newDocumentIds[key] = null;
+              return { key, success: false };
+            }
           }
-        });
+        );
 
         await Promise.all(requests);
 
         setLoadedFiles(newLoadedFiles);
         setDocumentIds(newDocumentIds);
-
       } catch (error) {
         console.error("Error al obtener el estado de los archivos:", error);
       }
@@ -88,7 +89,7 @@ const ArchivosSection = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+    if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
       Swal.fire("Error", "Solo se permiten imágenes y archivos PDF.", "error");
       return;
     }
@@ -98,9 +99,13 @@ const ArchivosSection = () => {
       return;
     }
 
-    if (documentIds[key]) {
-      Swal.fire("Error", `Este archivo ya ha sido enviado.`, "error");
-      return;
+    const keys = Object.keys(files);
+    const currentIndex = keys.indexOf(key);
+    for (let i = 0; i < currentIndex; i++) {
+      if (!loadedFiles[keys[i]]) {
+        Swal.fire("Error", `Debes cargar primero el archivo de ${keys[i]}`, "error");
+        return;
+      }
     }
 
     setFiles((prevFiles) => ({
@@ -153,7 +158,11 @@ const ArchivosSection = () => {
     try {
       const userString = localStorage.getItem("user");
       if (!userString) {
-        Swal.fire("Error", "No se encontró la información del usuario", "error");
+        Swal.fire(
+          "Error",
+          "No se encontró la información del usuario",
+          "error"
+        );
         return;
       }
 
@@ -163,7 +172,9 @@ const ArchivosSection = () => {
         return;
       }
 
-      const hasFilesToUpload = Object.values(files).some(file => file !== null);
+      const hasFilesToUpload = Object.values(files).some(
+        (file) => file !== null
+      );
       if (!hasFilesToUpload) {
         Swal.fire("Error", "No hay archivos para enviar", "error");
         return;
@@ -171,27 +182,29 @@ const ArchivosSection = () => {
 
       const swalWithTailwindButtons = Swal.mixin({
         customClass: {
-          confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-          cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+          confirmButton:
+            "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+          cancelButton:
+            "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
         },
-        buttonsStyling: false
+        buttonsStyling: false,
       });
 
       const result = await swalWithTailwindButtons.fire({
-        title: '¿Estás seguro?',
+        title: "¿Estás seguro?",
         text: "¿Quieres enviar los archivos?",
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonText: 'Sí, enviar',
-        cancelButtonText: 'No, cancelar',
-        reverseButtons: true
+        confirmButtonText: "Sí, enviar",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
       });
 
       if (!result.isConfirmed) {
         swalWithTailwindButtons.fire(
-          'Cancelado',
-          'Tus archivos están seguros :)',
-          'info'
+          "Cancelado",
+          "Tus archivos están seguros :)",
+          "info"
         );
         return;
       }
@@ -210,7 +223,7 @@ const ArchivosSection = () => {
         if (!file) return null;
 
         const formData = new FormData();
-        formData.append('archivo', file);
+        formData.append("archivo", file);
         formData.append("idUsuario", user._id);
 
         try {
@@ -236,9 +249,13 @@ const ArchivosSection = () => {
           console.log(`Respuesta para ${key}:`, response.data);
 
           if (response.data && response.data.idDocumento) {
-            setDocumentIds(prev => ({
+            setDocumentIds((prev) => ({
               ...prev,
-              [key]: response.data.idDocumento
+              [key]: response.data.idDocumento,
+            }));
+            setLoadedFiles((prev) => ({
+              ...prev,
+              [key]: true,
             }));
           }
 
@@ -249,8 +266,10 @@ const ArchivosSection = () => {
         }
       });
 
-      const results = await Promise.all(uploadPromises);
-      const allSucceeded = results.every(result => !result || result.success);
+      const results = await Promise.all(
+        uploadPromises.filter((promise) => promise !== null)
+      );
+      const allSucceeded = results.every((result) => result.success);
 
       if (allSucceeded) {
         await swalWithTailwindButtons.fire(
@@ -259,9 +278,9 @@ const ArchivosSection = () => {
           "success"
         );
 
-        const newFiles = {...files};
-        results.forEach(result => {
-          if (result && result.success) {
+        const newFiles = { ...files };
+        results.forEach((result) => {
+          if (result.success) {
             newFiles[result.key] = null;
           }
         });
@@ -270,8 +289,8 @@ const ArchivosSection = () => {
         setProgress({});
       } else {
         const failedFiles = results
-          .filter(result => result && !result.success)
-          .map(result => result.key)
+          .filter((result) => !result.success)
+          .map((result) => result.key)
           .join(", ");
 
         await swalWithTailwindButtons.fire(
@@ -280,7 +299,6 @@ const ArchivosSection = () => {
           "error"
         );
       }
-
     } catch (error) {
       console.error("Error al enviar los archivos:", error);
 
@@ -300,7 +318,10 @@ const ArchivosSection = () => {
   return (
     <div className="flex-1 p-4 overflow-y-auto relative">
       <div className="flex flex-col items-center p-6">
-        <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-6 text-center">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-3 gap-6 text-center"
+        >
           {Object.entries(files).map(([key, file]) => (
             <div key={key} className="flex flex-col items-center">
               <label className="flex flex-col items-center cursor-pointer">
@@ -317,7 +338,7 @@ const ArchivosSection = () => {
                   className="hidden"
                   onChange={(e) => handleFileChange(e, key)}
                   accept="image/*,application/pdf"
-                  disabled={isSubmitting || documentIds[key]}
+                  disabled={isSubmitting || (documentIds[key] && loadedFiles[key])}
                 />
               </label>
 
@@ -330,7 +351,9 @@ const ArchivosSection = () => {
                     ></div>
                   </div>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-xs text-gray-600 truncate max-w-xs">{file.name}</span>
+                    <span className="text-xs text-gray-600 truncate max-w-xs">
+                      {file.name}
+                    </span>
                     <MdCancel
                       className="w-5 h-5 text-red-500 cursor-pointer ml-2"
                       onClick={() => !isSubmitting && handleRemoveFile(key)}
@@ -341,7 +364,9 @@ const ArchivosSection = () => {
 
               {loadedFiles[key] && (
                 <div className="mt-2 text-green-500">
-                  {documentIds[key] ? "Documento aceptado" : "Archivo listo para enviar"}
+                  {documentIds[key]
+                    ? "Documento aceptado"
+                    : "Archivo listo para enviar"}
                 </div>
               )}
             </div>
@@ -361,11 +386,13 @@ const ArchivosSection = () => {
 
         <button
           type="submit"
-          className={`mt-8 px-6 py-3 botones text-white rounded ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`mt-8 px-6 py-3 botones text-white rounded ${
+            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           onClick={handleSubmit}
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Enviando...' : 'Enviar archivos'}
+          {isSubmitting ? "Enviando..." : "Enviar archivos"}
         </button>
       </div>
     </div>
