@@ -1,29 +1,31 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Swal from 'sweetalert2';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 // SweetAlert configuration with Tailwind CSS classes
 const swalWithTailwindButtons = Swal.mixin({
   customClass: {
-    confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-    cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2"
+    confirmButton:
+      "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+    cancelButton:
+      "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
   },
-  buttonsStyling: false
+  buttonsStyling: false,
 });
 
 const RecuperarContra = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
 
   const handleCodigo = async () => {
     // Validate email
     if (!email) {
       swalWithTailwindButtons.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Por favor, ingrese su correo electrónico.'
+        icon: "error",
+        title: "Error",
+        text: "Por favor, ingrese su correo electrónico.",
       });
       return;
     }
@@ -32,25 +34,59 @@ const RecuperarContra = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
       swalWithTailwindButtons.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Por favor, ingrese un correo electrónico válido.'
+        icon: "error",
+        title: "Error",
+        text: "Por favor, ingrese un correo electrónico válido.",
       });
       return;
     }
 
+    // Show loading alert
+    Swal.fire({
+      title: "Enviando solicitud...",
+      text: "Por favor espere mientras procesamos su solicitud",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
-      const response = await axios.post('http://localhost:3001/nar/usuarios/recuperacion/generar', {
-        correo: email
-      });
+      const response = await axios.post(
+        "http://localhost:3001/nar/usuarios/recuperacion/generar",
+        {
+          correo: email,
+        }
+      );
 
       if (response.status === 200) {
+        // Show success alert
+        await Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Se ha enviado un código de recuperación a su correo electrónico",
+          timer: 2000,
+          showConfirmButton: false,
+        });
         navigate("/recuperacion/codigo", { state: { correo: email } });
-      } else {
-        setError('Error al enviar el correo electrónico');
       }
     } catch (error) {
-      setError('Error al comunicarse con el servidor');
+      // Show error alert with specific message
+      let errorMessage = "Error al comunicarse con el servidor";
+      if (error.response) {
+        // Server responded with an error
+        errorMessage = error.response.data.message || "Error en el servidor";
+      } else if (error.request) {
+        // Request was made but no response received
+        errorMessage = "No se pudo conectar con el servidor";
+      }
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorMessage,
+      });
+      setError(errorMessage);
     }
   };
 
