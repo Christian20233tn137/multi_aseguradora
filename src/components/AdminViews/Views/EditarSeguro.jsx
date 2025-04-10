@@ -216,7 +216,7 @@ const EditarSeguro = () => {
 
           className="px-4 py-2 botones text-white rounded"
           style={{ backgroundColor: "#0B1956" }}
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1,{state:{id:id}})}
         >
           Regresar
         </button>

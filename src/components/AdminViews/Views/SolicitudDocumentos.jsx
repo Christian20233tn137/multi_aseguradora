@@ -280,7 +280,7 @@ const SolicitudDocumentos = () => {
         <button
           type="button"
           className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1,{state:{id:id}})}
         >
           Regresar
         </button>
@@ -371,7 +371,7 @@ const SolicitudDocumentos = () => {
         <button
           type="button"
           className="w-30 text-white py-2 px-4 rounded-md botones"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1,{state:{id:id}})}
         >
           Regresar
         </button>

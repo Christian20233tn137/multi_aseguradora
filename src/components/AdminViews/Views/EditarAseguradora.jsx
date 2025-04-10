@@ -444,7 +444,7 @@ const EditarAseguradora = () => {
           <button
               type="button"
               className="botones text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              onClick={() => navigate(-1)} // Regresar a la página anterior
+              onClick={() => navigate(-1,{state:{id:id}})} // Regresar a la página anterior
             >
               Regresar
             </button>

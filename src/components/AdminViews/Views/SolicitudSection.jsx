@@ -204,7 +204,7 @@ const SolicitudSection = () => {
             <button
               type="button"
               className="w-30 text-white py-2 px-4 rounded-md botones"
-              onClick={() => navigate(-1)} // Esto regresará a la página anterior
+              onClick={() => navigate(-1,{state:{id:id}})} // Esto regresará a la página anterior
             >
               Regresar
             </button>
