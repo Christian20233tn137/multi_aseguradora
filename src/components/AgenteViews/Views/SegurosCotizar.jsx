@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 
 const SegurosCotizar = () => {
   const navigate = useNavigate();
-  const API_URL = "http://localhost:3001/nar/seguros/tipo";
+  const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros/tipo";
   const location = useLocation();
   const id = location.state?.id;
   const idCliente = location.state?.idCliente;

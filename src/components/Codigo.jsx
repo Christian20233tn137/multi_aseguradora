@@ -64,7 +64,7 @@ const Codigo = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/nar/usuarios/recuperacion/validar",
+        "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/recuperacion/validar",
         {
           correo,
           codigoRecuperacion: codigoCompleto,

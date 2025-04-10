@@ -53,7 +53,7 @@ const RecuperarContra = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/nar/usuarios/recuperacion/generar",
+        "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/recuperacion/generar",
         {
           correo: email,
         }

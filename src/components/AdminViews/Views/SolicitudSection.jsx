@@ -43,7 +43,7 @@ const SolicitudSection = () => {
           });
           try {
             const response = await axios.put(
-              `http://localhost:3001/nar/usuarios/postulanteAceptado/${profile._id}`
+              `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/postulanteAceptado/${profile._id}`
             );
             Swal.fire({
               title: "¡Aceptado!",
@@ -101,7 +101,7 @@ const SolicitudSection = () => {
           });
           try {
             const response = await axios.put(
-              `http://localhost:3001/nar/usuarios/denegado/${profile._id}`
+              `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/denegado/${profile._id}`
             );
             Swal.fire({
               title: "Denegado!",

@@ -87,7 +87,7 @@ const NuevaContra = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/nar/usuarios/recuperacion/cambiar",
+        "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/recuperacion/cambiar",
         {
           correo,
           codigoRecuperacion,

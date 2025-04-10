@@ -51,7 +51,7 @@ const EditarPerfilAdmin = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/nar/usuarios/id/${id}`
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/id/${id}`
         );
         setFormData(response.data);
         // Guardar el correo y teléfono originales para comparar después
@@ -216,7 +216,7 @@ const EditarPerfilAdmin = () => {
       if (modificarContrasena) {
         // Actualizar la contraseña
         const passwordResponse = await axios.put(
-          `http://localhost:3001/nar/usuarios/updPostulante/${id}`,
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/updPostulante/${id}`,
           {
             contrasenaActual: formData.contrasenaActual,
             nuevaContrasena: formData.nuevaContrasena,
@@ -237,7 +237,7 @@ const EditarPerfilAdmin = () => {
         };
 
         const response = await axios.put(
-          `http://localhost:3001/nar/usuarios/byAdmin/${id}`,
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/byAdmin/${id}`,
           dataToSend
         );
 

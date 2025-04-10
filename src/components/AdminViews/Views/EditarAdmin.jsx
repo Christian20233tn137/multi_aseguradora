@@ -3,8 +3,8 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/nar/usuarios/id";
-const API_URL_EDIT = "http://localhost:3001/nar/usuarios";
+const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/id";
+const API_URL_EDIT = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios";
 
 const EditarAdmin = () => {
   const location = useLocation();

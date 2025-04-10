@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const CotizacionesPendientes = () => {
-  const API_URL = "http://localhost:3001/nar/cotizaciones/pendientesByAgente";
+  const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cotizaciones/pendientesByAgente";
 
   const navigate = useNavigate();
   const location = useLocation();

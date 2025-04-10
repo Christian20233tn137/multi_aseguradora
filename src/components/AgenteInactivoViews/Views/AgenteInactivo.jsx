@@ -8,7 +8,7 @@ import Estadisticas from "../assets/estadisticas.png";
 import Cotizaciones from "../assets/cotizaciones.png";
 
 const AgenteInactivo = () => {
-  const API_URL = "http://localhost:3001/nar/usuarios/id";
+  const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/id";
   const location = useLocation();
   const id = location.state?.id;
   const [isReactivationRequested, setIsReactivationRequested] = useState(false);
@@ -56,7 +56,7 @@ const AgenteInactivo = () => {
 
     try {
       await axios.put(
-        `http://localhost:3001/nar/usuarios/reactivacionesActive/${id}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/reactivacionesActive/${id}`
       );
 
       Swal.fire({

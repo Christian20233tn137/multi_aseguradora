@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const Seguros = () => {
-  const API_URL = "http://localhost:3001/nar/cotizaciones/id";
+  const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cotizaciones/id";
   const navigate = useNavigate();
 
   const [emision, setEmisiones] = useState(null);

@@ -42,9 +42,9 @@ const ProfileSection = () => {
 
     try {
       const [agentesRes, cotizacionesRes, emisionesRes] = await Promise.all([
-        axios.get("http://localhost:3001/nar/usuarios/agentesActivos"),
-        axios.get("http://localhost:3001/nar/cotizaciones"),
-        axios.get("http://localhost:3001/nar/emisiones"),
+        axios.get("https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/agentesActivos"),
+        axios.get("https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cotizaciones"),
+        axios.get("https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/emisiones"),
       ]);
 
       // Filtrar por mes

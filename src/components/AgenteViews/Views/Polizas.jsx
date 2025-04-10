@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/nar/emisiones/cliente";
+const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/emisiones/cliente";
 
 const Polizas = () => {
   const location = useLocation();

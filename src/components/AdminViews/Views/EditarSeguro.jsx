@@ -31,7 +31,7 @@ const EditarSeguro = () => {
   useEffect(() => {
     const fetchSeguroData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/nar/seguros/id/${idSeguro}`);
+        const response = await axios.get(`https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros/id/${idSeguro}`);
         const seguroData = response.data;
         console.log("Datos del seguro obtenidos:", seguroData);
 
@@ -88,7 +88,7 @@ const EditarSeguro = () => {
     });
 
     try {
-      const response = await axios.put(`http://localhost:3001/nar/seguros/id/${idSeguro}`, dataToSend);
+      const response = await axios.put(`https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros/id/${idSeguro}`, dataToSend);
 
       if (response.status === 200) {
         swalWithTailwindButtons.fire("Editado", "El seguro ha sido editado correctamente.", "success");

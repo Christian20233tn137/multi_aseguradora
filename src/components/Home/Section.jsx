@@ -195,7 +195,7 @@ const Section = () => {
 
       try {
         await axios.post(
-          "http://localhost:3001/nar/usuarios/postulante",
+          "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/postulante",
           formData
         );
 

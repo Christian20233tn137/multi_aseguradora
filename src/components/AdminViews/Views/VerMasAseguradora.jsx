@@ -34,12 +34,12 @@ const VerMasAseguradora = () => {
         }
 
         const aseguradoraResponse = await axios.get(
-          `http://localhost:3001/nar/aseguradoras/id/${idAseguradora}`
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/aseguradoras/id/${idAseguradora}`
         );
         setAseguradoraData(aseguradoraResponse.data);
 
         const segurosResponse = await axios.get(
-          `http://localhost:3001/nar/seguros/segurosByAseguradora/${idAseguradora}`
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros/segurosByAseguradora/${idAseguradora}`
         );
         setSeguros(segurosResponse.data);
 
@@ -139,7 +139,7 @@ const VerMasAseguradora = () => {
       .then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const endpoint = `http://localhost:3001/nar/seguros/${action}/${seguroId}`;
+            const endpoint = `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros/${action}/${seguroId}`;
             const response = await axios.put(endpoint);
 
             if (response.status === 200) {

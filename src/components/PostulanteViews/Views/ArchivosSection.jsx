@@ -113,7 +113,7 @@ const ArchivosSection = () => {
     try {
       // Este endpoint parece devolver todos los documentos para un usuario
       const response = await axios.get(
-        `http://localhost:3001/nar/comprobanteDomicilio/documentos/${userId}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/comprobanteDomicilio/documentos/${userId}`
       );
 
       if (response.data && Array.isArray(response.data)) {
@@ -131,7 +131,7 @@ const ArchivosSection = () => {
     try {
       // Primero intentamos obtener del endpoint específico
       const response = await axios.get(
-        `http://localhost:3001/nar/${endpoints[key]}/documentosPostulante/${userId}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${endpoints[key]}/documentosPostulante/${userId}`
       );
 
       if (response.data && response.data.idDocumento) {
@@ -478,7 +478,7 @@ const ArchivosSection = () => {
       // Intenta subir el documento
       try {
         const response = await axios.post(
-          `http://localhost:3001/nar/${endpoints[key]}/subirDocumento`,
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${endpoints[key]}/subirDocumento`,
           formData,
           {
             headers: {

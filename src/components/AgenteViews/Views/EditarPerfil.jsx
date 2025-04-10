@@ -43,7 +43,7 @@ const EditarPerfil = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/nar/usuarios/id/${id}`
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/id/${id}`
         );
         setFormData({
           nuevaContrasena: "",
@@ -147,7 +147,7 @@ const EditarPerfil = () => {
     try {
       // Actualizar la contraseña
       const passwordResponse = await axios.put(
-        `http://localhost:3001/nar/usuarios/updPostulante/${id}`,
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/updPostulante/${id}`,
         {
           contrasenaActual: formData.contrasenaActual,
           nuevaContrasena: formData.nuevaContrasena,

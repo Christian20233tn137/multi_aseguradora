@@ -45,7 +45,7 @@ const SolicitudDocumentos = () => {
             try {
               console.log(`Direct API check for ${docType.name}...`);
               const directResponse = await axios.get(
-                `http://localhost:3001/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
+                `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
               );
               console.log(
                 `Direct API response for ${docType.name}:`,
@@ -65,7 +65,7 @@ const SolicitudDocumentos = () => {
                 `Fetching ${docType.name} for user ${profile._id}...`
               );
               const response = await axios.get(
-                `http://localhost:3001/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
+                `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
               );
 
               console.log(`Raw response for ${docType.name}:`, response.data);
@@ -181,7 +181,7 @@ const SolicitudDocumentos = () => {
         if (result.isConfirmed) {
           try {
             await axios.put(
-              `http://localhost:3001/nar/usuarios/postulanteAgente/${profile._id}`
+              `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/postulanteAgente/${profile._id}`
             );
             swalWithTailwindButtons.fire({
               title: `${action.charAt(0).toUpperCase() + action.slice(1)}!`,
@@ -232,7 +232,7 @@ const SolicitudDocumentos = () => {
           });
           try {
             const response = await axios.put(
-              `http://localhost:3001/nar/usuarios/denegado/${profile._id}`
+              `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/denegado/${profile._id}`
             );
             Swal.fire({
               title: "Denegado!",

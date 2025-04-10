@@ -3,8 +3,8 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const API_URL = "http://localhost:3001/nar/aseguradoras/id";
-const API_URL_EDIT = "http://localhost:3001/nar/aseguradoras";
+const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/aseguradoras/id";
+const API_URL_EDIT = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/aseguradoras";
 
 const EditarAseguradora = () => {
   const navigate = useNavigate();
@@ -128,7 +128,7 @@ const EditarAseguradora = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/nar/aseguradoras/checkEmail/${email}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/aseguradoras/checkEmail/${email}`
       );
       return response.data.exists;
     } catch (error) {
@@ -145,7 +145,7 @@ const EditarAseguradora = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/nar/aseguradoras/checkPhone/${phone}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/aseguradoras/checkPhone/${phone}`
       );
       return response.data.exists;
     } catch (error) {

@@ -119,7 +119,7 @@ const InicioAdmin = () => {
             showConfirmButton: false,
           });
           try {
-            const endpoint = `http://localhost:3001/nar/usuarios/${action}/${adminId}`;
+            const endpoint = `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/${action}/${adminId}`;
             const response = await axios.put(endpoint);
 
             if (response.status === 200) {

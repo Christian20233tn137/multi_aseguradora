@@ -247,7 +247,7 @@ const DatosCotizar = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/nar/clientes/rfc/${rfcTitularExistente}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/clientes/rfc/${rfcTitularExistente}`
       );
 
       if (response.data) {
@@ -463,7 +463,7 @@ const DatosCotizar = () => {
           // Crear nuevo cliente
           const datosCliente = { ...titular, idUsuario };
           const responseCliente = await axios.post(
-            "http://localhost:3001/nar/clientes",
+            "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/clientes",
             datosCliente
           );
           newIdCliente = responseCliente.data._id;
@@ -532,7 +532,7 @@ const DatosCotizar = () => {
           };
         console.log("Datos a enviar:", datosAsegurado);
         const responseAsegurado = await axios.post(
-          "http://localhost:3001/nar/asegurados",
+          "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/asegurados",
           datosAsegurado
         );
         newIdAsegurado = responseAsegurado.data._id;

@@ -33,7 +33,7 @@ const DocumentViewer = () => {
 
         // 1. Obtener el estado del documento
         const statusResponse = await axios.get(
-          `http://localhost:3001/nar/${documentType}/estado/${documentId}`
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${documentType}/estado/${documentId}`
         );
         const estado = statusResponse.data.estado; // Ajusta según tu respuesta exacta
         setDocumentStatus(estado);
@@ -45,7 +45,7 @@ const DocumentViewer = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:3001/nar/${endpoint}/descargarDocumento/${documentId}`,
+          `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${endpoint}/descargarDocumento/${documentId}`,
           {
             responseType: "blob",
           }
@@ -98,7 +98,7 @@ const DocumentViewer = () => {
           try {
             if (action === "aceptar") {
               await axios.put(
-                `http://localhost:3001/nar/${documentType}/aceptarDocumento/${documentId}`
+                `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${documentType}/aceptarDocumento/${documentId}`
               );
               Swal.fire(
                 "¡Aceptado!",
@@ -107,7 +107,7 @@ const DocumentViewer = () => {
               );
             } else if (action === "rechazar") {
               await axios.delete(
-                `http://localhost:3001/nar/${documentType}/rechazarDocumento/${documentId}`
+                `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/${documentType}/rechazarDocumento/${documentId}`
               );
               Swal.fire(
                 "¡Rechazado!",

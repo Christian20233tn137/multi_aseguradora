@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 const Estadisticas = () => {
-  const API_URL = "http://localhost:3001/nar/usuarios/cotizacionesYEmisiones";
+  const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/cotizacionesYEmisiones";
   const location = useLocation();
   const id = location.state?.id;
 

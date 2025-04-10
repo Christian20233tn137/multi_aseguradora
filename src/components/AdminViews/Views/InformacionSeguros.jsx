@@ -22,7 +22,7 @@ const InformacionSeguros = () => {
   useEffect(() => {
     const fetchSeguroData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/nar/seguros/id/${idSeguro}`);
+        const response = await axios.get(`https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros/id/${idSeguro}`);
         const data = response.data;
         console.log("Datos del seguro obtenidos:", data);
 
