@@ -7,7 +7,7 @@ const EditarSeguro = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const id = location.state?.id;
-  const idSeguro = location.state?.idSeguro; 
+  const idSeguro = location.state?.idSeguro;
   const idAseguradora = location.state?.idAseguradora; // ID de la aseguradora
   console.log("ID de aseguradora:", idAseguradora); // Verifica que el ID de la aseguradora esté disponible
   console.log("ID del administrador:", id);
@@ -57,7 +57,6 @@ const EditarSeguro = () => {
     document.execCommand(command, false, value);
   };
 
-  
   const editarSeguro = async () => {
     // Validación de campos requeridos
     if (!nombre || !cobertura || !tipo || !precioBase || !idAseguradora) {
@@ -67,7 +66,7 @@ const EditarSeguro = () => {
 
     const dataToSend = {
         nombre,
-        cobertura: cobertura, 
+        cobertura: cobertura,
         icono,
         tipo,
         precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
@@ -108,7 +107,6 @@ const EditarSeguro = () => {
         swalWithTailwindButtons.close();
     }
 };
-
 
   const confirmarEditar = () => {
     swalWithTailwindButtons.fire({
@@ -211,15 +209,23 @@ const EditarSeguro = () => {
         </div>
       </div>
 
-      {/* Botón Editar */}
-      <div className="col-span-2 flex items-center justify-center mt-4">
+      {/* Botones Editar y Regresar */}
+      <div className="flex items-center justify-center mt-4 space-x-4">
         <button
-          type="button"
-          className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+         
+          className="px-4 py-2 botones text-white rounded"
           style={{ backgroundColor: "#0B1956" }}
           onClick={confirmarEditar}
         >
           Editar
+        </button>
+        <button
+          
+          className="px-4 py-2 botones text-white rounded"
+          style={{ backgroundColor: "#0B1956" }}
+          onClick={() => navigate(-1)}
+        >
+          Regresar
         </button>
       </div>
     </div>
