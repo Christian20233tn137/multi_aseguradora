@@ -83,8 +83,26 @@ const ArchivosSection = () => {
     }
   };
 
+  // Nueva función para obtener documentos desde el endpoint general
+  const fetchAllDocumentsFromAPI = async (userId) => {
+    try {
+      // Este endpoint parece devolver todos los documentos para un usuario
+      const response = await axios.get(`http://localhost:3001/nar/comprobanteDomicilio/documentos/${userId}`);
+      
+      if (response.data && Array.isArray(response.data)) {
+        console.log("Documentos obtenidos:", response.data);
+        return response.data;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error al obtener todos los documentos:", error);
+      return [];
+    }
+  };
+
   const fetchDocumentStatus = async (key, userId) => {
     try {
+      // Primero intentamos obtener del endpoint específico
       const response = await axios.get(
         `http://localhost:3001/nar/${endpoints[key]}/documentosPostulante/${userId}`
       );
@@ -112,27 +130,72 @@ const ArchivosSection = () => {
     }
 
     try {
+      // Primero obtenemos todos los documentos del endpoint general
+      const allDocs = await fetchAllDocumentsFromAPI(user._id);
+      
       const newLoadedFiles = {...loadedFiles};
       const newDocumentIds = {...documentIds};
       const newDocumentStatuses = {...documentStatuses};
 
-      const rejectedDocs = [];
+      // Procesar los documentos obtenidos del endpoint general
+      if (allDocs.length > 0) {
+        for (const doc of allDocs) {
+          // Mapear nombres de documentos a nuestras claves
+          let key = null;
+          
+          if (doc.nombre === "Comprobante de Domicilio") key = "domicilio";
+          else if (doc.nombre === "Constancia de situación fiscal") key = "fiscal";
+          else if (doc.nombre === "Identificación oficial") key = "identificacion";
+          else if (doc.nombre === "Carátula de banco") key = "banco";
+          else if (doc.nombre === "Documento de afiliación") key = "afiliacion";
+          
+          if (key) {
+            newLoadedFiles[key] = true;
+            newDocumentIds[key] = doc.idDocumento;
+            newDocumentStatuses[key] = doc.estado || "pendiente";
+            
+            // Guardar en localStorage para persistencia
+            localStorage.setItem(`document_status_${key}`, doc.estado || "pendiente");
+            localStorage.setItem(`document_id_${key}`, doc.idDocumento);
+          }
+        }
+      }
 
+      // Para documentos que no se encontraron en el endpoint general,
+      // intentamos con los endpoints específicos
       for (const [key] of Object.entries(endpoints)) {
-        const result = await fetchDocumentStatus(key, user._id);
-
-        newLoadedFiles[key] = result.loaded;
-        newDocumentIds[key] = result.id;
-        newDocumentStatuses[key] = result.status;
-
-        if (result.status === "rechazado") {
-          rejectedDocs.push(key);
+        if (!newLoadedFiles[key]) {
+          const result = await fetchDocumentStatus(key, user._id);
+          
+          if (result.loaded) {
+            newLoadedFiles[key] = result.loaded;
+            newDocumentIds[key] = result.id;
+            newDocumentStatuses[key] = result.status;
+            
+            // Guardar en localStorage para persistencia
+            localStorage.setItem(`document_status_${key}`, result.status);
+            localStorage.setItem(`document_id_${key}`, result.id);
+          } else {
+            // Intentar recuperar del localStorage
+            const savedStatus = localStorage.getItem(`document_status_${key}`);
+            const savedId = localStorage.getItem(`document_id_${key}`);
+            
+            if (savedStatus) {
+              newLoadedFiles[key] = true;
+              newDocumentIds[key] = savedId;
+              newDocumentStatuses[key] = savedStatus;
+            }
+          }
         }
       }
 
       setLoadedFiles(newLoadedFiles);
       setDocumentIds(newDocumentIds);
       setDocumentStatuses(newDocumentStatuses);
+
+      const rejectedDocs = Object.entries(newDocumentStatuses)
+        .filter(([key, status]) => status === "rechazado")
+        .map(([key]) => key);
 
       if (rejectedDocs.length > 0) {
         const rejectedNames = rejectedDocs.map(key => documentNames[key]).join(", ");
@@ -175,8 +238,39 @@ const ArchivosSection = () => {
   };
 
   useEffect(() => {
+    // Cargar estados guardados del localStorage primero
+    const loadFromLocalStorage = () => {
+      const newLoadedFiles = {...loadedFiles};
+      const newDocumentIds = {...documentIds};
+      const newDocumentStatuses = {...documentStatuses};
+      let hasData = false;
+
+      for (const key of Object.keys(endpoints)) {
+        const savedStatus = localStorage.getItem(`document_status_${key}`);
+        const savedId = localStorage.getItem(`document_id_${key}`);
+        
+        if (savedStatus) {
+          newLoadedFiles[key] = true;
+          newDocumentIds[key] = savedId;
+          newDocumentStatuses[key] = savedStatus;
+          hasData = true;
+        }
+      }
+
+      if (hasData) {
+        setLoadedFiles(newLoadedFiles);
+        setDocumentIds(newDocumentIds);
+        setDocumentStatuses(newDocumentStatuses);
+      }
+    };
+
+    // Primero cargar del localStorage
+    loadFromLocalStorage();
+    
+    // Luego actualizar desde el API
     fetchAllDocuments();
 
+    // Configurar los listeners y el intervalo
     const handleStorageChange = () => {
       console.log("Cambio detectado en localStorage");
       fetchAllDocuments();
@@ -391,6 +485,10 @@ const ArchivosSection = () => {
         [key]: "pendiente",
       }));
 
+      // Guardar en localStorage para persistencia
+      localStorage.setItem(`document_status_${key}`, "pendiente");
+      localStorage.setItem(`document_id_${key}`, documentId);
+
       setFiles(prev => ({
         ...prev,
         [key]: null
@@ -435,6 +533,10 @@ const ArchivosSection = () => {
         [key]: "pendiente",
       }));
 
+      // Guardar en localStorage para persistencia
+      localStorage.setItem(`document_status_${key}`, "pendiente");
+      localStorage.setItem(`document_id_${key}`, documentId);
+
       setFiles(prev => ({
         ...prev,
         [key]: null
@@ -462,8 +564,6 @@ const ArchivosSection = () => {
       fetchAllDocuments();
     }
   };
-
-
 
   const isDocumentUploadable = (key) => {
     return !loadedFiles[key] || documentStatuses[key] === "rechazado";
@@ -500,9 +600,6 @@ const ArchivosSection = () => {
     <div className="flex-1 p-4 overflow-y-auto relative">
       <div className="flex flex-col items-center p-6">
         <div className="flex justify-between w-full mb-4">
-          
-        
-        
         </div>
 
         <div className="grid grid-cols-3 gap-6 text-center">
@@ -614,7 +711,7 @@ const ArchivosSection = () => {
             );
           })}
 
-          <div className=" rounded-lg p-4  flex flex-col items-center justify-center">
+          <div className="rounded-lg p-4 flex flex-col items-center justify-center">
             <a
               href={afiliacionPDF}
               download="afiliacion.pdf"
