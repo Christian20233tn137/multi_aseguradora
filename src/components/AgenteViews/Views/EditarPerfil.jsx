@@ -9,31 +9,23 @@ const EditarPerfil = () => {
   console.log("Prueba", id);
 
   const [formData, setFormData] = useState({
-    nombre: "",
-    apellidoPaterno: "",
-    apellidoMaterno: "",
-    correo: "",
-    telefono: "",
-    rfc: "",
     nuevaContrasena: "",
     confirmarContrasena: "",
     contrasenaActual: "",
-  });
-
-  const [errors, setErrors] = useState({
     nombre: "",
     apellidoPaterno: "",
     apellidoMaterno: "",
-    correo: "",
-    telefono: "",
+  });
+
+  const [errors, setErrors] = useState({
     nuevaContrasena: "",
     confirmarContrasena: "",
     contrasenaActual: "",
   });
 
   const [error, setError] = useState("");
-  const [modificarContrasena, setModificarContrasena] = useState(false);
   const [correoOriginal, setCorreoOriginal] = useState("");
+  const [rfcOriginal, setRfcOriginal] = useState("");
   const [telefonoOriginal, setTelefonoOriginal] = useState("");
 
   const swalWithTailwindButtons = Swal.mixin({
@@ -53,10 +45,18 @@ const EditarPerfil = () => {
         const response = await axios.get(
           `http://localhost:3001/nar/usuarios/id/${id}`
         );
-        setFormData(response.data);
-        // Guardar el correo y teléfono originales para comparar después
+        setFormData({
+          nuevaContrasena: "",
+          confirmarContrasena: "",
+          contrasenaActual: "",
+          nombre: response.data.nombre,
+          apellidoPaterno: response.data.apellidoPaterno,
+          apellidoMaterno: response.data.apellidoMaterno,
+        });
+        // Guardar el correo y teléfono originales para mostrar
         setCorreoOriginal(response.data.correo);
         setTelefonoOriginal(response.data.telefono);
+        setRfcOriginal(response.data.rfc);
       } catch (error) {
         console.error("Error al cargar los datos del perfil", error);
       }
@@ -67,46 +67,6 @@ const EditarPerfil = () => {
 
   const validateInput = (name, value) => {
     let error = "";
-
-    // Validación de longitud máxima para campos específicos
-    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
-      if (value.length > 20) {
-        error = "No debe exceder 20 caracteres";
-      }
-    }
-
-    //Validacion maximo de campos en telefono
-    if (["telefono"].includes(name)) {
-      if (value.length > 10) {
-        error = "No debe exceder 10 caracteres";
-      }
-    }
-
-    // Validación para campos que no deben contener números
-    if (["nombre", "apellidoPaterno", "apellidoMaterno"].includes(name)) {
-      if (/\d/.test(value)) {
-        error = "No se permiten números en este campo";
-      }
-      if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
-        error = "No se permiten caracteres especiales en este campo";
-      }
-    }
-
-    // Validación específica para teléfono
-    if (name === "telefono") {
-      if (!/^\d{0,10}$/.test(value)) {
-        error = "Solo se permiten números y máximo 10 dígitos";
-      }
-    }
-
-    // Validación de correo electrónico
-    if (name === "correo" && value) {
-      if (value.length > 25) {
-        error = "No debe exceder 25 caracteres";
-      } else if (!/\S+@\S+\.\S+/.test(value)) {
-        error = "Formato de correo electrónico inválido";
-      }
-    }
 
     // Validación de contraseña
     if (name === "nuevaContrasena" && value) {
@@ -151,44 +111,25 @@ const EditarPerfil = () => {
     const newErrors = {};
     let hasErrors = false;
 
-    // Validar cada campo
-    const fields = {
-      nombre: formData.nombre,
-      apellidoPaterno: formData.apellidoPaterno,
-      apellidoMaterno: formData.apellidoMaterno,
-      correo: formData.correo,
-      telefono: formData.telefono,
+    // Validar campos de contraseña
+    const passwordFields = {
+      nuevaContrasena: formData.nuevaContrasena,
+      confirmarContrasena: formData.confirmarContrasena,
+      contrasenaActual: formData.contrasenaActual,
     };
 
-    Object.keys(fields).forEach((key) => {
-      const error = validateInput(key, fields[key]);
+    Object.keys(passwordFields).forEach((key) => {
+      const error = validateInput(key, passwordFields[key]);
       if (error) {
         newErrors[key] = error;
         hasErrors = true;
       }
     });
 
-    // Validar campos de contraseña si se está modificando
-    if (modificarContrasena) {
-      const passwordFields = {
-        nuevaContrasena: formData.nuevaContrasena,
-        confirmarContrasena: formData.confirmarContrasena,
-        contrasenaActual: formData.contrasenaActual,
-      };
-
-      Object.keys(passwordFields).forEach((key) => {
-        const error = validateInput(key, passwordFields[key]);
-        if (error) {
-          newErrors[key] = error;
-          hasErrors = true;
-        }
-      });
-
-      // Validar que la contraseña actual no esté vacía
-      if (!formData.contrasenaActual) {
-        newErrors.contrasenaActual = "Debe ingresar su contraseña actual";
-        hasErrors = true;
-      }
+    // Validar que la contraseña actual no esté vacía
+    if (!formData.contrasenaActual) {
+      newErrors.contrasenaActual = "Debe ingresar su contraseña actual";
+      hasErrors = true;
     }
 
     if (hasErrors) {
@@ -201,57 +142,26 @@ const EditarPerfil = () => {
       return;
     }
 
-    // Validar que las contraseñas coincidan si se desea modificar la contraseña
-    if (
-      modificarContrasena &&
-      formData.nuevaContrasena !== formData.confirmarContrasena
-    ) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
     setError(""); // Limpiar el mensaje de error si la validación pasa
 
     try {
-      if (modificarContrasena) {
-        // Actualizar la contraseña
-        const passwordResponse = await axios.put(
-          `http://localhost:3001/nar/usuarios/updPostulante/${id}`,
-          {
-            contrasenaActual: formData.contrasenaActual,
-            nuevaContrasena: formData.nuevaContrasena,
-          }
-        );
-
-        if (passwordResponse.status !== 200) {
-          throw new Error("Error al actualizar la contraseña");
+      // Actualizar la contraseña
+      const passwordResponse = await axios.put(
+        `http://localhost:3001/nar/usuarios/updPostulante/${id}`,
+        {
+          contrasenaActual: formData.contrasenaActual,
+          nuevaContrasena: formData.nuevaContrasena,
         }
-      } else {
-        // Actualizar los datos del perfil - enviar solo los campos requeridos
-        const dataToSend = {
-          nombre: formData.nombre,
-          apellidoPaterno: formData.apellidoPaterno,
-          apellidoMaterno: formData.apellidoMaterno,
-          correo: formData.correo,
-          telefono: formData.telefono,
-        };
+      );
 
-        const response = await axios.put(
-          `http://localhost:3001/nar/usuarios/byAdmin/${id}`,
-          dataToSend
-        );
-
-        if (response.status !== 200) {
-          throw new Error("Error al actualizar el perfil");
-        }
+      if (passwordResponse.status !== 200) {
+        throw new Error("Error al actualizar la contraseña");
       }
 
       swalWithTailwindButtons
         .fire({
           title: "¡Actualizado!",
-          text: modificarContrasena
-            ? "La contraseña se actualizó con éxito."
-            : "El perfil se actualizó con éxito.",
+          text: "La contraseña se actualizó con éxito.",
           icon: "success",
         })
         .then(() => {
@@ -259,35 +169,6 @@ const EditarPerfil = () => {
         });
     } catch (error) {
       console.error("Error al actualizar el perfil", error);
-
-      // Verificar si el error es por datos duplicados
-      if (error.response && error.response.data) {
-        const errorMessage = error.response.data.message;
-
-        if (errorMessage && errorMessage.includes("correo")) {
-          setErrors((prev) => ({
-            ...prev,
-            correo: "El correo electrónico ya está registrado en el sistema",
-          }));
-          swalWithTailwindButtons.fire({
-            title: "Error",
-            text: "El correo electrónico ya está registrado en el sistema",
-            icon: "error",
-          });
-          return;
-        } else if (errorMessage && errorMessage.includes("teléfono")) {
-          setErrors((prev) => ({
-            ...prev,
-            telefono: "El teléfono ya está registrado en el sistema",
-          }));
-          swalWithTailwindButtons.fire({
-            title: "Error",
-            text: "El teléfono ya está registrado en el sistema",
-            icon: "error",
-          });
-          return;
-        }
-      }
 
       swalWithTailwindButtons.fire({
         title: "Error",
@@ -302,44 +183,25 @@ const EditarPerfil = () => {
     const newErrors = {};
     let hasErrors = false;
 
-    // Validar cada campo
-    const fields = {
-      nombre: formData.nombre,
-      apellidoPaterno: formData.apellidoPaterno,
-      apellidoMaterno: formData.apellidoMaterno,
-      correo: formData.correo,
-      telefono: formData.telefono,
+    // Validar campos de contraseña
+    const passwordFields = {
+      nuevaContrasena: formData.nuevaContrasena,
+      confirmarContrasena: formData.confirmarContrasena,
+      contrasenaActual: formData.contrasenaActual,
     };
 
-    Object.keys(fields).forEach((key) => {
-      const error = validateInput(key, fields[key]);
+    Object.keys(passwordFields).forEach((key) => {
+      const error = validateInput(key, passwordFields[key]);
       if (error) {
         newErrors[key] = error;
         hasErrors = true;
       }
     });
 
-    // Validar campos de contraseña si se está modificando
-    if (modificarContrasena) {
-      const passwordFields = {
-        nuevaContrasena: formData.nuevaContrasena,
-        confirmarContrasena: formData.confirmarContrasena,
-        contrasenaActual: formData.contrasenaActual,
-      };
-
-      Object.keys(passwordFields).forEach((key) => {
-        const error = validateInput(key, passwordFields[key]);
-        if (error) {
-          newErrors[key] = error;
-          hasErrors = true;
-        }
-      });
-
-      // Validar que la contraseña actual no esté vacía
-      if (!formData.contrasenaActual) {
-        newErrors.contrasenaActual = "Debe ingresar su contraseña actual";
-        hasErrors = true;
-      }
+    // Validar que la contraseña actual no esté vacía
+    if (!formData.contrasenaActual) {
+      newErrors.contrasenaActual = "Debe ingresar su contraseña actual";
+      hasErrors = true;
     }
 
     if (hasErrors) {
@@ -383,191 +245,129 @@ const EditarPerfil = () => {
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
         <div>
-          <label className="block text-sm font-medium">Nombre*</label>
+          <label className="block text-sm font-medium">Nombre</label>
           <input
             type="text"
-            name="nombre"
             value={formData.nombre}
-            onChange={handleChange}
-            className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-              errors.nombre ? "border-red-500" : ""
-            }`}
+            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
+            disabled
           />
-          {errors.nombre && (
-            <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
-          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Apellido paterno*</label>
+          <label className="block text-sm font-medium">Apellido paterno</label>
           <input
             type="text"
-            name="apellidoPaterno"
             value={formData.apellidoPaterno}
+            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
+            disabled
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Apellido materno</label>
+          <input
+            type="text"
+            value={formData.apellidoMaterno}
+            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
+            disabled
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">
+            Correo electrónico
+          </label>
+          <input
+            type="text"
+            value={correoOriginal}
+            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
+            disabled
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Teléfono</label>
+          <input
+            type="text"
+            value={telefonoOriginal}
+            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
+            disabled
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">RFC</label>
+          <input
+            type="text"
+            value={rfcOriginal}
+            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
+            disabled
+          />
+        </div>
+
+        <div className="mt-6 md:col-span-3">
+          <label className="text-gray-700 text-sm font-bold">
+            Modificar contraseña
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">
+            Contraseña actual:
+          </label>
+          <input
+            type="password"
+            name="contrasenaActual"
+            value={formData.contrasenaActual}
             onChange={handleChange}
             className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-              errors.apellidoPaterno ? "border-red-500" : ""
+              errors.contrasenaActual ? "border-red-500" : ""
             }`}
           />
-          {errors.apellidoPaterno && (
+          {errors.contrasenaActual && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.apellidoPaterno}
+              {errors.contrasenaActual}
             </p>
           )}
         </div>
-
         <div>
-          <label className="block text-sm font-medium">Apellido materno*</label>
+          <label className="block text-sm font-medium">Nueva contraseña:</label>
           <input
-            type="text"
-            name="apellidoMaterno"
-            value={formData.apellidoMaterno}
+            type="password"
+            name="nuevaContrasena"
+            value={formData.nuevaContrasena}
             onChange={handleChange}
             className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-              errors.apellidoMaterno ? "border-red-500" : ""
+              errors.nuevaContrasena ? "border-red-500" : ""
             }`}
           />
-          {errors.apellidoMaterno && (
+          {errors.nuevaContrasena && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.apellidoMaterno}
+              {errors.nuevaContrasena}
             </p>
           )}
         </div>
 
         <div>
           <label className="block text-sm font-medium">
-            Correo electrónico*
+            Confirmar Contraseña
           </label>
           <input
-            type="email"
-            name="correo"
-            value={formData.correo}
+            type="password"
+            name="confirmarContrasena"
+            value={formData.confirmarContrasena}
             onChange={handleChange}
             className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-              errors.correo ? "border-red-500" : ""
+              errors.confirmarContrasena ? "border-red-500" : ""
             }`}
           />
-          {errors.correo && (
-            <p className="text-red-500 text-xs mt-1">{errors.correo}</p>
+          {errors.confirmarContrasena && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.confirmarContrasena}
+            </p>
           )}
         </div>
-
-        <div>
-          <label className="block text-sm font-medium">Teléfono*</label>
-          <input
-            type="text"
-            name="telefono"
-            value={formData.telefono}
-            onChange={handleChange}
-            className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-              errors.telefono ? "border-red-500" : ""
-            }`}
-          />
-          {errors.telefono && (
-            <p className="text-red-500 text-xs mt-1">{errors.telefono}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">RFC*</label>
-          <input
-            type="text"
-            name="rfc"
-            value={formData.rfc}
-            onChange={handleChange}
-            className="mt-1 w-full border border-gray-300 p-2 rounded bg-gray-100"
-            disabled // Deshabilitar el campo RFC
-          />
-        </div>
-
-        <div className="mt-6 md:col-span-3">
-          <label className="text-gray-700 text-sm font-bold">
-            ¿Desea modificar su contraseña?*
-          </label>
-          <div className="flex items-center">
-            <label className="ml-2">
-              <input
-                type="radio"
-                name="modificarContrasena"
-                checked={modificarContrasena}
-                onChange={() => setModificarContrasena(true)}
-              />{" "}
-              Sí
-            </label>
-            <label className="ml-4">
-              <input
-                type="radio"
-                name="modificarContrasena"
-                checked={!modificarContrasena}
-                onChange={() => setModificarContrasena(false)}
-              />{" "}
-              No
-            </label>
-          </div>
-        </div>
-
-        {modificarContrasena && (
-          <>
-            <div>
-              <label className="block text-sm font-medium">
-                Contraseña actual:
-              </label>
-              <input
-                type="password"
-                name="contrasenaActual"
-                value={formData.contrasenaActual}
-                onChange={handleChange}
-                className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-                  errors.contrasenaActual ? "border-red-500" : ""
-                }`}
-              />
-              {errors.contrasenaActual && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.contrasenaActual}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium">
-                Nueva contraseña:
-              </label>
-              <input
-                type="password"
-                name="nuevaContrasena"
-                value={formData.nuevaContrasena}
-                onChange={handleChange}
-                className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-                  errors.nuevaContrasena ? "border-red-500" : ""
-                }`}
-              />
-              {errors.nuevaContrasena && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.nuevaContrasena}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">
-                Confirmar Contraseña*
-              </label>
-              <input
-                type="password"
-                name="confirmarContrasena"
-                value={formData.confirmarContrasena}
-                onChange={handleChange}
-                className={`mt-1 w-full border border-gray-300 p-2 rounded ${
-                  errors.confirmarContrasena ? "border-red-500" : ""
-                }`}
-              />
-              {errors.confirmarContrasena && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.confirmarContrasena}
-                </p>
-              )}
-            </div>
-          </>
-        )}
 
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 

@@ -20,33 +20,17 @@ const Estadisticas = () => {
   const [tittle, setTittle] = useState("Cuotas a cumplir: ");
 
   const [dataCotizaciones, setDataCotizaciones] = useState([
-    { name: "Ene", cotizaciones: 0 },
-    { name: "Feb", cotizaciones: 0 },
-    { name: "Mar", cotizaciones: 0 },
+    { name: "Ene", cotizaciones: 12 },
+    { name: "Feb", cotizaciones: 8 },
+    { name: "Mar", cotizaciones: 22 },
     { name: "Abr", cotizaciones: 0 },
-    { name: "May", cotizaciones: 0 },
-    { name: "Jun", cotizaciones: 0 },
-    { name: "Jul", cotizaciones: 0 },
-    { name: "Ago", cotizaciones: 0 },
-    { name: "Sep", cotizaciones: 0 },
-    { name: "Oct", cotizaciones: 0 },
-    { name: "Nov", cotizaciones: 0 },
-    { name: "Dic", cotizaciones: 0 },
   ]);
 
   const [dataVentas, setDataVentas] = useState([
-    { name: "Ene", ventas: 0 },
-    { name: "Feb", ventas: 0 },
-    { name: "Mar", ventas: 0 },
+    { name: "Ene", ventas: 12 },
+    { name: "Feb", ventas: 9 },
+    { name: "Mar", ventas: 11 },
     { name: "Abr", ventas: 0 },
-    { name: "May", ventas: 0 },
-    { name: "Jun", ventas: 0 },
-    { name: "Jul", ventas: 0 },
-    { name: "Ago", ventas: 0 },
-    { name: "Sep", ventas: 0 },
-    { name: "Oct", ventas: 0 },
-    { name: "Nov", ventas: 0 },
-    { name: "Dic", ventas: 0 },
   ]);
 
   useEffect(() => {
@@ -86,17 +70,19 @@ const Estadisticas = () => {
         const currentMonth = new Date().getMonth();
 
         // Actualizar los datos del mes actual
-        setDataCotizaciones((prevData) =>
-          prevData.map((data, index) =>
-            index === currentMonth ? { ...data, cotizaciones } : data
-          )
-        );
+        if (currentMonth < 4) { // Solo actualizar si el mes es entre enero y abril
+          setDataCotizaciones((prevData) =>
+            prevData.map((data, index) =>
+              index === currentMonth ? { ...data, cotizaciones } : data
+            )
+          );
 
-        setDataVentas((prevData) =>
-          prevData.map((data, index) =>
-            index === currentMonth ? { ...data, ventas: emisiones } : data
-          )
-        );
+          setDataVentas((prevData) =>
+            prevData.map((data, index) =>
+              index === currentMonth ? { ...data, ventas: emisiones } : data
+            )
+          );
+        }
       } catch (error) {
         console.error("Error al obtener los datos:", error);
       }
@@ -127,8 +113,8 @@ const Estadisticas = () => {
   }, []);
 
   const currentMonth = new Date().getMonth();
-  const currentCotizaciones = dataCotizaciones[currentMonth].cotizaciones;
-  const currentEmisiones = dataVentas[currentMonth].ventas;
+  const currentCotizaciones = dataCotizaciones[currentMonth]?.cotizaciones || 0;
+  const currentEmisiones = dataVentas[currentMonth]?.ventas || 0;
 
   return (
     <div className="p-6 w-auto h-auto overflow-hidden">
@@ -159,7 +145,7 @@ const Estadisticas = () => {
           </BarChart>
         </div>
       </div>
-      
+
       {currentEmisiones >= cuotas ? (
         <p className="text-green-600 text-center mt-4">Meta mensual completada</p>
       ) : (
