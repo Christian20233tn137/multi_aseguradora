@@ -322,8 +322,9 @@ const ArchivosSection = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
-      Swal.fire("Error", "Solo se permiten imágenes y archivos PDF.", "error");
+    // Validación modificada para aceptar solo archivos PDF
+    if (file.type !== "application/pdf") {
+      Swal.fire("Error", "Solo se permiten archivos PDF.", "error");
       return;
     }
 
@@ -690,7 +691,7 @@ const ArchivosSection = () => {
                     type="file"
                     className="hidden"
                     onChange={(e) => handleFileChange(e, key)}
-                    accept="image/*,application/pdf"
+                    accept="application/pdf"
                     disabled={isUploading || !isUploadable}
                   />
                 </label>
