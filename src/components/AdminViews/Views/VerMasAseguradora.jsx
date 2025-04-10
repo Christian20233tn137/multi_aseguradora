@@ -78,6 +78,10 @@ const VerMasAseguradora = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
   };
 
+  const handleReturn = () => {
+    navigate(-1); // This will navigate to the previous page
+  };
+
   const filteredSeguros = seguros.filter((seguro) => {
     const searchField = seguro?.name || seguro?.nombre || "";
     return searchField.toLowerCase().includes(searchTerm.toLowerCase());
@@ -251,7 +255,7 @@ const VerMasAseguradora = () => {
             return (
               <div
                 key={seguroId}
-                className="flex flex-col md:flex-row items-center justify-between p-4 md:p-6 border-0 rounded-lg shadow-lg mt-3 bg-white"
+                className="flex flex-col md:flex-row items-center justify-between p-4 md:p-6 border-0 rounded-lg shadow-lg mt-4 bg-white"
               >
                 <div className="flex items-center space-x-4 mb-4 md:mb-0">
                   <div>
@@ -295,20 +299,26 @@ const VerMasAseguradora = () => {
       </div>
 
       {filteredSeguros.length > 0 && (
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-between mt-1">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 0}
-            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
+            className="px-6 py-3 text-white botones"
           >
             Anterior
+          </button>
+          <button
+            onClick={handleReturn}
+            className="px-6 py-3 text-white botones"
+          >
+            Regresar
           </button>
           <button
             onClick={handleNextPage}
             disabled={
               (currentPage + 1) * itemsPerPage >= filteredSeguros.length
             }
-            className="px-4 py-2 botones text-white rounded disabled:bg-gray-400"
+            className="px-6 py-3 text-white botones"
           >
             Siguiente
           </button>
