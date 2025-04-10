@@ -97,14 +97,16 @@ const Seguros = () => {
   }
 
   return (
-    <div className="max-h-screen flex flex-col items-center justify-center p-4 overflow-auto">
-      <h1 className="text-2xl font-bold text-center bg-blue-200 w-full py-4 rounded-lg">
+    <div className="flex flex-col items-center justify-center p-4 sm:p-6 overflow-auto">
+      <h1 className="text-xl sm:text-2xl font-bold text-center bg-blue-200 w-full py-4 rounded-lg">
         Información sobre el seguro
       </h1>
 
-      <div className="bg-white p-6 rounded-lg max-w-3xl w-full mt-6 overflow-auto max-h-[80vh]">
-        <div className="flex items-center space-x-6 mb-6">
-          <h2 className="text-2xl font-semibold">{emision.nombreSeguro}</h2>
+      <div className="bg-white p-4 sm:p-6 rounded-lg w-full max-w-3xl mt-6 overflow-auto max-h-[80vh]">
+        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-center sm:text-left">
+            {emision.nombreSeguro}
+          </h2>
         </div>
 
         <div className="border border-gray-300 rounded-lg p-4 mb-4">
@@ -128,15 +130,15 @@ const Seguros = () => {
           </p>
         </div>
 
-        <div className="flex justify-between mt-6">
+        <div className="flex flex-col sm:flex-row justify-between mt-6 space-y-2 sm:space-y-0 sm:space-x-2">
           <button
-            className="botones text-white px-4 py-2 rounded-lg"
+            className="botones text-white px-4 py-2 rounded-lg w-full sm:w-auto"
             onClick={() => navigate("/inicioAgentes", { state: { id: id } })}
           >
             Regresar
           </button>
           <button
-            className="botones text-white px-4 py-2 rounded-lg"
+            className="botones text-white px-4 py-2 rounded-lg w-full sm:w-auto"
             onClick={handleEmitir}
           >
             Emitir
@@ -145,6 +147,8 @@ const Seguros = () => {
       </div>
     </div>
   );
+
+
 };
 
 export default Seguros;

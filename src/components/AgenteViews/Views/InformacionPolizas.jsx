@@ -31,7 +31,7 @@ const InformacionPolizas = () => {
         } else {
           setError(
             response.data.message ||
-              "Error al obtener la información de la póliza"
+            "Error al obtener la información de la póliza"
           );
         }
       } catch (error) {
@@ -56,12 +56,12 @@ const InformacionPolizas = () => {
   }
 
   return (
-    <div className="p-6 flex flex-col items-center">
-      <h1 className="text-2xl font-semibold text-black bg-blue-100 py-3 px-6 rounded-xl">
+    <div className="p-4 sm:p-6 flex flex-col items-center">
+      <h1 className="text-xl sm:text-2xl font-semibold text-black bg-blue-100 py-3 px-6 rounded-xl w-full text-center">
         Póliza N.1
       </h1>
 
-      <div className="mt-6 p-6 border-0 shadow-md rounded-lg w-full max-w-3xl bg-white">
+      <div className="mt-6 p-4 sm:p-6 border-0 shadow-md rounded-lg w-full max-w-3xl bg-white">
         <h2 className="text-lg font-bold">INFORMACIÓN DE LA PÓLIZA</h2>
         <p>
           <strong>Correo del titular:</strong> {poliza.correoTitular}
@@ -84,10 +84,7 @@ const InformacionPolizas = () => {
         <p>
           <div>
             <strong>Cobertura:</strong>
-            <div
-              className="pl-4 mt-1"
-              dangerouslySetInnerHTML={{ __html: poliza.cobertura }}
-            />
+            <div className="pl-4 mt-1" dangerouslySetInnerHTML={{ __html: poliza.cobertura }} />
           </div>
         </p>
         <p>
@@ -100,12 +97,13 @@ const InformacionPolizas = () => {
 
       <button
         onClick={handleRegresar}
-        className="mt-6 botones rounded-lg text-white px-6 py-2 transition font-medium"
+        className="mt-6 botones rounded-lg text-white px-6 py-2 transition font-medium w-full sm:w-auto"
       >
         Regresar
       </button>
     </div>
   );
+
 };
 
 export default InformacionPolizas;
