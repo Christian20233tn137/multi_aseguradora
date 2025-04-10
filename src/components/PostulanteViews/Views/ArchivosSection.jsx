@@ -636,7 +636,7 @@ const ArchivosSection = () => {
             );
           })}
 
-          <div className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center">
+          <div className=" rounded-lg p-4  flex flex-col items-center justify-center">
             <a
               href="afiliacion.pdf"
               download="afiliacion.pdf"
