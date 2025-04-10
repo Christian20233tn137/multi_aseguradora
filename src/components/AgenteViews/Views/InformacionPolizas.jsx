@@ -64,7 +64,10 @@ const InformacionPolizas = () => {
       <div className="mt-6 p-6 border-0 shadow-md rounded-lg w-full max-w-3xl bg-white">
         <h2 className="text-lg font-bold">INFORMACIÓN DE LA PÓLIZA</h2>
         <p>
-          <strong>Nombre Asegurado:</strong> {poliza.nombreAsegurado}
+          <strong>Correo del titular:</strong> {poliza.correoTitular}
+        </p>
+        <p>
+          <strong>Nombre del Asegurado:</strong> {poliza.nombreAsegurado}
         </p>
         <p>
           <strong>RFC:</strong> {poliza.rfc}
