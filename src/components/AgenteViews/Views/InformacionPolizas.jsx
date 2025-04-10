@@ -79,7 +79,13 @@ const InformacionPolizas = () => {
           <strong>Tipo de Seguro:</strong> {poliza.tipoSeguro}
         </p>
         <p>
-          <strong>Cobertura:</strong> {poliza.cobertura}
+          <div>
+            <strong>Cobertura:</strong>
+            <div
+              className="pl-4 mt-1"
+              dangerouslySetInnerHTML={{ __html: poliza.cobertura }}
+            />
+          </div>
         </p>
         <p>
           <strong>Vigencia:</strong> {poliza.vigencia}

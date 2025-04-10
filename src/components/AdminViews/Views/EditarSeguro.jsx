@@ -67,7 +67,7 @@ const EditarSeguro = () => {
 
     const dataToSend = {
         nombre,
-        cobertura: cobertura.replace(/<\/?[^>]+(>|$)/g, ""), // Elimina etiquetas HTML
+        cobertura: cobertura, 
         icono,
         tipo,
         precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
@@ -197,6 +197,7 @@ const EditarSeguro = () => {
             <button onClick={() => formatText("justifyCenter")} className="p-1">⬆</button>
             <button onClick={() => formatText("justifyRight")} className="p-1">➡</button>
             <button onClick={() => formatText("foreColor", "red")} className="p-1 text-red-500">A</button>
+            <button onClick={() => formatText("foreColor", "black")} className="p-1 text-black-500">A</button>
           </div>
 
           {/* Área de edición */}

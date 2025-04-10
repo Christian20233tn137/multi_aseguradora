@@ -44,8 +44,7 @@ const AgregarSeguro = () => {
 
     const dataToSend = {
       nombre,
-      cobertura: cobertura.replace(/<\/?[^>]+(>|$)/g, ""), // Elimina etiquetas HTML
-      icono,
+      cobertura: cobertura,
       idAseguradora,
       tipo,
       precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
@@ -191,6 +190,12 @@ const AgregarSeguro = () => {
             <button
               onClick={() => formatText("foreColor", "red")}
               className="p-1 text-red-500"
+            >
+              A
+            </button>
+            <button
+              onClick={() => formatText("foreColor", "black")}
+              className="p-1 text-black-500"
             >
               A
             </button>
