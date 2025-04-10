@@ -463,26 +463,7 @@ const ArchivosSection = () => {
     }
   };
 
-  const handleRefreshDocuments = () => {
-    Swal.fire({
-      title: "Actualizando...",
-      text: "Obteniendo estado actual de tus documentos",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-        fetchAllDocuments().then(() => {
-          Swal.close();
-          Swal.fire({
-            title: "Actualizado",
-            text: "La información de documentos ha sido actualizada",
-            icon: "success",
-            timer: 2000,
-            showConfirmButton: false
-          });
-        });
-      }
-    });
-  };
+
 
   const isDocumentUploadable = (key) => {
     return !loadedFiles[key] || documentStatuses[key] === "rechazado";
@@ -519,13 +500,9 @@ const ArchivosSection = () => {
     <div className="flex-1 p-4 overflow-y-auto relative">
       <div className="flex flex-col items-center p-6">
         <div className="flex justify-between w-full mb-4">
-          <h2 className="text-xl font-bold">Mis Documentos</h2>
-          <button
-            onClick={handleRefreshDocuments}
-            className="px-4 py-2 text-white botones rounded hover:bg-blue-600"
-          >
-            Actualizar estado
-          </button>
+          
+        
+        
         </div>
 
         <div className="grid grid-cols-3 gap-6 text-center">
