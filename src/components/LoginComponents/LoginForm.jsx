@@ -71,7 +71,10 @@ const LoginForm = ({ setUser }) => {
             replace: true, 
           });
         } else if (data.rol === "postulante") {
-          navigate("/archivosPostulante");
+          navigate("/archivosPostulante", {
+            state: { id: data._id },
+            replace: true, 
+          });
         } else if (data.rol==="agenteInactivo"){
           navigate("/agenteInactivo");
         }

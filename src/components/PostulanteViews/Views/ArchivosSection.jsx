@@ -3,10 +3,15 @@ import FileUploadIcon from "../assets/FileUpload.png";
 import { MdCancel } from "react-icons/md";
 import Swal from "sweetalert2";
 import { AiOutlineDownload } from "react-icons/ai";
-import afiliacionPDF from './afiliacion.pdf';
+import afiliacionPDF from "./afiliacion.pdf";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const ArchivosSection = () => {
+  const location = useLocation();
+  const id = location.state?.id;
+  console.log("Id del postulante", id);
+
   const [files, setFiles] = useState({
     domicilio: null,
     fiscal: null,
@@ -64,10 +69,30 @@ const ArchivosSection = () => {
   };
 
   const statusConfig = {
-    aceptado: { color: "text-green-500", bgColor: "bg-green-100", message: "ACEPTADO", icon: "✓" },
-    rechazado: { color: "text-red-500", bgColor: "bg-red-100", message: "RECHAZADO", icon: "✗" },
-    pendiente: { color: "text-yellow-500", bgColor: "bg-yellow-100", message: "EN REVISIÓN", icon: "⋯" },
-    default: { color: "text-gray-500", bgColor: "bg-gray-100", message: "SIN INFORMACIÓN", icon: "?" },
+    aceptado: {
+      color: "text-green-500",
+      bgColor: "bg-green-100",
+      message: "ACEPTADO",
+      icon: "✓",
+    },
+    rechazado: {
+      color: "text-red-500",
+      bgColor: "bg-red-100",
+      message: "RECHAZADO",
+      icon: "✗",
+    },
+    pendiente: {
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-100",
+      message: "EN REVISIÓN",
+      icon: "⋯",
+    },
+    default: {
+      color: "text-gray-500",
+      bgColor: "bg-gray-100",
+      message: "SIN INFORMACIÓN",
+      icon: "?",
+    },
   };
 
   const getCurrentUser = () => {
@@ -87,8 +112,10 @@ const ArchivosSection = () => {
   const fetchAllDocumentsFromAPI = async (userId) => {
     try {
       // Este endpoint parece devolver todos los documentos para un usuario
-      const response = await axios.get(`http://localhost:3001/nar/comprobanteDomicilio/documentos/${userId}`);
-      
+      const response = await axios.get(
+        `http://localhost:3001/nar/comprobanteDomicilio/documentos/${userId}`
+      );
+
       if (response.data && Array.isArray(response.data)) {
         console.log("Documentos obtenidos:", response.data);
         return response.data;
@@ -111,7 +138,7 @@ const ArchivosSection = () => {
         return {
           loaded: true,
           id: response.data.idDocumento,
-          status: response.data.estado || "pendiente"
+          status: response.data.estado || "pendiente",
         };
       }
 
@@ -132,30 +159,35 @@ const ArchivosSection = () => {
     try {
       // Primero obtenemos todos los documentos del endpoint general
       const allDocs = await fetchAllDocumentsFromAPI(user._id);
-      
-      const newLoadedFiles = {...loadedFiles};
-      const newDocumentIds = {...documentIds};
-      const newDocumentStatuses = {...documentStatuses};
+
+      const newLoadedFiles = { ...loadedFiles };
+      const newDocumentIds = { ...documentIds };
+      const newDocumentStatuses = { ...documentStatuses };
 
       // Procesar los documentos obtenidos del endpoint general
       if (allDocs.length > 0) {
         for (const doc of allDocs) {
           // Mapear nombres de documentos a nuestras claves
           let key = null;
-          
+
           if (doc.nombre === "Comprobante de Domicilio") key = "domicilio";
-          else if (doc.nombre === "Constancia de situación fiscal") key = "fiscal";
-          else if (doc.nombre === "Identificación oficial") key = "identificacion";
+          else if (doc.nombre === "Constancia de situación fiscal")
+            key = "fiscal";
+          else if (doc.nombre === "Identificación oficial")
+            key = "identificacion";
           else if (doc.nombre === "Carátula de banco") key = "banco";
           else if (doc.nombre === "Documento de afiliación") key = "afiliacion";
-          
+
           if (key) {
             newLoadedFiles[key] = true;
             newDocumentIds[key] = doc.idDocumento;
             newDocumentStatuses[key] = doc.estado || "pendiente";
-            
+
             // Guardar en localStorage para persistencia
-            localStorage.setItem(`document_status_${key}`, doc.estado || "pendiente");
+            localStorage.setItem(
+              `document_status_${key}`,
+              doc.estado || "pendiente"
+            );
             localStorage.setItem(`document_id_${key}`, doc.idDocumento);
           }
         }
@@ -166,25 +198,24 @@ const ArchivosSection = () => {
       for (const [key] of Object.entries(endpoints)) {
         if (!newLoadedFiles[key]) {
           const result = await fetchDocumentStatus(key, user._id);
-          
+
           if (result.loaded) {
             newLoadedFiles[key] = result.loaded;
             newDocumentIds[key] = result.id;
             newDocumentStatuses[key] = result.status;
-            
+
             // Guardar en localStorage para persistencia
             localStorage.setItem(`document_status_${key}`, result.status);
             localStorage.setItem(`document_id_${key}`, result.id);
           } else {
-            // Intentar recuperar del localStorage
-            const savedStatus = localStorage.getItem(`document_status_${key}`);
-            const savedId = localStorage.getItem(`document_id_${key}`);
-            
-            if (savedStatus) {
-              newLoadedFiles[key] = true;
-              newDocumentIds[key] = savedId;
-              newDocumentStatuses[key] = savedStatus;
-            }
+            // Si no se encuentra en el endpoint específico, marcamos como disponible para subir
+            newLoadedFiles[key] = false;
+            newDocumentIds[key] = null;
+            newDocumentStatuses[key] = null;
+
+            // Limpiar del localStorage
+            localStorage.removeItem(`document_status_${key}`);
+            localStorage.removeItem(`document_id_${key}`);
           }
         }
       }
@@ -198,37 +229,28 @@ const ArchivosSection = () => {
         .map(([key]) => key);
 
       if (rejectedDocs.length > 0) {
-        const rejectedNames = rejectedDocs.map(key => documentNames[key]).join(", ");
+        const rejectedNames = rejectedDocs
+          .map((key) => documentNames[key])
+          .join(", ");
         setTimeout(() => {
           Swal.fire({
             title: "Documentos rechazados",
             html: `Los siguientes documentos han sido <span class="text-red-500 font-bold">rechazados</span>:<br><br>${rejectedNames}<br><br>Por favor, vuelve a subirlos.`,
             icon: "warning",
-            confirmButtonText: "Entendido"
+            confirmButtonText: "Entendido",
           });
         }, 1000);
       }
 
-      const pending = Object.values(newDocumentStatuses).filter(status => status === "pendiente").length;
-      const accepted = Object.values(newDocumentStatuses).filter(status => status === "aceptado").length;
-      const rejected = Object.values(newDocumentStatuses).filter(status => status === "rechazado").length;
-
-      if (pending > 0 || accepted > 0 || rejected > 0) {
-        setTimeout(() => {
-          Swal.fire({
-            title: "Estado de tus documentos",
-            html: `
-              <div class="text-left">
-                <p><span class="text-green-500 font-bold">${accepted}</span> documentos aceptados</p>
-                <p><span class="text-yellow-500 font-bold">${pending}</span> documentos en revisión</p>
-                <p><span class="text-red-500 font-bold">${rejected}</span> documentos rechazados</p>
-              </div>
-            `,
-            icon: "info",
-            confirmButtonText: "Entendido"
-          });
-        }, 500);
-      }
+      const pending = Object.values(newDocumentStatuses).filter(
+        (status) => status === "pendiente"
+      ).length;
+      const accepted = Object.values(newDocumentStatuses).filter(
+        (status) => status === "aceptado"
+      ).length;
+      const rejected = Object.values(newDocumentStatuses).filter(
+        (status) => status === "rechazado"
+      ).length;
 
       return { newLoadedFiles, newDocumentIds, newDocumentStatuses };
     } catch (error) {
@@ -240,20 +262,25 @@ const ArchivosSection = () => {
   useEffect(() => {
     // Cargar estados guardados del localStorage primero
     const loadFromLocalStorage = () => {
-      const newLoadedFiles = {...loadedFiles};
-      const newDocumentIds = {...documentIds};
-      const newDocumentStatuses = {...documentStatuses};
+      const newLoadedFiles = { ...loadedFiles };
+      const newDocumentIds = { ...documentIds };
+      const newDocumentStatuses = { ...documentStatuses };
       let hasData = false;
 
       for (const key of Object.keys(endpoints)) {
         const savedStatus = localStorage.getItem(`document_status_${key}`);
         const savedId = localStorage.getItem(`document_id_${key}`);
-        
-        if (savedStatus) {
+
+        if (savedStatus && savedId) {
           newLoadedFiles[key] = true;
           newDocumentIds[key] = savedId;
           newDocumentStatuses[key] = savedStatus;
           hasData = true;
+        } else {
+          // Si no hay datos guardados, marcamos como disponible para subir
+          newLoadedFiles[key] = false;
+          newDocumentIds[key] = null;
+          newDocumentStatuses[key] = null;
         }
       }
 
@@ -266,7 +293,7 @@ const ArchivosSection = () => {
 
     // Primero cargar del localStorage
     loadFromLocalStorage();
-    
+
     // Luego actualizar desde el API
     fetchAllDocuments();
 
@@ -276,7 +303,7 @@ const ArchivosSection = () => {
       fetchAllDocuments();
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     const checkUserInterval = setInterval(() => {
       const userString = localStorage.getItem("user");
@@ -286,7 +313,7 @@ const ArchivosSection = () => {
     }, 5000);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
       clearInterval(checkUserInterval);
     };
   }, []);
@@ -347,13 +374,17 @@ const ArchivosSection = () => {
 
     return (
       <div className={`mt-2 ${config.color} font-medium text-center`}>
-        <div className={`${config.bgColor} ${config.color} py-1 px-3 rounded-full inline-flex items-center justify-center font-bold`}>
+        <div
+          className={`${config.bgColor} ${config.color} py-1 px-3 rounded-full inline-flex items-center justify-center font-bold`}
+        >
           <span className="mr-1">{config.icon}</span>
           {config.message}
         </div>
         {status === "rechazado" && (
           <div className="block text-xs text-red-500 mt-1 font-semibold">
-            Este documento fue rechazado.<br/>Por favor, súbelo nuevamente.
+            Este documento fue rechazado.
+            <br />
+            Por favor, súbelo nuevamente.
           </div>
         )}
       </div>
@@ -396,9 +427,9 @@ const ArchivosSection = () => {
         return;
       }
 
-      setIsSubmitting(prev => ({
+      setIsSubmitting((prev) => ({
         ...prev,
-        [key]: true
+        [key]: true,
       }));
 
       const swalWithTailwindButtons = Swal.mixin({
@@ -419,24 +450,24 @@ const ArchivosSection = () => {
         confirmButtonText: "Sí, enviar",
         cancelButtonText: "No, cancelar",
         reverseButtons: true,
-        allowOutsideClick: false
+        allowOutsideClick: false,
       });
 
       if (!result.isConfirmed) {
-        setIsSubmitting(prev => ({
+        setIsSubmitting((prev) => ({
           ...prev,
-          [key]: false
+          [key]: false,
         }));
         return;
       }
 
       Swal.fire({
-        title: 'Subiendo documento...',
+        title: "Subiendo documento...",
         allowOutsideClick: false,
         showConfirmButton: false,
         willOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
 
       const formData = new FormData();
@@ -489,15 +520,15 @@ const ArchivosSection = () => {
       localStorage.setItem(`document_status_${key}`, "pendiente");
       localStorage.setItem(`document_id_${key}`, documentId);
 
-      setFiles(prev => ({
+      setFiles((prev) => ({
         ...prev,
-        [key]: null
+        [key]: null,
       }));
 
       // Deshabilitamos el botón permanentemente para este documento
-      setIsSubmitting(prev => ({
+      setIsSubmitting((prev) => ({
         ...prev,
-        [key]: true
+        [key]: true,
       }));
 
       Swal.close();
@@ -508,16 +539,15 @@ const ArchivosSection = () => {
           <p>El documento "${documentNames[key]}" ha sido enviado correctamente.</p>
           <p class="mt-2 text-yellow-500 font-bold">Estado: EN REVISIÓN</p>
         </div>`,
-        icon: "success"
+        icon: "success",
       });
 
       // Actualizamos el estado después de mostrar el mensaje
       fetchAllDocuments();
-
     } catch (error) {
       // Este bloque no debería ejecutarse, pero por si acaso
       console.error(`Error inesperado:`, error);
-      
+
       // Aún así, forzamos el éxito
       const documentId = Date.now().toString();
       setDocumentIds((prev) => ({
@@ -537,17 +567,19 @@ const ArchivosSection = () => {
       localStorage.setItem(`document_status_${key}`, "pendiente");
       localStorage.setItem(`document_id_${key}`, documentId);
 
-      setFiles(prev => ({
+      setFiles((prev) => ({
         ...prev,
-        [key]: null
+        [key]: null,
       }));
 
       Swal.close();
 
       const swalWithTailwindButtons = Swal.mixin({
         customClass: {
-          confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
-          cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+          confirmButton:
+            "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+          cancelButton:
+            "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
         },
         buttonsStyling: false,
       });
@@ -558,9 +590,9 @@ const ArchivosSection = () => {
           <p>El documento "${documentNames[key]}" ha sido enviado correctamente.</p>
           <p class="mt-2 text-yellow-500 font-bold">Estado: EN REVISIÓN</p>
         </div>`,
-        icon: "success"
+        icon: "success",
       });
-      
+
       fetchAllDocuments();
     }
   };
@@ -586,7 +618,8 @@ const ArchivosSection = () => {
   };
 
   const getButtonClass = (key) => {
-    const baseClass = "mt-3 px-4 py-2 botones text-white rounded-full text-sm transition duration-200";
+    const baseClass =
+      "mt-3 px-4 py-2 botones text-white rounded-full text-sm transition duration-200";
     if (isSubmitting[key]) {
       return `${baseClass} opacity-70 cursor-not-allowed bg-gray-500`;
     }
@@ -599,8 +632,7 @@ const ArchivosSection = () => {
   return (
     <div className="flex-1 p-4 overflow-y-auto relative">
       <div className="flex flex-col items-center p-6">
-        <div className="flex justify-between w-full mb-4">
-        </div>
+        <div className="flex justify-between w-full mb-4"></div>
 
         <div className="grid grid-cols-3 gap-6 text-center">
           {Object.entries(documentNames).map(([key, name]) => {
@@ -613,7 +645,10 @@ const ArchivosSection = () => {
             const buttonDisabled = isUploadButtonDisabled(key);
 
             return (
-              <div key={key} className="relative border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div
+                key={key}
+                className="relative border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+              >
                 {isAccepted && (
                   <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl shadow-md">
                     ✓
@@ -632,11 +667,21 @@ const ArchivosSection = () => {
                   </div>
                 )}
 
-                <label className={`flex flex-col items-center ${isUploading ? 'cursor-wait' : isUploadable ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+                <label
+                  className={`flex flex-col items-center ${
+                    isUploading
+                      ? "cursor-wait"
+                      : isUploadable
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed"
+                  }`}
+                >
                   <img
                     src={FileUploadIcon}
                     alt="Upload"
-                    className={`w-20 h-20 ${isUploading ? 'opacity-70' : !isUploadable && 'opacity-50'}`}
+                    className={`w-20 h-20 ${
+                      isUploading ? "opacity-70" : !isUploadable && "opacity-50"
+                    }`}
                   />
                   <span className="mt-2 text-sm text-gray-600 font-semibold">
                     {name}
@@ -660,10 +705,16 @@ const ArchivosSection = () => {
                     </div>
                     <div className="flex items-center justify-between mt-2 w-full">
                       <span className="text-xs text-gray-600 truncate max-w-xs">
-                        {file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name}
+                        {file.name.length > 15
+                          ? file.name.substring(0, 12) + "..."
+                          : file.name}
                       </span>
                       <MdCancel
-                        className={`w-5 h-5 text-red-500 ml-2 ${isUploading ? 'opacity-50' : 'cursor-pointer hover:text-red-700'}`}
+                        className={`w-5 h-5 text-red-500 ml-2 ${
+                          isUploading
+                            ? "opacity-50"
+                            : "cursor-pointer hover:text-red-700"
+                        }`}
                         onClick={() => !isUploading && handleRemoveFile(key)}
                       />
                     </div>
@@ -688,21 +739,27 @@ const ArchivosSection = () => {
                     {isRejected && (
                       <div className="mt-3 px-4 py-2 bg-red-100 border border-red-300 rounded-lg text-xs text-red-800 w-full">
                         <strong>Documento rechazado</strong>
-                        <p className="text-xs mt-1">Debes subir este documento nuevamente.</p>
+                        <p className="text-xs mt-1">
+                          Debes subir este documento nuevamente.
+                        </p>
                       </div>
                     )}
 
                     {isAccepted && (
                       <div className="mt-3 px-4 py-2 bg-green-100 border border-green-300 rounded-lg text-xs text-green-800 w-full">
                         <strong>Documento aceptado</strong>
-                        <p className="text-xs mt-1">Este documento ha sido verificado y aprobado.</p>
+                        <p className="text-xs mt-1">
+                          Este documento ha sido verificado y aprobado.
+                        </p>
                       </div>
                     )}
 
                     {isPending && (
                       <div className="mt-3 px-4 py-2 bg-yellow-100 border border-yellow-300 rounded-lg text-xs text-yellow-800 w-full">
                         <strong>En revisión</strong>
-                        <p className="text-xs mt-1">Tu documento está siendo evaluado.</p>
+                        <p className="text-xs mt-1">
+                          Tu documento está siendo evaluado.
+                        </p>
                       </div>
                     )}
                   </div>
