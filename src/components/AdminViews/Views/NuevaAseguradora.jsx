@@ -30,8 +30,8 @@ const NuevaAseguradora = () => {
 
     // Validación de longitud máxima para campos específicos
     if (["nombre", "nombreContacto"].includes(name)) {
-      if (value.length > 20) {
-        error = "No debe exceder 20 caracteres";
+      if (value.length > 30) {
+        error = "No debe exceder 30 caracteres";
       }
     }
 

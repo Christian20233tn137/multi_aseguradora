@@ -167,11 +167,11 @@ const DocumentViewer = () => {
       <div className="flex space-x-4">
         <button
           type="button"
-          className={`w-32 text-white py-2 rounded-md ${documentStatus === 'aceptado' ? 'bg-green-300 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
+          className={`w-32 text-white py-2 rounded-md ${documentStatus === 'aceptado' ? 'bg-red-300 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'}`}
           disabled={documentStatus === 'aceptado'}
-          onClick={() => showAlert("aceptar")}
+          onClick={() => showAlert("rechazar")}
         >
-          Aceptar
+          Rechazar
         </button>
         <button
           type="button"
@@ -180,13 +180,14 @@ const DocumentViewer = () => {
         >
           Regresar
         </button>
+
         <button
           type="button"
-          className={`w-32 text-white py-2 rounded-md ${documentStatus === 'aceptado' ? 'bg-red-300 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'}`}
+          className={`w-32 text-white py-2 rounded-md ${documentStatus === 'aceptado' ? 'bg-green-300 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
           disabled={documentStatus === 'aceptado'}
-          onClick={() => showAlert("rechazar")}
+          onClick={() => showAlert("aceptar")}
         >
-          Rechazar
+          Aceptar
         </button>
       </div>
       {isProcessing && (

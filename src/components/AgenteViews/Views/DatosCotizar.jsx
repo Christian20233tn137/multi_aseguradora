@@ -614,8 +614,8 @@ const DatosCotizar = () => {
   const maxDate = new Date(currentYear - 18, 11, 31); // 18 años atrás
 
   return (
-    <div className="p-6 w-full h-auto overflow-hidden">
-      <h1 className="text-3xl w-full p-3 text-center font-normal text-white colorFondo rounded-2xl">
+    <div className="p-4 w-full h-auto overflow-hidden">
+      <h1 className="text-2xl md:text-3xl w-full p-3 text-center font-normal text-white colorFondo rounded-2xl">
         Datos del titular
       </h1>
 
@@ -623,7 +623,7 @@ const DatosCotizar = () => {
         <label className="text-gray-700 text-sm font-bold">
           ¿Ya ha sido titular antes?*
         </label>
-        <div className="flex items-center">
+        <div className="flex items-center flex-wrap">
           <label className="ml-2">
             <input
               type="radio"
@@ -654,8 +654,8 @@ const DatosCotizar = () => {
 
       {esTitularExistente && (
         <div className="mt-5">
-          <div className="flex items-center">
-            <div className="flex-grow">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="flex-grow mb-2 md:mb-0">
               <input
                 type="text"
                 placeholder="Ingrese el RFC del titular existente"
@@ -671,7 +671,7 @@ const DatosCotizar = () => {
               )}
             </div>
             <button
-              className="ml-2 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="ml-0 md:ml-2 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               style={{ backgroundColor: "#0B1956" }}
               onClick={buscarTitularExistente}
             >
@@ -825,7 +825,7 @@ const DatosCotizar = () => {
         <label className="text-gray-700 text-sm font-bold">
           ¿El titular también será el asegurado?*
         </label>
-        <div className="flex items-center">
+        <div className="flex items-center flex-wrap">
           <label className="ml-2">
             <input
               type="radio"
@@ -972,9 +972,15 @@ const DatosCotizar = () => {
         </div>
       )}
 
-      <div className="mt-10">
+      <div className="mt-10 flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
         <button
-          className="botones text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="botones text-white px-4 py-2 rounded hover:bg-blue-600 w-full md:w-auto"
+          onClick={() => navigate(-1, { state: { id: id } })}
+        >
+          Regresar
+        </button>
+        <button
+          className="botones text-white px-4 py-2 rounded hover:bg-blue-600 w-full md:w-auto"
           onClick={agregarCotizacion}
         >
           Cotizar
@@ -982,6 +988,7 @@ const DatosCotizar = () => {
       </div>
     </div>
   );
+
 };
 
 export default DatosCotizar;

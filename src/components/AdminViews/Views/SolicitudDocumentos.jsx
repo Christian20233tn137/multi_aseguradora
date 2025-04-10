@@ -14,12 +14,12 @@ const SolicitudDocumentos = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [allDocumentsAccepted, setAllDocumentsAccepted] = useState(false);
 
   useEffect(() => {
     const fetchDocuments = async () => {
       if (profile && profile._id) {
         try {
-          // Check API endpoints directly
           console.log("Checking API endpoints for user ID:", profile._id);
           const documentTypes = [
             {
@@ -41,7 +41,6 @@ const SolicitudDocumentos = () => {
             },
           ];
 
-          // First, check each endpoint directly to see what it returns
           for (const docType of documentTypes) {
             try {
               console.log(`Direct API check for ${docType.name}...`);
@@ -69,28 +68,23 @@ const SolicitudDocumentos = () => {
                 `http://localhost:3001/nar/${docType.endpoint}/documentosPostulante/${profile._id}`
               );
 
-              // Improved document ID extraction with better error handling
               console.log(`Raw response for ${docType.name}:`, response.data);
 
-              // Handle different response formats
               let documentData;
               let idDocumento = null;
               let estado = "pendiente";
 
               if (Array.isArray(response.data) && response.data.length > 0) {
-                // If response is an array, take the first item
                 documentData = response.data[0];
                 idDocumento =
                   documentData.idDocumento || documentData._id || null;
                 estado = documentData.estado || "pendiente";
               } else if (response.data && typeof response.data === "object") {
-                // If response is a single object
                 documentData = response.data;
                 idDocumento =
                   documentData.idDocumento || documentData._id || null;
                 estado = documentData.estado || "pendiente";
               } else {
-                // If response is not in expected format
                 console.warn(
                   `Unexpected response format for ${docType.name}:`,
                   response.data
@@ -122,6 +116,12 @@ const SolicitudDocumentos = () => {
           const transformedDocuments = await Promise.all(documentPromises);
           console.log("Transformed documents:", transformedDocuments);
           setDocuments(transformedDocuments);
+
+          // Check if all documents are accepted
+          const allAccepted = transformedDocuments.every(
+            (doc) => doc.status === "aceptado"
+          );
+          setAllDocumentsAccepted(allAccepted);
         } catch (error) {
           setError("Error al obtener los documentos.");
           console.error("Error fetching documents:", error);
@@ -249,7 +249,6 @@ const SolicitudDocumentos = () => {
         </thead>
         <tbody>
           {documents.map((doc, index) => {
-            // Improved validation logic for document IDs
             const hasValidId =
               doc.id &&
               typeof doc.id === "string" &&
@@ -318,8 +317,11 @@ const SolicitudDocumentos = () => {
         </button>
         <button
           type="button"
-          className="w-32 text-white py-2 rounded-md bg-green-500 hover:bg-green-600"
-          onClick={() => showAlert("aceptar")}
+          className={`w-32 text-white py-2 rounded-md bg-green-500 hover:bg-green-600 ${
+            !allDocumentsAccepted ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          onClick={() => allDocumentsAccepted && showAlert("aceptar")}
+          disabled={!allDocumentsAccepted}
         >
           Aceptar
         </button>

@@ -60,53 +60,53 @@ const EditarSeguro = () => {
   const editarSeguro = async () => {
     // Validación de campos requeridos
     if (!nombre || !cobertura || !tipo || !precioBase || !idAseguradora) {
-        swalWithTailwindButtons.fire("Error", "Por favor, complete todos los campos requeridos.", "error");
-        return;
+      swalWithTailwindButtons.fire("Error", "Por favor, complete todos los campos requeridos.", "error");
+      return;
     }
 
     const dataToSend = {
-        nombre,
-        cobertura: cobertura,
-        icono,
-        tipo,
-        precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
-        idAseguradora // Incluir el ID de la aseguradora
+      nombre,
+      cobertura: cobertura,
+      icono,
+      tipo,
+      precioBase: Number(precioBase), // Asegúrate de que precioBase sea un número
+      idAseguradora // Incluir el ID de la aseguradora
     };
 
     console.log("Datos a enviar en la edición:", dataToSend);
 
     // Mostrar alerta de cargando
     swalWithTailwindButtons.fire({
-        title: 'Cargando',
-        text: 'Por favor, espere...',
-        icon: 'info',
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        didOpen: () => {
-            swalWithTailwindButtons.showLoading();
-        }
+      title: 'Cargando',
+      text: 'Por favor, espere...',
+      icon: 'info',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        swalWithTailwindButtons.showLoading();
+      }
     });
 
     try {
-        const response = await axios.put(`http://localhost:3001/nar/seguros/id/${idSeguro}`, dataToSend);
+      const response = await axios.put(`http://localhost:3001/nar/seguros/id/${idSeguro}`, dataToSend);
 
-        if (response.status === 200) {
-            swalWithTailwindButtons.fire("Editado", "El seguro ha sido editado correctamente.", "success");
-            navigate("/aseguradoras/seguros", { state: { idAseguradora, id:id } }); // Pasar el estado con idAseguradora
-        } else {
-            swalWithTailwindButtons.fire("Error", "Hubo un problema al editar el seguro.", "error");
-        }
+      if (response.status === 200) {
+        swalWithTailwindButtons.fire("Editado", "El seguro ha sido editado correctamente.", "success");
+        navigate("/aseguradoras/seguros", { state: { idAseguradora, id: id } }); // Pasar el estado con idAseguradora
+      } else {
+        swalWithTailwindButtons.fire("Error", "Hubo un problema al editar el seguro.", "error");
+      }
     } catch (error) {
-        console.error("Error al editar el seguro:", error);
-        if (error.response) {
-            console.error("Respuesta del servidor:", error.response.data);
-        }
-        swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
+      console.error("Error al editar el seguro:", error);
+      if (error.response) {
+        console.error("Respuesta del servidor:", error.response.data);
+      }
+      swalWithTailwindButtons.fire("Error", "Ocurrió un error inesperado.", "error");
     } finally {
-        // Cerrar la alerta de cargando
-        swalWithTailwindButtons.close();
+      // Cerrar la alerta de cargando
+      swalWithTailwindButtons.close();
     }
-};
+  };
 
   const confirmarEditar = () => {
     swalWithTailwindButtons.fire({
@@ -211,21 +211,23 @@ const EditarSeguro = () => {
 
       {/* Botones Editar y Regresar */}
       <div className="flex items-center justify-center mt-4 space-x-4">
+
         <button
-         
-          className="px-4 py-2 botones text-white rounded"
-          style={{ backgroundColor: "#0B1956" }}
-          onClick={confirmarEditar}
-        >
-          Editar
-        </button>
-        <button
-          
+
           className="px-4 py-2 botones text-white rounded"
           style={{ backgroundColor: "#0B1956" }}
           onClick={() => navigate(-1)}
         >
           Regresar
+        </button>
+
+        <button
+
+          className="px-4 py-2 botones text-white rounded"
+          style={{ backgroundColor: "#0B1956" }}
+          onClick={confirmarEditar}
+        >
+          Editar
         </button>
       </div>
     </div>
