@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -8,9 +8,31 @@ import Estadisticas from "../assets/estadisticas.png";
 import Cotizaciones from "../assets/cotizaciones.png";
 
 const AgenteInactivo = () => {
+  const API_URL = "http://localhost:3001/nar/usuarios/id";
   const location = useLocation();
   const id = location.state?.id;
   const [isReactivationRequested, setIsReactivationRequested] = useState(false);
+
+  useEffect(() => {
+    const fetchReactivationStatus = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/${id}`);
+        const data = response.data;
+        console.log("API Response:", data);
+        setIsReactivationRequested(data.reactivacionSolicitada === "activa");
+        console.log(
+          "isReactivationRequested:",
+          data.reactivacionSolicitada === "activa"
+        );
+      } catch (error) {
+        console.error("Error al obtener la reactivación:", error);
+      }
+    };
+
+    if (id) {
+      fetchReactivationStatus();
+    }
+  }, [id]);
 
   const swalWithTailwindButtons = Swal.mixin({
     customClass: {
@@ -33,7 +55,9 @@ const AgenteInactivo = () => {
     }
 
     try {
-      await axios.put(`http://localhost:3001/nar/usuarios/reactivacionesActive/${id}`);
+      await axios.put(
+        `http://localhost:3001/nar/usuarios/reactivacionesActive/${id}`
+      );
 
       Swal.fire({
         title: "Solicitud enviada",
@@ -56,7 +80,8 @@ const AgenteInactivo = () => {
     <div className="p-6 w-full h-full overflow-hidden">
       <div className="mt-10 md:mt-40">
         <p className="text-red-500 text-lg font-semibold mb-4">
-          LAS ACCIONES HAN SIDO BLOQUEADAS DEBIDO AL INCUMPLIMIENTO DE LA CUOTA MENSUAL
+          LAS ACCIONES HAN SIDO BLOQUEADAS DEBIDO AL INCUMPLIMIENTO DE LA CUOTA
+          MENSUAL
         </p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="bg-gray-200 p-6 rounded-2xl shadow-md flex flex-col items-center text-center cursor-not-allowed">
@@ -94,13 +119,20 @@ const AgenteInactivo = () => {
         </div>
         <button
           className={`mt-8 botones p-3 rounded-md ${
-            isReactivationRequested ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 text-white"
+            isReactivationRequested
+              ? "bg-gray-400 text-white cursor-not-allowed opacity-50"
+              : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
           onClick={solicitarReactivacion}
           disabled={isReactivationRequested}
         >
-          Solicitar Reactivación
+          {isReactivationRequested
+            ? "Solicitud Enviada"
+            : "Solicitar Reactivación"}
         </button>
+        {isReactivationRequested && (
+          <p className="text-red-500 text-sm mt-2">Solicitud enviada</p>
+        )}
       </div>
     </div>
   );
