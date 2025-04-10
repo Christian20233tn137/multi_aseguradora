@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -8,10 +8,9 @@ const SolicitudSection = () => {
   const location = useLocation();
   const id = location.state?.id;
   const { profile } = location.state || {};
-  const [isLoading, setIsLoading] = useState(false); // Estado para el loader
 
   const handleBack = () => {
-    navigate("/solicitudes");
+    navigate("/solicitudes", {state : {id : id}});
   };
 
   const showAlert = async () => {
@@ -35,12 +34,18 @@ const SolicitudSection = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
-          setIsLoading(true); // Mostrar el loader
+          Swal.fire({
+            title: "Procesando",
+            text: "Por favor, espere...",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+          });
           try {
             const response = await axios.put(
               `http://localhost:3001/nar/usuarios/postulanteAceptado/${profile._id}`
             );
-            swalWithTailwindButtons.fire({
+            Swal.fire({
               title: "¡Aceptado!",
               text: "El postulante fue aceptado.",
               icon: "success",
@@ -48,16 +53,16 @@ const SolicitudSection = () => {
             handleBack();
           } catch (error) {
             console.error("Error updating postulante:", error);
-            swalWithTailwindButtons.fire({
+            Swal.fire({
               title: "Error",
               text: "Hubo un problema al aceptar al postulante.",
               icon: "error",
             });
           } finally {
-            setIsLoading(false); // Ocultar el loader
+            Swal.close();
           }
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalWithTailwindButtons.fire({
+          Swal.fire({
             title: "Cancelado",
             text: "El postulante no fue aceptado",
             icon: "error",
@@ -85,19 +90,38 @@ const SolicitudSection = () => {
         cancelButtonText: "No, cancelalo!",
         reverseButtons: true,
       })
-      .then((result) => {
+      .then(async (result) => {
         if (result.isConfirmed) {
-          setIsLoading(true); // Mostrar el loader
-          swalWithTailwindButtons.fire({
-            title: "Denegado!",
-            text: "El postulante fue denegado.",
-            icon: "success",
+          Swal.fire({
+            title: "Procesando",
+            text: "Por favor, espere...",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
           });
-          handleBack();
+          try {
+            const response = await axios.put(
+              `http://localhost:3001/nar/usuarios/denegado/${profile._id}`
+            );
+            Swal.fire({
+              title: "Denegado!",
+              text: "El postulante fue denegado.",
+              icon: "success",
+            });
+            handleBack();
+          } catch (error) {
+            Swal.fire({
+              title: "Error",
+              text: "Hubo un problema al denegar al postulante.",
+              icon: "error",
+            });
+          } finally {
+            Swal.close();
+          }
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalWithTailwindButtons.fire({
+          Swal.fire({
             title: "Cancelado",
-            text: "El postulante fue denegado correctamente",
+            text: "El postulante no fue denegado",
             icon: "error",
           });
         }
@@ -194,11 +218,6 @@ const SolicitudSection = () => {
           </div>
         </div>
       </div>
-      {isLoading && (
-        <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-          <div className="loader border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
-        </div>
-      )}
     </div>
   );
 };
