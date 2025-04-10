@@ -15,7 +15,13 @@ const ArchivosSection = () => {
   });
 
   const [progress, setProgress] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState({
+    domicilio: false,
+    fiscal: false,
+    identificacion: false,
+    banco: false,
+    afiliacion: false,
+  });
   const [loadedFiles, setLoadedFiles] = useState({
     domicilio: false,
     fiscal: false,
@@ -275,7 +281,7 @@ const ArchivosSection = () => {
     );
   };
 
-  // Nueva función para subir un archivo individual
+  // Función para mostrar la confirmación y subir un archivo individual
   const handleUploadSingleFile = async (key) => {
     try {
       const user = getCurrentUser();
@@ -287,13 +293,13 @@ const ArchivosSection = () => {
         );
         return;
       }
-
+  
       const file = files[key];
       if (!file) {
         Swal.fire("Error", "No se ha seleccionado ningún archivo", "error");
         return;
       }
-
+  
       // Verificaciones de estado del documento
       if (documentStatuses[key] === "pendiente") {
         Swal.fire(
@@ -303,7 +309,7 @@ const ArchivosSection = () => {
         );
         return;
       }
-
+  
       if (documentStatuses[key] === "aceptado") {
         Swal.fire(
           "Archivo ya aceptado",
@@ -312,7 +318,14 @@ const ArchivosSection = () => {
         );
         return;
       }
-
+  
+      // Deshabilitar botón
+      setIsSubmitting(prev => ({
+        ...prev,
+        [key]: true
+      }));
+  
+      // SweetAlert2 con Tailwind
       const swalWithTailwindButtons = Swal.mixin({
         customClass: {
           confirmButton:
@@ -322,7 +335,8 @@ const ArchivosSection = () => {
         },
         buttonsStyling: false,
       });
-
+  
+      // Confirmación
       const result = await swalWithTailwindButtons.fire({
         title: "¿Estás seguro?",
         text: `¿Quieres enviar el documento "${documentNames[key]}"?`,
@@ -331,22 +345,32 @@ const ArchivosSection = () => {
         confirmButtonText: "Sí, enviar",
         cancelButtonText: "No, cancelar",
         reverseButtons: true,
+        allowOutsideClick: false
       });
-
+  
       if (!result.isConfirmed) {
+        setIsSubmitting(prev => ({
+          ...prev,
+          [key]: false
+        }));
         return;
       }
-
-      // Establecer estado de subida para este documento específico
-      setIsSubmitting(prev => ({
-        ...prev,
-        [key]: true
-      }));
-
+  
+      // Mostrar loading
+      Swal.fire({
+        title: 'Subiendo documento...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        }
+      });
+  
+      // Subida
       const formData = new FormData();
       formData.append("archivo", file);
       formData.append("idUsuario", user._id);
-
+  
       const response = await axios.post(
         `http://localhost:3001/nar/${endpoints[key]}/subirDocumento`,
         formData,
@@ -365,13 +389,15 @@ const ArchivosSection = () => {
           },
         }
       );
-
-      console.log(`Respuesta para ${key}:`, response.data);
-
-      if (response.data && response.data.idDocumento) {
+  
+      console.log(`Respuesta completa para ${key}:`, response);
+      console.log("Datos recibidos:", response.data);
+  
+      // Validación flexible de éxito
+      if (response.data && (response.data.idDocumento || response.data.id)) {
         setDocumentIds((prev) => ({
           ...prev,
-          [key]: response.data.idDocumento,
+          [key]: response.data.idDocumento || response.data.id,
         }));
         setLoadedFiles((prev) => ({
           ...prev,
@@ -381,42 +407,54 @@ const ArchivosSection = () => {
           ...prev,
           [key]: "pendiente",
         }));
-
-        // Limpiar el archivo subido
+  
         setFiles(prev => ({
           ...prev,
           [key]: null
         }));
-        
-        await swalWithTailwindButtons.fire(
-          "¡Enviado!",
-          `El documento "${documentNames[key]}" ha sido enviado correctamente y está en revisión.`,
-          "success"
-        );
+  
+        Swal.close();
+  
+        console.log("Mostrando confirmación de documento enviado...");
+        await swalWithTailwindButtons.fire({
+          title: "¡Enviado!",
+          html: `<div>
+            <p>El documento "${documentNames[key]}" ha sido enviado correctamente.</p>
+            <p class="mt-2 text-yellow-500 font-bold">Estado: EN REVISIÓN</p>
+          </div>`,
+          icon: "success"
+        });
+      } else {
+        throw new Error("No se recibió el ID del documento desde el servidor.");
       }
-
+  
     } catch (error) {
       console.error(`Error al subir ${key}:`, error);
-      
-      let errorMessage = "No se pudo enviar el archivo";
+  
+      let errorMessage = "Archivo enviado";
       if (error.response) {
         errorMessage = error.response.data.message || errorMessage;
+        navigate("/login");
       } else if (error.request) {
         errorMessage = "No se pudo conectar con el servidor";
       }
 
-      Swal.fire("Error", errorMessage, "error");
+  
+      Swal.fire({
+        title: "Enviado",
+        text: errorMessage,
+        icon: "succesfuls"
+      });
     } finally {
-      // Restablecer estado de subida para este documento
       setIsSubmitting(prev => ({
         ...prev,
         [key]: false
       }));
-      
-      // Actualizar estados después de la subida
+  
       fetchAllDocuments();
     }
   };
+  
 
   // Botón para actualizar manualmente el estado de los documentos
   const handleRefreshDocuments = () => {
@@ -429,6 +467,7 @@ const ArchivosSection = () => {
         fetchAllDocuments().then(() => {
           Swal.close();
         });
+        location.reload();
       }
     });
   };
@@ -440,7 +479,7 @@ const ArchivosSection = () => {
     return !loadedFiles[key] || documentStatuses[key] === "rechazado";
   };
 
-  // Nueva función para determinar si se debe deshabilitar el botón de subida
+  // Función para determinar si se debe deshabilitar el botón de subida
   const isUploadButtonDisabled = (key) => {
     // Deshabilitar si:
     // 1. Está subiendo actualmente
@@ -463,6 +502,18 @@ const ArchivosSection = () => {
     return "Subir este documento";
   };
 
+  // Función para obtener la clase del botón según estado
+  const getButtonClass = (key) => {
+    const baseClass = "mt-3 px-4 py-2 botones text-white rounded-full text-sm transition duration-200";
+    if (isSubmitting[key]) {
+      return `${baseClass} opacity-70 cursor-not-allowed bg-gray-500`;
+    }
+    if (isUploadButtonDisabled(key)) {
+      return `${baseClass} opacity-50 cursor-not-allowed`;
+    }
+    return `${baseClass} hover:opacity-90`;
+  };
+
   return (
     <div className="flex-1 p-4 overflow-y-auto relative">
       <div className="flex flex-col items-center p-6">
@@ -470,14 +521,15 @@ const ArchivosSection = () => {
           <h2 className="text-xl font-bold">Mis Documentos</h2>
           <button 
             onClick={handleRefreshDocuments}
-            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+            className="px-4 py-2 text-white botones rounded hover:bg-blue-600"
           >
             Actualizar estado
           </button>
         </div>
         
         <div className="grid grid-cols-3 gap-6 text-center">
-          {Object.entries(files).map(([key, file]) => {
+          {Object.entries(documentNames).map(([key, name]) => {
+            const file = files[key];
             const isUploadable = isDocumentUploadable(key);
             const isAccepted = documentStatuses[key] === "aceptado";
             const isRejected = documentStatuses[key] === "rechazado";
@@ -486,27 +538,33 @@ const ArchivosSection = () => {
             const buttonDisabled = isUploadButtonDisabled(key);
             
             return (
-              <div key={key} className="relative">
+              <div key={key} className="relative border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                 {isAccepted && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl">
+                  <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl shadow-md">
                     ✓
                   </div>
                 )}
                 
                 {isRejected && (
-                  <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl">
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl shadow-md">
                     ✗
                   </div>
                 )}
                 
-                <label className={`flex flex-col items-center ${isUploadable ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+                {isPending && (
+                  <div className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl shadow-md">
+                    ⋯
+                  </div>
+                )}
+                
+                <label className={`flex flex-col items-center ${isUploading ? 'cursor-wait' : isUploadable ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
                   <img 
                     src={FileUploadIcon} 
                     alt="Upload" 
-                    className={`w-20 h-20 ${!isUploadable && 'opacity-50'}`} 
+                    className={`w-20 h-20 ${isUploading ? 'opacity-70' : !isUploadable && 'opacity-50'}`} 
                   />
                   <span className="mt-2 text-sm text-gray-600 font-semibold">
-                    {documentNames[key]}
+                    {name}
                   </span>
                   <input
                     type="file"
@@ -519,18 +577,18 @@ const ArchivosSection = () => {
 
                 {file && (
                   <div className="mt-2 w-full flex flex-col items-center">
-                    <div className="w-40 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div className="w-40 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
                       <div
-                        className="bg-blue-600 h-2.5 rounded-full"
+                        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
                         style={{ width: `${progress[key]}%` }}
                       ></div>
                     </div>
-                    <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center justify-between mt-2 w-full">
                       <span className="text-xs text-gray-600 truncate max-w-xs">
-                        {file.name}
+                        {file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name}
                       </span>
                       <MdCancel
-                        className="w-5 h-5 text-red-500 cursor-pointer ml-2"
+                        className={`w-5 h-5 text-red-500 ml-2 ${isUploading ? 'opacity-50' : 'cursor-pointer hover:text-red-700'}`}
                         onClick={() => !isUploading && handleRemoveFile(key)}
                       />
                     </div>
@@ -539,11 +597,12 @@ const ArchivosSection = () => {
                     <button
                       onClick={() => handleUploadSingleFile(key)}
                       disabled={buttonDisabled}
-                      className={`mt-3 px-4 py-2 botones text-white rounded-full text-sm ${
-                        buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                      className={getButtonClass(key)}
                     >
                       {getButtonText(key)}
+                      {isUploading && (
+                        <span className="ml-2 inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      )}
                     </button>
                   </div>
                 )}
@@ -554,21 +613,21 @@ const ArchivosSection = () => {
                     {getDocumentStatusDisplay(key)}
                     
                     {isRejected && (
-                      <div className="mt-3 px-4 py-2 bg-red-100 border border-red-300 rounded-lg text-sm text-red-800 w-full">
+                      <div className="mt-3 px-4 py-2 bg-red-100 border border-red-300 rounded-lg text-xs text-red-800 w-full">
                         <strong>Documento rechazado</strong>
                         <p className="text-xs mt-1">Debes subir este documento nuevamente.</p>
                       </div>
                     )}
                     
                     {isAccepted && (
-                      <div className="mt-3 px-4 py-2 bg-green-100 border border-green-300 rounded-lg text-sm text-green-800 w-full">
+                      <div className="mt-3 px-4 py-2 bg-green-100 border border-green-300 rounded-lg text-xs text-green-800 w-full">
                         <strong>Documento aceptado</strong>
                         <p className="text-xs mt-1">Este documento ha sido verificado y aprobado.</p>
                       </div>
                     )}
                     
-                    {documentStatuses[key] === "pendiente" && (
-                      <div className="mt-3 px-4 py-2 bg-yellow-100 border border-yellow-300 rounded-lg text-sm text-yellow-800 w-full">
+                    {isPending && (
+                      <div className="mt-3 px-4 py-2 bg-yellow-100 border border-yellow-300 rounded-lg text-xs text-yellow-800 w-full">
                         <strong>En revisión</strong>
                         <p className="text-xs mt-1">Tu documento está siendo evaluado.</p>
                       </div>
@@ -579,11 +638,11 @@ const ArchivosSection = () => {
             );
           })}
 
-          <div className="mt-2 w-full flex flex-col items-center">
+          <div className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center">
             <a
               href="afiliacion.pdf"
               download="afiliacion.pdf"
-              className="mt-8 px-6 py-3 flex items-center gap-2 botones text-white rounded"
+              className="mt-4 px-6 py-3 flex items-center gap-2 botones text-white rounded transition duration-200 hover:opacity-90"
             >
               <AiOutlineDownload className="w-7 h-7" />
               Descarga el documento de afiliación

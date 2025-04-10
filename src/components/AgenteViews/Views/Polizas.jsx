@@ -9,7 +9,7 @@ const Polizas = () => {
   const id = location.state.id;
   const idPoliza = location.state.idPoliza;
   console.log(id);
-  
+
   const [polizas, setPolizas] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState(null);
@@ -29,8 +29,8 @@ const Polizas = () => {
         if (response.data.success) {
           const polizasData = response.data.data;
           if (polizasData.length === 0) {
-            setError(null); 
-            setPolizas([]); 
+            setError(null);
+            setPolizas([]);
           } else {
             setPolizas(polizasData);
           }
@@ -48,7 +48,7 @@ const Polizas = () => {
 
   const handleInfo = (idPoliza) => {
     console.log("Id de la poliza", idPoliza);
-    navigate(`${location.pathname}/informacion`, {state:{id: location.state.id, idPoliza : idPoliza}});
+    navigate(`${location.pathname}/informacion`, { state: { id: location.state.id, idPoliza: idPoliza } });
   };
 
   const handleSearchChange = (event) => {
@@ -99,6 +99,16 @@ const Polizas = () => {
             </div>
           ))
         )}
+      </div>
+
+      {/* Botón de Regresar */}
+      <div className="mt-4 text-center">
+        <button
+          className="botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          onClick={() => navigate(-1)}
+        >
+          Regresar
+        </button>
       </div>
     </div>
   );
