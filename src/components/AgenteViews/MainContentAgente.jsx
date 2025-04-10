@@ -46,8 +46,7 @@ const MainContentAgente = () => {
         return <Estadisticas />;
       case `/inicioAgentes/clientes`:
         return <Clientes />;
-      case `/inicioAgentes/clientes`:
-        return <Clientes />;
+    
       default:
         return <Notfound />;
     }
