@@ -41,10 +41,17 @@ const LoginForm = ({ setUser }) => {
       const response = await axios.post(
         "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/login",
         {
-          correo,
-          contrasena,
+            correo,
+            contrasena,
+        },
+        {
+            withCredentials: true, // Permite enviar y recibir cookies/sesiones
+            headers: {
+                "Content-Type": "application/json",
+            },
         }
-      );
+    );
+    
 
       const { success, data, message } = response.data;
 
