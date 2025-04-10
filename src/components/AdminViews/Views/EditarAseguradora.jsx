@@ -440,13 +440,20 @@ const EditarAseguradora = () => {
               <p className="text-red-500 text-xs mt-1">{errors.informacion}</p>
             )}
           </div>
-          <div className="col-span-2 flex items-center justify-center">
+          <div className="col-span-2 flex items-center justify-center space-x-4">
             <button
               type="button"
               className="botones text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               onClick={showEditAlert}
             >
               Guardar
+            </button>
+            <button
+              type="button"
+              className="botones text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              onClick={() => navigate(-1)} // Regresar a la página anterior
+            >
+              Regresar
             </button>
           </div>
         </form>

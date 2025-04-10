@@ -311,7 +311,7 @@ const SolicitudDocumentos = () => {
         </button>
         <button
           type="button"
-          className="w-30 text-white py-2 px-4 rounded-md bg-gray-500 hover:bg-gray-600"
+          className="w-30 text-white py-2 px-4 rounded-md botones"
           onClick={() => navigate(-1)}
         >
           Regresar

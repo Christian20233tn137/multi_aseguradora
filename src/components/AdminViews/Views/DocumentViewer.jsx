@@ -175,7 +175,7 @@ const DocumentViewer = () => {
         </button>
         <button
           type="button"
-          className="w-32 text-white py-2 rounded-md bg-gray-500 hover:bg-gray-600"
+          className="w-32 text-white py-2 rounded-md botones"
           onClick={() => navigate(-1, { state: { id: id, } })}
         >
           Regresar

@@ -212,14 +212,21 @@ const AgregarSeguro = () => {
         </div>
       </div>
 
-      {/* Botón Agregar */}
-      <div className="col-span-2 flex items-center justify-center mt-4">
+      {/* Botones Agregar y Regresar */}
+      <div className="col-span-2 flex items-center justify-center mt-4 space-x-4">
         <button
           type="button"
           className="text-white font-bold py-2 px-4 botones focus:outline-none focus:shadow-outline"
           onClick={confirmarAgregar}
         >
           Agregar
+        </button>
+        <button
+          type="button"
+          className="text-white font-bold py-2 px-4 botones focus:outline-none focus:shadow-outline"
+          onClick={() => navigate(-1)} // Regresar a la página anterior
+        >
+          Regresar
         </button>
       </div>
     </div>
