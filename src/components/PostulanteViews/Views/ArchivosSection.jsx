@@ -3,6 +3,7 @@ import FileUploadIcon from "../assets/FileUpload.png";
 import { MdCancel } from "react-icons/md";
 import Swal from "sweetalert2";
 import { AiOutlineDownload } from "react-icons/ai";
+import afiliacionPDF from './afiliacion.pdf';
 import axios from "axios";
 
 const ArchivosSection = () => {
@@ -638,7 +639,7 @@ const ArchivosSection = () => {
 
           <div className=" rounded-lg p-4  flex flex-col items-center justify-center">
             <a
-              href="afiliacion.pdf"
+              href={afiliacionPDF}
               download="afiliacion.pdf"
               className="mt-4 px-6 py-3 flex items-center gap-2 botones text-white rounded transition duration-200 hover:opacity-90"
             >
