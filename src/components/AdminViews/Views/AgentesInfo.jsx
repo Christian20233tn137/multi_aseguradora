@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   BarChart,
@@ -14,6 +14,7 @@ import Swal from "sweetalert2";
 
 const AgentesInfo = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const id = location.state?.id;
   const idAgente = location.state?.idAgente;
 
@@ -214,6 +215,18 @@ const AgentesInfo = () => {
             <Bar dataKey="ventas" fill="#82ca9d" />
           </BarChart>
         </div>
+      </div>
+
+      {/* Botón de Regresar */}
+      <div className="flex items-center justify-center mt-4">
+        <button
+          type="button"
+          className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          style={{ backgroundColor: "#0B1956" }}
+          onClick={() => navigate(-1,{state:{id:id}})}
+        >
+          Regresar
+        </button>
       </div>
     </div>
   );

@@ -508,13 +508,21 @@ const EditarAgente = () => {
             />
           </div>
         </form>
-        <div className="col-span-2 flex justify-center mt-8">
+        <div className="flex items-center justify-center mt-8 space-x-4">
+          
           <button
             type="button"
-            className="text-white items-start font-bold mr-2 py-2 px-2 botones focus:outline-none focus:shadow-outline"
+            className="text-white font-bold py-2 px-4 botones focus:outline-none focus:shadow-outline"
             onClick={restablecerContrasena}
           >
             Restablecer contraseña
+          </button>
+          <button
+            type="button"
+            className="text-white font-bold py-2 px-4 botones focus:outline-none focus:shadow-outline"
+            onClick={() => navigate(-1,{state:{id:id}})}
+          >
+            Regresar
           </button>
           <button
             type="button"
