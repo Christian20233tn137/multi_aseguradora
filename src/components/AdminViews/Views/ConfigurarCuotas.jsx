@@ -87,7 +87,7 @@ const ConfigurarCuotas = () => {
             setLoading(true);
 
             const response = await axios.put(
-              `http://localhost:3001/nar/cuotas/id/67ef962c86cbecc00539053d`,
+              `http://localhost:3001/nar/cuotas/id/67f7672cd291e7c96c2ebef3`,
               {
                 cuotaMensual: cantidad,
               }
