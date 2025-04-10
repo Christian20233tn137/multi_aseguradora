@@ -140,7 +140,9 @@ const SolicitudDocumentos = () => {
 
   const handleViewDocument = (documentId, documentType) => {
     if (documentId) {
-      navigate(`/solicitudes/verDocumento`, {state :{id:id, documentId : documentId, documentType: documentType}});
+      navigate(`/solicitudes/verDocumento`, {
+        state: { id: id, documentId: documentId, documentType: documentType },
+      });
     } else {
       Swal.fire({
         title: "Error",
@@ -199,6 +201,64 @@ const SolicitudDocumentos = () => {
         }
       });
   };
+
+  const showAlertDenegar = () => {
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mx-2",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mx-2",
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithTailwindButtons
+      .fire({
+        title: "¿Estás seguro?",
+        text: "No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Si, eliminalo!",
+        cancelButtonText: "No, cancelalo!",
+        reverseButtons: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Procesando",
+            text: "Por favor, espere...",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+          });
+          try {
+            const response = await axios.put(
+              `http://localhost:3001/nar/usuarios/denegado/${profile._id}`
+            );
+            Swal.fire({
+              title: "Denegado!",
+              text: "El postulante fue denegado.",
+              icon: "success",
+            });
+            handleBack();
+          } catch (error) {
+            Swal.fire({
+              title: "Error",
+              text: "Hubo un problema al denegar al postulante.",
+              icon: "error",
+            });
+          } finally {
+            Swal.close();
+          }
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          Swal.fire({
+            title: "Cancelado",
+            text: "El postulante no fue denegado",
+            icon: "error",
+          });
+        }
+      });
+  };
+
 
   const nombrePostulante = profile
     ? `${profile.nombre || ""} ${profile.apellidoPaterno || ""} ${
@@ -304,7 +364,7 @@ const SolicitudDocumentos = () => {
         <button
           type="button"
           className="w-32 text-white py-2 rounded-md bg-red-500 hover:bg-red-600"
-          onClick={() => showAlert("denegar")}
+          onClick={showAlertDenegar}
         >
           Denegar
         </button>
