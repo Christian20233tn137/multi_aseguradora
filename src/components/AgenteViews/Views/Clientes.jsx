@@ -58,20 +58,22 @@ const Clientes = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="relative p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">Clientes</h1>
+    <div className="p-4 sm:p-6 w-full h-auto overflow-hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left">
+          Clientes
+        </h1>
         <input
           type="text"
           placeholder="Buscar cliente"
-          className="border-0 shadow-md rounded-lg p-2 w-64"
+          className="border-0 shadow-md rounded-lg p-2 w-full sm:w-64 mt-2 sm:mt-0"
           value={searchTerm}
           onChange={handleSearch}
           aria-label="Buscar cliente"
         />
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full">
+        <table className="min-w-full w-full">
           <thead>
             <tr>
               <th className="py-2 px-4 border-b border-gray-200 text-center">
@@ -94,22 +96,22 @@ const Clientes = () => {
           <tbody>
             {currentClients.length > 0 ? (
               currentClients.map((cliente) => (
-                <tr key={cliente.id}>
-                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                <tr key={cliente.id} className="text-center">
+                  <td className="py-2 px-4 border-b border-gray-200">
                     {cliente.nombre}
                   </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                  <td className="py-2 px-4 border-b border-gray-200">
                     {cliente.apellidoPaterno} {cliente.apellidoMaterno}
                   </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                  <td className="py-2 px-4 border-b border-gray-200">
                     {cliente.rfc}
                   </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                  <td className="py-2 px-4 border-b border-gray-200">
                     {cliente.edad}
                   </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-center">
+                  <td className="py-2 px-4 border-b border-gray-200">
                     <button
-                      className="botones text-white py-1 px-3 rounded"
+                      className="botones text-white py-1 px-3 rounded w-full sm:w-auto"
                       onClick={() => {
                         navigate(`${location.pathname}/polizas`, {
                           state: { idPoliza: cliente._id, id: id },
@@ -123,7 +125,7 @@ const Clientes = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center">
+                <td colSpan="5" className="text-center py-4">
                   No se encontraron clientes
                 </td>
               </tr>
@@ -131,24 +133,26 @@ const Clientes = () => {
           </tbody>
         </table>
       </div>
-      <div className="flex justify-between mt-4">
+      <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-2">
         <button
           onClick={() => paginate(currentPage - 1)}
           disabled={currentPage === 1}
-          className="botones text-white py-1 px-3 rounded"
+          className="botones text-white py-2 px-4 rounded w-full sm:w-auto"
         >
           Anterior
         </button>
         <button
           onClick={() => paginate(currentPage + 1)}
           disabled={indexOfLastClient >= filteredClientes.length}
-          className="botones text-white py-1 px-3 rounded"
+          className="botones text-white py-2 px-4 rounded w-full sm:w-auto"
         >
           Siguiente
         </button>
       </div>
     </div>
+
   );
+
 };
 
 export default Clientes;

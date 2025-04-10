@@ -60,21 +60,21 @@ const Polizas = () => {
   );
 
   return (
-    <div className="p-6 w-auto h-auto overflow-hidden">
-      <h1 className="text-3xl max-w-screen p-3 text-center font-normal text-black bg-blue-100 rounded-2xl">
+    <div className="p-4 sm:p-6 w-full h-auto overflow-hidden">
+      <h1 className="text-2xl sm:text-3xl w-full p-3 text-center font-normal text-black bg-blue-100 rounded-2xl">
         Pólizas
       </h1>
-
+  
       <div className="flex justify-end p-4">
         <input
           type="text"
           placeholder="Buscar..."
           value={searchQuery}
           onChange={handleSearchChange}
-          className="border-0 shadow-md rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border-0 shadow-md rounded-lg p-2 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-
+  
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
         {filteredPolizas.length === 0 ? (
           <div className="col-span-full text-center text-gray-500">
@@ -84,14 +84,14 @@ const Polizas = () => {
           filteredPolizas.map((poliza) => (
             <div
               key={poliza.numeroPoliza}
-              className="border-0 shadow-md rounded-lg p-4"
+              className="border-0 shadow-md rounded-lg p-4 flex flex-col h-full"
             >
-              <h2 className="font-bold">PÓLIZA N. {poliza.numeroPoliza}</h2>
-              <p>{poliza.nombreSeguro}</p>
-              <p>Vigencia: {poliza.vigencia}</p>
-              <p>Costo total: ${poliza.montoTotal}</p>
+              <h2 className="font-bold text-lg sm:text-xl">PÓLIZA N. {poliza.numeroPoliza}</h2>
+              <p className="text-base sm:text-lg">{poliza.nombreSeguro}</p>
+              <p className="text-base sm:text-lg">Vigencia: {poliza.vigencia}</p>
+              <p className="text-base sm:text-lg">Costo total: ${poliza.montoTotal}</p>
               <button
-                className="mt-4 botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="mt-4 sm:mt-6 botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
                 onClick={() => handleInfo(poliza.idPoliza)}
               >
                 Ver más
@@ -100,11 +100,11 @@ const Polizas = () => {
           ))
         )}
       </div>
-
+  
       {/* Botón de Regresar */}
       <div className="mt-4 text-center">
         <button
-          className="botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="botones text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
           onClick={() => navigate(-1)}
         >
           Regresar
@@ -112,6 +112,7 @@ const Polizas = () => {
       </div>
     </div>
   );
+  
 };
 
 export default Polizas;

@@ -75,12 +75,12 @@ const CotizacionesPendientes = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col sm:flex-row mb-6">
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row mb-4 sm:mb-6">
         <input
           type="text"
           placeholder="Buscar cotización"
-          className="border-gray-300 p-3 w-72 rounded-lg shadow-sm focus:outline-none ml-auto"
+          className="border-gray-300 p-3 w-full sm:w-72 rounded-lg shadow-sm focus:outline-none sm:ml-auto"
           aria-label="Buscar cotización"
           value={searchTerm}
           onChange={handleSearch}
@@ -99,7 +99,7 @@ const CotizacionesPendientes = () => {
             {currentCotizaciones.map((cotizacion) => (
               <div
                 key={cotizacion.idCotizacion}
-                className="bg-white p-6 border-0 shadow-md rounded-lg flex items-center"
+                className="bg-white p-6 border-0 shadow-md rounded-lg flex flex-col sm:flex-row items-center"
               >
                 <div className="flex flex-col space-y-2 flex-grow">
                   <p className="text-lg font-semibold text-gray-900">
@@ -116,7 +116,7 @@ const CotizacionesPendientes = () => {
                 </div>
 
                 <button
-                  className="px-6 py-2 botones rounded-lg font-medium ml-auto"
+                  className="px-6 py-2 botones rounded-lg font-medium mt-4 sm:mt-0 sm:ml-auto w-full sm:w-auto"
                   onClick={() => handleEmision(cotizacion.idCotizacion)}
                 >
                   Información
@@ -125,26 +125,27 @@ const CotizacionesPendientes = () => {
             ))}
 
             {totalPages > 1 && (
-              <div className="flex justify-between mt-6">
+              <div className="flex flex-col sm:flex-row justify-between items-center mt-6 space-y-2 sm:space-y-0 sm:space-x-2">
                 <button
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
-                  className={`px-4 py-2 rounded-lg font-medium ${
-                    currentPage === 1
+                  className={`px-4 py-2 rounded-lg font-medium w-full sm:w-auto ${currentPage === 1
                       ? "bg-gray-300 cursor-not-allowed"
                       : "botones"
-                  }`}
+                    }`}
                 >
                   Anterior
                 </button>
+                <span className="text-gray-700">
+                  Página {currentPage} de {totalPages}
+                </span>
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className={`px-4 py-2 rounded-lg font-medium ${
-                    currentPage === totalPages
+                  className={`px-4 py-2 rounded-lg font-medium w-full sm:w-auto ${currentPage === totalPages
                       ? "bg-gray-300 cursor-not-allowed"
                       : "botones"
-                  }`}
+                    }`}
                 >
                   Siguiente
                 </button>
@@ -155,6 +156,7 @@ const CotizacionesPendientes = () => {
       </div>
     </div>
   );
+
 };
 
 export default CotizacionesPendientes;

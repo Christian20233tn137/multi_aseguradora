@@ -62,7 +62,7 @@ const Cotizar = () => {
               </span>
             </div>
             <button
-              className="px-8 py-3 text-white rounded botones mt-2 sm:mt-0"
+              className="px-4 py-2 text-white rounded botones mt-2 sm:mt-0"
               onClick={() => handleFormulario(aseguradora.nombre)}
             >
               Cotizar
@@ -72,6 +72,7 @@ const Cotizar = () => {
       </div>
     </div>
   );
+
 };
 
 export default Cotizar;
