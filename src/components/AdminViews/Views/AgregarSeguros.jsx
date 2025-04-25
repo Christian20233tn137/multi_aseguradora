@@ -54,7 +54,7 @@ const AgregarSeguro = () => {
 
     try {
       const response = await axios.post(
-        "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros/",
+        "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/seguros",
         dataToSend
       );
 

@@ -26,7 +26,7 @@ const ConfigurarCuotas = () => {
     const fetchEmisionesActuales = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cuotas/");
+        const response = await axios.get("https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cuotas");
         const data = response.data;
         console.log("Datos de la API:", data); // Verifica la respuesta de la API
         if (data.length > 0) {

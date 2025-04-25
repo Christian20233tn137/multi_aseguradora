@@ -36,7 +36,7 @@ const Estadisticas = () => {
   useEffect(() => {
     const fetchEmisionesActuales = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/nar/cuotas/");
+        const response = await axios.get("https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cuotas/");
         const data = response.data;
 
         if (data.length > 0) {

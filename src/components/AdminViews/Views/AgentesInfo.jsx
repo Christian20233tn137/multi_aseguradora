@@ -19,7 +19,7 @@ const AgentesInfo = () => {
   const idAgente = location.state?.idAgente;
 
   const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com//nar/usuarios/cotizacionesYEmisiones";
-  const API_URL_DATOS = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com//nar/usuarios";
+  const API_URL_DATOS = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios";
 
   const [nombrePostulante, setNombrePostulante] = useState("");
   const [agente, setAgente] = useState({

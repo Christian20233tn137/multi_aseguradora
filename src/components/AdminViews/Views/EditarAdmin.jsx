@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const API_URL = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/id";
 const API_URL_EDIT = "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios";
@@ -128,7 +128,7 @@ const EditarAdmin = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/nar/usuarios/checkEmail/${email}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/checkEmail/${email}`
       );
       return response.data.exists;
     } catch (error) {
@@ -145,7 +145,7 @@ const EditarAdmin = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/nar/usuarios/checkPhone/${phone}`
+        `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios/checkPhone/${phone}`
       );
       return response.data.exists;
     } catch (error) {

@@ -96,7 +96,7 @@ const SegurosCotizar = () => {
       };
 
       const responseCotizacion = await axios.post(
-        "http://localhost:3001/nar/cotizaciones",
+        "https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cotizaciones",
         datosCotizacionCompletos
       );
 

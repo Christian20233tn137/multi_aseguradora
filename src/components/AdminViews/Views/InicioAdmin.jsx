@@ -17,7 +17,7 @@ const InicioAdmin = () => {
   useEffect(() => {
     const fetchAdministradores = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/nar/usuarios");
+        const response = await axios.get("https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/usuarios");
         const admins = response.data.filter(
           (user) => user.rol === "administrador"
         );

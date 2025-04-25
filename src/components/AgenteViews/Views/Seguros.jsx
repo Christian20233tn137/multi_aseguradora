@@ -62,7 +62,7 @@ const Seguros = () => {
 
           try {
             const response = await axios.put(
-              `http://localhost:3001/nar/cotizaciones/emitida/${idCotizacion}`
+              `https://lz2k718xka.execute-api.us-east-1.amazonaws.com/nar/cotizaciones/emitida/${idCotizacion}`
             );
 
             if (response.status === 200) {
